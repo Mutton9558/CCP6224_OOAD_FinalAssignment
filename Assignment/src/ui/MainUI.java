@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class MainUI extends JFrame {
 
-    MainUI(SystemController system){
+    MainUI(){
         
     }
 }
