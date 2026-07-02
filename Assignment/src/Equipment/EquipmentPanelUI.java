@@ -67,6 +67,11 @@ public class EquipmentPanelUI extends JPanel {
         newCategoryBtn.setForeground(Color.WHITE);
         newCategoryBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         newCategoryBtn.setFocusPainted(false);
+        newCategoryBtn.addActionListener(e -> {
+            Window window = SwingUtilities.getWindowAncestor(this);
+            JDialog createCategory = new AddCategoryUI(window);
+            createCategory.setVisible(true);
+        });
 
         headerPanel.add(titleLabel, BorderLayout.WEST);
         headerPanel.add(newCategoryBtn, BorderLayout.EAST);
@@ -89,6 +94,14 @@ public class EquipmentPanelUI extends JPanel {
         nameLabel.setForeground(Color.WHITE);
         nameLabel.setFont(new Font("Arial", Font.PLAIN, 18));
 
+        JButton editCategoryBtn = new JButton("Edit Category");
+        editCategoryBtn.setBackground(Color.GRAY);
+        editCategoryBtn.setForeground(Color.WHITE);
+        editCategoryBtn.setFont(new Font("Arial", Font.PLAIN, 12));
+        editCategoryBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        
+       
+        
         JButton addEquipmentBtn = new JButton("+ Equipment");
         addEquipmentBtn.setBackground(Color.GRAY);
         addEquipmentBtn.setForeground(Color.WHITE);
@@ -97,6 +110,8 @@ public class EquipmentPanelUI extends JPanel {
 
         labelRow.add(nameLabel);
         labelRow.add(Box.createHorizontalGlue());
+        labelRow.add(editCategoryBtn);
+        labelRow.add(Box.createHorizontalStrut(10));
         labelRow.add(addEquipmentBtn);
         
         // Corrected columns mismatch from previous mock data arrays
