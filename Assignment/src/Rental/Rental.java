@@ -9,14 +9,20 @@ public class Rental {
     private final int user_id;
     private Bill bill;
     private final Equipment equipment;
-    private LocalTime duration;
+    private LocalDate bookedDate;
+    private LocalDate dueDate;
+    private int duration;
+    private Boolean returnStatus;
     private Boolean lateStatus;
     
-    public Rental(int id, int userID, Equipment equipment, LocalTime duration, Boolean lateStatus){
+    public Rental(int id, int userID, Equipment equipment, int duration, Boolean lateStatus){
         this.rental_id = id;
         this.user_id = userID;
         this.equipment = equipment;
+        this.bookedDate = LocalDate.now();
+        this.dueDate = bookedDate.plusDays(duration);
         this.duration = duration;
+        this.returnStatus = false;
         this.lateStatus = lateStatus;
     }
     
