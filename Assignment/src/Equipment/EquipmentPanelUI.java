@@ -34,7 +34,8 @@ public class EquipmentPanelUI extends JPanel {
         
         add(Box.createVerticalStrut(25));
         
-        add(createCategoryBlock("Cameras & Lenses"));
+        Category camerasAndLenses = new Category(1, "Cameras & Lenses", 100.0f, 0.1f, 0.05f, 0.3f);
+        add(createCategoryBlock(camerasAndLenses));
         add(Box.createVerticalStrut(20));
 
         JSeparator separator = new JSeparator(JSeparator.HORIZONTAL);
@@ -44,7 +45,8 @@ public class EquipmentPanelUI extends JPanel {
         add(separator);
         add(Box.createVerticalStrut(20));
 
-        add(createCategoryBlock("Lighting Equipment"));
+        Category lightingEquipment = new Category(2, "Lighting Equipment", 70.0f, 0.05f, 0.05f, 0.2f);
+        add(createCategoryBlock(lightingEquipment));
     }
 
     private JPanel createHeaderPanel() {
@@ -78,7 +80,7 @@ public class EquipmentPanelUI extends JPanel {
         return headerPanel;
     }
 
-    private JPanel createCategoryBlock(String categoryName) {
+    private JPanel createCategoryBlock(Category category) {
         JPanel blockPanel = new JPanel();
         blockPanel.setLayout(new BoxLayout(blockPanel, BoxLayout.Y_AXIS));
         blockPanel.setBackground(uiConstants.LightPurple);
@@ -90,7 +92,7 @@ public class EquipmentPanelUI extends JPanel {
         labelRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         labelRow.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel nameLabel = new JLabel(categoryName);
+        JLabel nameLabel = new JLabel(category.getName());
         nameLabel.setForeground(Color.WHITE);
         nameLabel.setFont(new Font("Arial", Font.PLAIN, 18));
 
@@ -99,7 +101,11 @@ public class EquipmentPanelUI extends JPanel {
         editCategoryBtn.setForeground(Color.WHITE);
         editCategoryBtn.setFont(new Font("Arial", Font.PLAIN, 12));
         editCategoryBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        
+        editCategoryBtn.addActionListener(e -> {
+            Window parent = SwingUtilities.getWindowAncestor(this);
+            JDialog editCategoryDialog = new EditCategoryUI(parent, category);
+            editCategoryDialog.setVisible(true);
+        });
        
         
         JButton addEquipmentBtn = new JButton("+ Equipment");
@@ -107,6 +113,11 @@ public class EquipmentPanelUI extends JPanel {
         addEquipmentBtn.setForeground(Color.WHITE);
         addEquipmentBtn.setFont(new Font("Arial", Font.PLAIN, 12));
         addEquipmentBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        addEquipmentBtn.addActionListener(e -> {
+            Window parent = SwingUtilities.getWindowAncestor(this);
+            JDialog addEquipmentDialog = new AddEquipmentUI(parent);
+            addEquipmentDialog.setVisible(true);
+        });
 
         labelRow.add(nameLabel);
         labelRow.add(Box.createHorizontalGlue());
