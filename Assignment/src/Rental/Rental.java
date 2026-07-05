@@ -46,8 +46,20 @@ public class Rental {
         return this.duration;
     }
     
-    public Boolean getStatus(){
+    public Boolean getReturnStatus(){
+        return this.returnStatus;
+    }
+
+    public Boolean getLateStatus(){
         return this.lateStatus;
+    }
+
+    public LocalDate getBookedDate(){
+        return this.bookedDate;
+    }
+
+    public LocalDate getDueDate(){
+        return this.dueDate;
     }
     
     public void setDuration(int time){

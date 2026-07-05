@@ -35,14 +35,14 @@ public class RentalController {
         return temp;
     }
 
-    public boolean checkDiscountLegibility(int rental_id){
-        Rental rental = rentalMap.get(rental_id);
-        User user = rental.getUser
+    // public boolean checkDiscountLegibility(int rental_id){
+    //     Rental rental = rentalMap.get(rental_id);
+    //     User user = rental.getUserId();
 
-        else
+    //     else
 
-        return validDiscount;
-    }
+    //     return validDiscount;
+    // }
 
     public boolean addRental(int id, int userID, Equipment equipment, LocalTime duration, Boolean lateStatus){
         
