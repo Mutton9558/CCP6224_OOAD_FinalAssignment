@@ -39,7 +39,7 @@ public class EquipmentPanelUI extends JPanel {
         add(Box.createVerticalStrut(25));
         
         Category camerasAndLenses = new Category(1, "Cameras & Lenses", 100.0f, 0.1f, 0.05f, 0.3f);
-        Equipment test1 = new Equipment(101, "Camera Sony A7IV", camerasAndLenses, 100.0f, "Available");
+        Equipment test1 = new Equipment(101, "Camera Sony A7IV", camerasAndLenses, 100.0f, "Pending Return Confirmation");
         Equipment test2 = new Equipment(102, "Lens 24-70mm f2.8", camerasAndLenses, 50.0f, "Rented Out");
         List<Equipment> testList1 = new ArrayList<>();
         testList1.add(test1);
