@@ -225,11 +225,12 @@ public class EquipmentPanelUI extends JPanel {
             int visualRow = table.getEditingRow();
             if (visualRow != -1) {
                 int modelRow = table.convertRowIndexToModel(visualRow);
-                fireEditingStopped();
+                
                 Window parent = SwingUtilities.getWindowAncestor(table.getParent());
                 JDialog equipmentDetails = new EquipmentDetailsUI(parent, equipmentList.get(modelRow));
                 equipmentDetails.setVisible(true);
             }
+            fireEditingStopped();
         }
     }
 }

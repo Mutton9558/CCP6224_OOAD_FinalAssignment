@@ -10,7 +10,7 @@ public class temprunner{
         frame.setSize(1280, 720);
 
         // Instantiate your new JPanel
-        EquipmentPanelUI listPanel = new EquipmentPanelUI(true);
+        RentedEquipmentUI listPanel = new RentedEquipmentUI();
 
         // Highly recommended: Wrap it in a scroll pane so content can scroll 
         JScrollPane scrollPane = new JScrollPane(listPanel);
