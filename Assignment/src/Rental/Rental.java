@@ -42,7 +42,7 @@ public class Rental {
         return this.equipment;
     }
     
-    public LocalTime getDuration(){
+    public int getDuration(){
         return this.duration;
     }
     
@@ -50,7 +50,7 @@ public class Rental {
         return this.lateStatus;
     }
     
-    public void setDuration(LocalTime time){
+    public void setDuration(int time){
         this.duration = time;
     }
     
