@@ -31,7 +31,6 @@ public class CategoryDB {
             }
 
             statement.executeBatch();
-            System.out.println("Test data inserted successfully.");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -64,7 +63,7 @@ public class CategoryDB {
     }
     
     public int create(String name, float fee, float discount, float late_penalty, float dmg_penalty){
-        String insertReq = "INSERT INTO Cetegories VALUES (?, ?, ?, ?, ?)";
+        String insertReq = "INSERT INTO Categories (category_name, maintenance_fee, category_discount, late_penalty, damage_penalty) VALUES (?, ?, ?, ?, ?)";
         try(Connection conn = core.DatabaseManager.getConnection()){
             try(PreparedStatement statement = conn.prepareStatement(insertReq, Statement.RETURN_GENERATED_KEYS)){
                 statement.setString(1, name);
@@ -106,10 +105,11 @@ public class CategoryDB {
     }
     
     public boolean delete(int id){
-        String deleteQuery = "DELETE FROM Categories WHERE id = ?";
+        String deleteQuery = "DELETE FROM Categories WHERE category_id = ?";
         
         try(Connection conn = core.DatabaseManager.getConnection()){
             try (PreparedStatement pstmt = conn.prepareStatement(deleteQuery)) {
+                pstmt.setInt(1, id);
                 int rowsDeleted = pstmt.executeUpdate(); 
                 if(rowsDeleted > 0){
                     return true;

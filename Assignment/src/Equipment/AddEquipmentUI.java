@@ -4,11 +4,13 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import ui.UIConstants;
+import core.SystemFacade;
+import java.util.List;
 
 public class AddEquipmentUI extends JDialog {
     private UIConstants uiConst = new UIConstants();
 
-    public AddEquipmentUI(Window parent) {
+    public AddEquipmentUI(Window parent, String defaultCategory, SystemFacade facade) {
         super(parent, "Add Equipment", Dialog.ModalityType.APPLICATION_MODAL);
         this.setSize(800, 600);
         
@@ -20,7 +22,6 @@ public class AddEquipmentUI extends JDialog {
         // add 20px padding around the edges so elements don't touch the window borders
         contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // build your UI components
         JLabel headerLabel = new JLabel("Add Equipment");
         headerLabel.setForeground(Color.WHITE);
         headerLabel.setFont(new Font("Arial", Font.BOLD, 24));
@@ -40,11 +41,15 @@ public class AddEquipmentUI extends JDialog {
         categoryLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         categoryLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
-        String[] categoryOptions = {"Camera and Lenses", "Lighting"};
+        SystemFacade.AddEquipmentContext data = facade.getAddEquipmentContext();
         
-        JComboBox categoryDropdown = new JComboBox<>(categoryOptions);
+        
+//        String[] categoryOptions = {"Camera and Lenses", "Lighting"};
+        
+        JComboBox categoryDropdown = new JComboBox<>(data.categoryNames().toArray());
         categoryDropdown.setAlignmentX(Component.LEFT_ALIGNMENT);
         categoryDropdown.setMaximumSize(new Dimension(Integer.MAX_VALUE, categoryDropdown.getPreferredSize().height));
+        categoryDropdown.setSelectedItem(defaultCategory);
         
         JLabel rentalLabel = new JLabel("Set Daily Rental Rate");
         rentalLabel.setForeground(Color.WHITE);
@@ -71,6 +76,28 @@ public class AddEquipmentUI extends JDialog {
         JButton submitBtn = new JButton("Submit");
         submitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         submitBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        submitBtn.addActionListener(e -> {
+            // Pure data extraction, no data conversions are happening here anymore
+            String name = nameTextField.getText();
+            String categoryName = (String) categoryDropdown.getSelectedItem();
+            String rentalRate = rentalTextField.getText();
+            String status = (String) statusDropdown.getSelectedItem();
+
+            try {
+                // Send everything as strings to the facade
+                facade.addNewEquipment(name, categoryName, rentalRate, status);
+
+                JOptionPane.showMessageDialog(null, "Successfully added equipment");
+                dispose();
+            } catch (IllegalArgumentException ex) {
+                // The facade rejected the input (e.g. empty string, negative rate, or letters instead of numbers)
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Input Validation Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                // Catch any database or system-level issues safely
+                JOptionPane.showMessageDialog(null, "Failed to add equipment to system!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        
         submitPanel.add(submitBtn);
         submitPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         

@@ -63,4 +63,19 @@ public class CategoryController {
         
         return success;
     }
+    
+    public boolean deleteCategory(int id){
+        boolean success = repository.delete(id);
+        if(success){
+            this.categoryMap.remove(id);
+        } 
+        return success;
+    }  
+    
+    public Category getCategoryByName(String name) {
+        return this.categoryMap.values().stream()
+            .filter(category -> category.getName().equals(name))
+            .findFirst()
+            .orElse(null);
+    }
 }

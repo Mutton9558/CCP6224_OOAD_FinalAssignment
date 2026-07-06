@@ -4,11 +4,13 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import ui.UIConstants;
+import core.SystemFacade;
+import javax.swing.JOptionPane;
 
 public class EquipmentDetailsUI extends JDialog {
     private UIConstants uiConst = new UIConstants();
 
-    public EquipmentDetailsUI(Window parent, Equipment equipment, boolean canEdit) {
+    public EquipmentDetailsUI(Window parent, Equipment equipment, boolean canEdit, SystemFacade facade) {
         super(parent, "Add Equipment", Dialog.ModalityType.APPLICATION_MODAL);
         this.setSize(800, 600);
         
@@ -82,9 +84,39 @@ public class EquipmentDetailsUI extends JDialog {
         JButton submitBtn = new JButton("Submit");
         submitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         submitBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        submitBtn.addActionListener(e -> {
+//            edit detail
+            String rentalRate = (String) rentalTextField.getText();
+            String status = (String) statusDropdown.getSelectedItem();
+            
+            try {
+                // Send everything as strings to the facade
+                facade.editEquipment(equipment.getId(), rentalRate, status);
+
+                JOptionPane.showMessageDialog(null, "Successfully edited equipment");
+                dispose();
+            } catch (IllegalArgumentException ex) {
+                // The facade rejected the input (e.g. empty string, negative rate, or letters instead of numbers)
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Input Validation Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                // Catch any database or system-level issues safely
+                JOptionPane.showMessageDialog(null, "Failed to edit equipment in system!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        
         JButton deleteBtn = new JButton("Delete");
         deleteBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         deleteBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        deleteBtn.addActionListener(e -> {
+            boolean success = facade.deleteEquipment(equipment.getId());
+            if(success){
+                JOptionPane.showMessageDialog(null, "Successfully deleted equipment");
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "Failed to delete equipment!", "Deletion Error", JOptionPane.ERROR_MESSAGE);
+            }
+            
+        });
         submitPanel.add(submitBtn);
         submitPanel.add(deleteBtn);
         submitPanel.setAlignmentX(Component.LEFT_ALIGNMENT);

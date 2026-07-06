@@ -67,5 +67,11 @@ public class EquipmentController {
         return success;  
     }
     
-    
+    public boolean deleteEquipment(int id){
+        boolean success = repository.delete(id);
+        if(success){
+            this.equipmentMap.remove(id);
+        } 
+        return success;
+    }   
 }

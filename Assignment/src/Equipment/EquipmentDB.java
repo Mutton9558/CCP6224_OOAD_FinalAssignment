@@ -33,7 +33,6 @@ public class EquipmentDB {
             }
 
             statement.executeBatch();
-            System.out.println("Test data inserted successfully.");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -68,7 +67,7 @@ public class EquipmentDB {
     }
     
     public int create(String name, Category category, float rate, String status){
-        String insertReq = "INSERT INTO Equipments VALUES (?, ?, ?, ?)";
+        String insertReq = "INSERT INTO Equipments(name, category, daily_rental_rate, status) VALUES (?, ?, ?, ?)";
         try(Connection conn = core.DatabaseManager.getConnection()){
             try(PreparedStatement statement = conn.prepareStatement(insertReq, Statement.RETURN_GENERATED_KEYS)){
                 statement.setString(1, name);
@@ -109,10 +108,11 @@ public class EquipmentDB {
     }
     
     public boolean delete(int id){
-        String deleteQuery = "DELETE FROM Equipments WHERE id = ?";
+        String deleteQuery = "DELETE FROM Equipments WHERE equipment_id = ?";
         
         try(Connection conn = core.DatabaseManager.getConnection()){
             try (PreparedStatement pstmt = conn.prepareStatement(deleteQuery)) {
+                pstmt.setInt(1, id);
                 int rowsDeleted = pstmt.executeUpdate(); 
                 if(rowsDeleted > 0){
                     return true;

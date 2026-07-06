@@ -14,10 +14,8 @@ public class temprunner{
         CategoryController categoryService = CategoryController.getInstance(categoryRepo);
         EquipmentController equipmentService = EquipmentController.getInstance(equipmentRepo, categoryService);
         
-        
-        core.SystemRepositories repos = new core.SystemRepositories(categoryRepo, equipmentRepo);
         core.SystemServices services = new core.SystemServices(categoryService, equipmentService);
-        core.SystemFacade facade = new core.SystemFacade(repos, services);
+        core.SystemFacade facade = new core.SystemFacade(services);
         
         // Instantiate your new JPanel
         EquipmentPanelUI listPanel = new EquipmentPanelUI(false, facade);
