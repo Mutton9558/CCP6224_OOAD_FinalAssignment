@@ -18,27 +18,31 @@ public class UserController {
         return userController;
     }
     
+    //register
+    public void registerUser(){}
+        
+    //login
+    public void login(int id, String password){}
+
+    //logout 
+    public void logout(){
+        currentUser = null;
+    }
+    
     //UPDATING USER DETAILS BY HAVING SETTERS THROUGH USER CONTROLLER
     public boolean updateUserProfile(User user, String newName, String newEmail, String newPassword, String newGender, LocalDate newDob, UserType newUserType ){
         
-        if(!isValidName(newName)){
-            return false;
-        }
+//        if(!isValidName(newName)){
+//            return false;
+//        }
         user.setName(newName);
         user.setEmail(newEmail);
         user.setPassword(newPassword);
-                       user.setGender(newGender);
-                              user.setGender(newGender);
-                                      user.setDateOfBirth(newDob);
-                                              user.setUserType(newUserType);
-
-
-
-
-
-
-        
-        
+        user.setGender(newGender);
+        user.setGender(newGender);
+        user.setDateOfBirth(newDob);
+        user.setUserType(newUserType);
+        return true;
+       }
+    
     }
-    
-    
