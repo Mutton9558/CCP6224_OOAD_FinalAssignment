@@ -12,12 +12,15 @@ public class User{
     private String password;
     private String gender;
     private LocalDate date_of_birth;
-    private UserType userType = new UserType();
+    private UserType userType;
     
     public User(){
-        
-        
     }
+    
+    //setters
+    
+    
+    //getters
     
     
 }

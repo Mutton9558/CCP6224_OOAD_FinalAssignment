@@ -8,9 +8,6 @@ public class UserType {
     private double discount_rate;
     private Set<Permission> permissionSet = EnumSet.noneOf(Permission.class);
     
-    public UserType(){
-    }
-    
     public UserType(String typename, double discount){
         
         this.user_type_name = typename;
