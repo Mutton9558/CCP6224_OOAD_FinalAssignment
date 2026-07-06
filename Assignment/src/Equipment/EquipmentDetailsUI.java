@@ -86,6 +86,22 @@ public class EquipmentDetailsUI extends JDialog {
         submitBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         submitBtn.addActionListener(e -> {
 //            edit detail
+            String rentalRate = (String) rentalTextField.getText();
+            String status = (String) statusDropdown.getSelectedItem();
+            
+            try {
+                // Send everything as strings to the facade
+                facade.editEquipment(equipment.getId(), rentalRate, status);
+
+                JOptionPane.showMessageDialog(null, "Successfully edited equipment");
+                dispose();
+            } catch (IllegalArgumentException ex) {
+                // The facade rejected the input (e.g. empty string, negative rate, or letters instead of numbers)
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Input Validation Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                // Catch any database or system-level issues safely
+                JOptionPane.showMessageDialog(null, "Failed to edit equipment in system!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
         
         JButton deleteBtn = new JButton("Delete");

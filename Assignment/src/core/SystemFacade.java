@@ -68,6 +68,24 @@ public class SystemFacade {
         }
     }
     
+    public void editEquipment(int id, String rentalRate, String status){
+        float parsedRate;
+        try {
+            parsedRate = Float.parseFloat(rentalRate);
+            if (parsedRate < 0) {
+                throw new IllegalArgumentException("Rental rate cannot be a negative value.");
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Rental rate must be a valid numeric number (e.g., 10.50).");
+        }
+        
+        boolean success = services.equipmentService().editEquipment(id, parsedRate, status);
+        
+        if (!success) {
+            throw new RuntimeException("Database insertion operation failed.");
+        }
+    }
+    
     public boolean addNewCategory(String name, float fee, float discount, float late_penalty, float dmg_penalty){
         boolean success = services.categoryService().addCategory(name, fee, discount, late_penalty, dmg_penalty);
         return success;
