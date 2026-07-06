@@ -38,9 +38,25 @@ public class DatabaseManager {
             );
             """;
 
+        String createRentalsTable = """
+            CREATE TABLE IF NOT EXISTS Rentals (
+                rental_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                equipment INTEGER NOT NULL,
+                bookedDate DATE NOT NULL,
+                dueDate DATE NOT NULL,
+                duration INTEGER NOT NULL,
+                returnStatus BOOLEAN,
+                lateStatus BOOLEAN NOT NULL,    
+                FOREIGN KEY (equipment) REFERENCES Equipments(equipment_id)
+            );
+            """;
+
         try (Statement stmt = conn.createStatement()) {
             stmt.execute(createCategoriesTable);
             stmt.execute(createEquipmentsTable);
+            stmt.execute(createRentalsTable);
+
         } catch (SQLException e) {
             System.err.println("Failed to initialize database tables: " + e.getMessage());
         }

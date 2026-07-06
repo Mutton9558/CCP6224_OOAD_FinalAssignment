@@ -1,13 +1,15 @@
 package Rental;
 
 import java.sql.Connection;
-    import java.sql.PreparedStatement;
-    import java.sql.SQLException;
-    import java.sql.ResultSet;
-    import java.sql.Statement;
-    import java.util.List;
-    import java.util.ArrayList;
-    import java.util.Map;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 
 import Equipment.Equipment;
 
@@ -55,10 +57,13 @@ public class RentalDB {
                         int id = res2.getInt("rental_id");
                         int user_id = res2.getInt("user_id");
                         int equipment = res2.getInt("equipment");
+                        LocalDate bookedDate = res2.getDate("bookedDate").toLocalDate();
+                        LocalDate dueDate = res2.getDate("dueDate").toLocalDate();
                         int duration = res2.getInt("duration");
+                        boolean returnStatus = res2.getBoolean("returnStatus");
                         boolean lateStatus = res2.getBoolean("lateStatus");
                         
-                        Rental newRental = new Rental(id, user_id, equipmentMap.get(equipment), duration, lateStatus);
+                        Rental newRental = new Rental(id, user_id, equipmentMap.get(equipment), bookedDate, dueDate, duration, returnStatus, lateStatus);
                         temp.put(id, newRental);
                     }
                 }
@@ -70,14 +75,21 @@ public class RentalDB {
             return temp;
         }
         
-        public int create(int user_id, Equipment equipment, int duration, boolean status){
-            String insertReq = "INSERT INTO Rental VALUES (?, ?, ?, ?)";
+        public int create(int user_id, Equipment equipment, int duration){
+            String insertReq = "INSERT INTO Rental VALUES (?, ?, ?, ?, ?, ?, ?)";
+            LocalDate bookedDate = LocalDate.now();
+            LocalDate dueDate = bookedDate.plusDays(duration);
+            boolean returnStatus = false;
+            boolean lateStatus = false;
             try(Connection conn = core.DatabaseManager.getConnection()){
                 try(PreparedStatement statement = conn.prepareStatement(insertReq, Statement.RETURN_GENERATED_KEYS)){
                     statement.setInt(1, user_id);
                     statement.setInt(2, equipment.getId());
-                    statement.setInt(3, duration);
-                    statement.setBoolean(4, status);
+                    statement.setDate(3, Date.valueOf(bookedDate));
+                    statement.setDate(4, Date.valueOf(dueDate));
+                    statement.setInt(5, duration);
+                    statement.setBoolean(6, returnStatus);
+                    statement.setBoolean(7, lateStatus);
                     statement.executeUpdate();
                     try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                         if (generatedKeys.next()) {
@@ -91,14 +103,15 @@ public class RentalDB {
             return -1;
         }
         
-        public boolean update(int id, int new_duration, boolean new_status){
-            String updateQuery = "UPDATE Rental SET duration = ?, lateStatus = ? WHERE equipment_id = ?";
+        public boolean update(int id, int new_duration, boolean returnStatus, boolean lateStatus){
+            String updateQuery = "UPDATE Rental SET duration = ?, returnStatus = ?, lateStatus = ? WHERE equipment_id = ?";
     
             try(Connection conn = core.DatabaseManager.getConnection()){
                 try(PreparedStatement statement = conn.prepareStatement(updateQuery)){
                     statement.setInt(1, new_duration);
-                    statement.setBoolean(2, new_status);
-                    statement.setInt(3, id);
+                    statement.setBoolean(2, returnStatus);
+                    statement.setBoolean(3, lateStatus);
+                    statement.setInt(4, id);
                     int rowsUpdated = statement.executeUpdate();
                     if(rowsUpdated > 0){
                         return true;
