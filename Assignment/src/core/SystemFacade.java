@@ -110,6 +110,27 @@ public class SystemFacade {
         }
     }
     
+    public void editCategory(int id, String fee, String discount, String late_penalty, String dmg_penalty){
+        float parsedFee, parsedDiscount, parsedLatePenalty, parsedDmgPenalty;
+        
+        try {
+            parsedFee = Float.parseFloat(fee);
+            parsedDiscount = Float.parseFloat(discount);
+            parsedLatePenalty = Float.parseFloat(late_penalty);
+            parsedDmgPenalty = Float.parseFloat(dmg_penalty);
+            if (parsedFee < 0 || parsedDiscount < 0 || parsedLatePenalty < 0 || parsedDmgPenalty < 0) {
+                throw new IllegalArgumentException("Ensure all values are above 0!");
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Non-name sections must be a valid numeric number (e.g., 10.50).");
+        }
+        boolean success = services.categoryService().editCategory(id, parsedFee, parsedDiscount, parsedLatePenalty, parsedLatePenalty);
+        
+        if (!success) {
+            throw new RuntimeException("Database update operation failed.");
+        }
+    }
+    
     public boolean deleteEquipment(int id){
 //        temp will change later to also remove all rental and billings related
         boolean success = services.equipmentService().deleteEquipment(id);

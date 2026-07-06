@@ -31,7 +31,6 @@ public class CategoryDB {
             }
 
             statement.executeBatch();
-            System.out.println("Test data inserted successfully.");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -106,7 +105,7 @@ public class CategoryDB {
     }
     
     public boolean delete(int id){
-        String deleteQuery = "DELETE FROM Categories WHERE id = ?";
+        String deleteQuery = "DELETE FROM Categories WHERE category_id = ?";
         
         try(Connection conn = core.DatabaseManager.getConnection()){
             try (PreparedStatement pstmt = conn.prepareStatement(deleteQuery)) {

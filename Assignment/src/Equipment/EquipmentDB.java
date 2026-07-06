@@ -33,7 +33,6 @@ public class EquipmentDB {
             }
 
             statement.executeBatch();
-            System.out.println("Test data inserted successfully.");
 
         } catch (SQLException e) {
             e.printStackTrace();
