@@ -1,13 +1,10 @@
 package Rental;
 import java.time.*;
 import Equipment.*;
-import Billing.*;
-
 
 public class Rental {
     private final int rental_id;
     private final int user_id;
-    private Bill bill;
     private final Equipment equipment;
     private LocalDate bookedDate;
     private LocalDate dueDate;
@@ -32,10 +29,6 @@ public class Rental {
 
     public int getUserId(){
         return this.user_id;
-    }
-
-    public Bill getBill(){
-        return this.bill;
     }
 
     public Equipment getEquipment(){
@@ -64,13 +57,10 @@ public class Rental {
     
     public void setDuration(int time){
         this.duration = time;
+        this.dueDate = bookedDate.plusDays(this.duration);
     }
     
     public void setLateStatus(Boolean status){
         this.lateStatus = status;
-    }
-
-    public void setBill(Bill cipher){
-        this.bill = cipher;
     }
 }

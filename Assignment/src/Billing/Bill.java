@@ -11,7 +11,7 @@ public class Bill {
     private LocalTime duration;
     private Boolean lateStatus;
     
-    public Equipment(int id, int userID, Bill bill, Equipment equipment, LocalTime duration, Boolean lateStatus){
+    public Bill(int id, int userID, Bill bill, Equipment equipment, LocalTime duration, Boolean lateStatus){
         this.rental_id = id;
         this.user_id = userID;
         this.bill = Bill;
