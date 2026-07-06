@@ -15,6 +15,7 @@ public class EquipmentPanelUI extends JPanel {
     private final UIConstants uiConstants = new UIConstants();
     private boolean isSelecting;
     private boolean canEdit;
+    private core.SystemFacade facade;
     
     private class ViewDetailsButton extends JButton {
         public ViewDetailsButton() {
@@ -23,24 +24,37 @@ public class EquipmentPanelUI extends JPanel {
             this.setForeground(Color.WHITE);
             this.setFont(new Font("Arial", Font.PLAIN, 12));
             this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            this.setFocusPainted(false); // Clean visual styling
+            this.setFocusPainted(false);
         }
     }
     
     public EquipmentPanelUI(boolean isSelecting, core.SystemFacade facade) {
         this.isSelecting = isSelecting;
-        core.SystemFacade.EquipmentPanelContext data = facade.getEquipmentPanelData();
-        this.canEdit = data.canEdit();
+        this.facade = facade;
+        
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         setBackground(uiConstants.LightPurple);
 
+        refreshData();
+    }
+
+    public void refreshData() {
+        // Clear all existing UI components currently drawn on the panel
+        this.removeAll();
+
+        // Fetch fresh state data from the backend facade
+        core.SystemFacade.EquipmentPanelContext data = facade.getEquipmentPanelData();
+        this.canEdit = data.canEdit();
+
+        // Build header layout
         JPanel header = createHeaderPanel();
         header.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(header);
         
         add(Box.createVerticalStrut(25));
 
+        // Rebuild each equipment category block layout
         data.equipments().forEach((category, equipmentList) -> {
             add(createCategoryBlock(category, equipmentList));
             add(Box.createVerticalStrut(20));
@@ -52,6 +66,9 @@ public class EquipmentPanelUI extends JPanel {
             add(separator);
             add(Box.createVerticalStrut(20));
         });
+
+        this.revalidate();
+        this.repaint();
     }
 
     private JPanel createHeaderPanel() {
@@ -79,6 +96,7 @@ public class EquipmentPanelUI extends JPanel {
             Window window = SwingUtilities.getWindowAncestor(this);
             JDialog createCategory = new AddCategoryUI(window);
             createCategory.setVisible(true);
+            refreshData();
         });
 
         headerPanel.add(titleLabel, BorderLayout.WEST);
@@ -112,9 +130,9 @@ public class EquipmentPanelUI extends JPanel {
             Window parent = SwingUtilities.getWindowAncestor(this);
             JDialog editCategoryDialog = new EditCategoryUI(parent, category);
             editCategoryDialog.setVisible(true);
+            refreshData();
         });
        
-        
         JButton addEquipmentBtn = new JButton("+ Equipment");
         addEquipmentBtn.setBackground(Color.GRAY);
         addEquipmentBtn.setForeground(Color.WHITE);
@@ -123,8 +141,9 @@ public class EquipmentPanelUI extends JPanel {
         addEquipmentBtn.setVisible(canEdit);
         addEquipmentBtn.addActionListener(e -> {
             Window parent = SwingUtilities.getWindowAncestor(this);
-            JDialog addEquipmentDialog = new AddEquipmentUI(parent);
+            JDialog addEquipmentDialog = new AddEquipmentUI(parent, category.getName(), facade);
             addEquipmentDialog.setVisible(true);
+            refreshData(); // 5. Refresh when this modal closes
         });
 
         labelRow.add(nameLabel);
@@ -155,25 +174,21 @@ public class EquipmentPanelUI extends JPanel {
             columns[4] = "Select Resource";
         }
         
-        // Construct the Table Components
         DefaultTableModel model = new DefaultTableModel(data.toArray(new Object[0][]), columns);
         JTable table = new JTable(model);
         table.setRowHeight(32);
         
-        // Link custom handlers to column index 4 ("See Details")
         if(this.isSelecting || this.canEdit){
             table.getColumnModel().getColumn(4).setCellRenderer(new TableButtonRenderer());
             table.getColumnModel().getColumn(4).setCellEditor(new TableButtonEditor(table, equipmentList));
         }
-        
 
-        // Wrap the JTable inside a JScrollPane
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
        
         blockPanel.add(labelRow);
         blockPanel.add(Box.createVerticalStrut(10)); 
-        blockPanel.add(scrollPane); // Add the structured scroll pane layout
+        blockPanel.add(scrollPane);
 
         return blockPanel;
     }
@@ -200,27 +215,27 @@ public class EquipmentPanelUI extends JPanel {
         }
 
         @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                boolean isSelected, int row, int column) {
-            return editingButton;
-        }
-
-        @Override
         public Object getCellEditorValue() {
             return "Select";
         }
 
         @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            return editingButton;
+        }
+
+        @Override
         public void actionPerformed(ActionEvent e) {
-            int visualRow = table.getEditingRow();
-            if (visualRow != -1) {
-                int modelRow = table.convertRowIndexToModel(visualRow);
-                
-                Window parent = SwingUtilities.getWindowAncestor(table.getParent());
-                JDialog equipmentDetails = new EquipmentDetailsUI(parent, equipmentList.get(modelRow), canEdit);
-                equipmentDetails.setVisible(true);
-            }
+            int modelRow = table.convertRowIndexToModel(table.getEditingRow());
             fireEditingStopped();
+
+            Window parent = SwingUtilities.getWindowAncestor(EquipmentPanelUI.this);
+            Equipment equipment = equipmentList.get(modelRow);
+
+            JDialog equipmentDetails = new EquipmentDetailsUI(parent, equipment, canEdit, facade);
+            equipmentDetails.setVisible(true);
+
+            refreshData(); 
         }
     }
 }
