@@ -1,4 +1,4 @@
-package Equipment;
+package Rental;
 
 import javax.swing.*;
 import java.awt.*;

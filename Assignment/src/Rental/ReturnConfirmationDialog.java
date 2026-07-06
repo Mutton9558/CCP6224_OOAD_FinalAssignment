@@ -1,4 +1,4 @@
-package Equipment;
+package Rental;
 
 import java.awt.*;
 import java.awt.event.ItemEvent;

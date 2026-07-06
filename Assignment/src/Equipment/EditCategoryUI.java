@@ -81,7 +81,12 @@ public class EditCategoryUI extends JDialog {
         JButton submitBtn = new JButton("Submit");
         submitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         submitBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        
+        JButton deleteBtn = new JButton("Delete");
+        deleteBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        deleteBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         submitPanel.add(submitBtn);
+        submitPanel.add(deleteBtn);
         submitPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         contentPanel.add(headerLabel);
