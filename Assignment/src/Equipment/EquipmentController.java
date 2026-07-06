@@ -28,6 +28,10 @@ public class EquipmentController {
         
         return instance;
     }
+
+    public Map<Integer, Equipment> fetchMap(){
+        return this.equipmentMap;
+    }
     
 //    public List<Equipment> getAllEquipments(){
 //        List<Equipment> temp = new ArrayList<>();
