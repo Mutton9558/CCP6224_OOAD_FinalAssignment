@@ -86,9 +86,28 @@ public class SystemFacade {
         }
     }
     
-    public boolean addNewCategory(String name, float fee, float discount, float late_penalty, float dmg_penalty){
-        boolean success = services.categoryService().addCategory(name, fee, discount, late_penalty, dmg_penalty);
-        return success;
+    public void addNewCategory(String name, String fee, String discount, String late_penalty, String dmg_penalty){
+        float parsedFee, parsedDiscount, parsedLatePenalty, parsedDmgPenalty;
+        if(name == null || name.trim().isEmpty()){
+            throw new IllegalArgumentException("Category name cannot be empty.");
+        }
+        
+        try {
+            parsedFee = Float.parseFloat(fee);
+            parsedDiscount = Float.parseFloat(discount);
+            parsedLatePenalty = Float.parseFloat(late_penalty);
+            parsedDmgPenalty = Float.parseFloat(dmg_penalty);
+            if (parsedFee < 0 || parsedDiscount < 0 || parsedLatePenalty < 0 || parsedDmgPenalty < 0) {
+                throw new IllegalArgumentException("Ensure all values are above 0!");
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Non-name sections must be a valid numeric number (e.g., 10.50).");
+        }
+        boolean success = services.categoryService().addCategory(name, parsedFee, parsedDiscount, parsedLatePenalty, parsedDmgPenalty);
+        
+        if (!success) {
+            throw new RuntimeException("Database insertion operation failed.");
+        }
     }
     
     public boolean deleteEquipment(int id){
@@ -100,14 +119,16 @@ public class SystemFacade {
     public boolean deleteCategory(int category_id){
         List<Equipment> temp;
         temp = services.equipmentService().getEquipmentsByCategory(category_id);
-        for(Equipment e: temp){
-            boolean success = deleteEquipment(e.getId());
-            
-            if(success == false){
-                return false;
+        if(temp != null){
+            for(Equipment e: temp){
+                boolean success = deleteEquipment(e.getId());
+
+                if(success == false){
+                    return false;
+                }
             }
         }
-        
+
         boolean success2 = services.categoryService().deleteCategory(category_id);
         return success2;
     }

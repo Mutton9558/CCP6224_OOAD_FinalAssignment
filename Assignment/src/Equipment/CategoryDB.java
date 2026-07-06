@@ -64,7 +64,7 @@ public class CategoryDB {
     }
     
     public int create(String name, float fee, float discount, float late_penalty, float dmg_penalty){
-        String insertReq = "INSERT INTO Cetegories (category_name, maintenance_fee, category_discount, late_penalty, damage_penalty) VALUES (?, ?, ?, ?, ?)";
+        String insertReq = "INSERT INTO Categories (category_name, maintenance_fee, category_discount, late_penalty, damage_penalty) VALUES (?, ?, ?, ?, ?)";
         try(Connection conn = core.DatabaseManager.getConnection()){
             try(PreparedStatement statement = conn.prepareStatement(insertReq, Statement.RETURN_GENERATED_KEYS)){
                 statement.setString(1, name);

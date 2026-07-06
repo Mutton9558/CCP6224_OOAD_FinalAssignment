@@ -94,7 +94,7 @@ public class EquipmentPanelUI extends JPanel {
         newCategoryBtn.setVisible(canEdit);
         newCategoryBtn.addActionListener(e -> {
             Window window = SwingUtilities.getWindowAncestor(this);
-            JDialog createCategory = new AddCategoryUI(window);
+            JDialog createCategory = new AddCategoryUI(window, facade);
             createCategory.setVisible(true);
             refreshData();
         });

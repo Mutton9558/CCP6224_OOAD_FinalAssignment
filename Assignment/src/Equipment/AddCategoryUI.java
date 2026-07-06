@@ -4,11 +4,12 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import ui.UIConstants;
+import core.SystemFacade;
 
 public class AddCategoryUI extends JDialog {
     private UIConstants uiConst = new UIConstants();
 
-    public AddCategoryUI(Window parent) {
+    public AddCategoryUI(Window parent, SystemFacade facade) {
         super(parent, "Add Category", Dialog.ModalityType.APPLICATION_MODAL);
         this.setSize(800, 600);
         
@@ -76,6 +77,28 @@ public class AddCategoryUI extends JDialog {
         JButton submitBtn = new JButton("Submit");
         submitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         submitBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        submitBtn.addActionListener(e -> {
+            
+            String name = (String) nameTextField.getText();
+            String fee = (String) maintenanceFeeTextField.getText();
+            String discount = (String) discountTextField.getText();
+            String latePenalty = (String) latePenaltyField.getText();
+            String dmgPenalty = (String) dmgPenaltyField.getText();
+            
+            try {
+                // Send everything as strings to the facade
+                facade.addNewCategory(name, fee, discount, latePenalty, dmgPenalty);
+
+                JOptionPane.showMessageDialog(null, "Successfully added Category!");
+                dispose();
+            } catch (IllegalArgumentException ex) {
+                // The facade rejected the input (e.g. empty string, negative rate, or letters instead of numbers)
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Input Validation Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                // Catch any database or system-level issues safely
+                JOptionPane.showMessageDialog(null, "Failed to add category to system!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
         submitPanel.add(submitBtn);
         submitPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
