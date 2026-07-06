@@ -12,27 +12,27 @@ import java.util.HashMap;
 
 public class EquipmentDB {
     public EquipmentDB(){
-        String insertQuery = "INSERT INTO Equipments (name, category, daily_rental_rate, status) VALUES (?, ?, ?, ?)";
+        String insertQuery = "INSERT OR IGNORE INTO Equipments (equipment_id, name, category, daily_rental_rate, status) VALUES (?, ?, ?, ?, ?)";
 
         Object[][] testData = {
-            {"Camera Sony A7IV", 1, 250.00f, "Available"},
-            {"Lens 24-70mm f2.8", 1, 80.00f, "Rented Out"},
-            {"Tripod Manfrotto", 2, 45.00f, "Pending Return Confirmation"}
+            {1, "Camera Sony A7IV", 1, 250.00f, "Available"},
+            {2, "Lens 24-70mm f2.8", 1, 80.00f, "Rented Out"},
+            {3, "Tripod Manfrotto", 2, 45.00f, "Pending Return Confirmation"}
         };
 
         try (Connection conn = core.DatabaseManager.getConnection();
              PreparedStatement statement = conn.prepareStatement(insertQuery)) {
 
             for (Object[] row : testData) {
-                statement.setString(1, (String) row[0]);
+                statement.setInt(1, (Integer) row[0]);
                 statement.setString(2, (String) row[1]);
-                statement.setFloat(3, (Float) row[2]);
-                statement.setString(4, (String) row[3]);
+                statement.setInt(3, (Integer) row[2]);
+                statement.setFloat(4, (Float) row[3]);
+                statement.setString(5, (String) row[4]);
                 statement.addBatch();
             }
 
             statement.executeBatch();
-            System.out.println("Test data inserted successfully.");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -67,7 +67,7 @@ public class EquipmentDB {
     }
     
     public int create(String name, Category category, float rate, String status){
-        String insertReq = "INSERT INTO Equipments VALUES (?, ?, ?, ?)";
+        String insertReq = "INSERT INTO Equipments(name, category, daily_rental_rate, status) VALUES (?, ?, ?, ?)";
         try(Connection conn = core.DatabaseManager.getConnection()){
             try(PreparedStatement statement = conn.prepareStatement(insertReq, Statement.RETURN_GENERATED_KEYS)){
                 statement.setString(1, name);
@@ -108,10 +108,11 @@ public class EquipmentDB {
     }
     
     public boolean delete(int id){
-        String deleteQuery = "DELETE FROM Equipments WHERE id = ?";
+        String deleteQuery = "DELETE FROM Equipments WHERE equipment_id = ?";
         
         try(Connection conn = core.DatabaseManager.getConnection()){
             try (PreparedStatement pstmt = conn.prepareStatement(deleteQuery)) {
+                pstmt.setInt(1, id);
                 int rowsDeleted = pstmt.executeUpdate(); 
                 if(rowsDeleted > 0){
                     return true;

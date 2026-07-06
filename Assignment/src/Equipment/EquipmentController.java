@@ -41,10 +41,10 @@ public class EquipmentController {
 //        return temp;
 //    }
     
-    public List<Equipment> getEquipmentsByCategory(){
+    public List<Equipment> getEquipmentsByCategory(int category_id){
         List<Equipment> temp = new ArrayList<>();
         equipmentMap.forEach((id, val) -> {
-            if(val.getCategory().getId() == id){
+            if(val.getCategory().getId() == category_id){
                 temp.add(val);
             }
         });
@@ -71,5 +71,11 @@ public class EquipmentController {
         return success;  
     }
     
-    
+    public boolean deleteEquipment(int id){
+        boolean success = repository.delete(id);
+        if(success){
+            this.equipmentMap.remove(id);
+        } 
+        return success;
+    }   
 }

@@ -14,6 +14,8 @@ import java.util.ArrayList;
 public class EquipmentPanelUI extends JPanel {
     private final UIConstants uiConstants = new UIConstants();
     private boolean isSelecting;
+    private boolean canEdit;
+    private core.SystemFacade facade;
     
     private class ViewDetailsButton extends JButton {
         public ViewDetailsButton() {
@@ -22,43 +24,51 @@ public class EquipmentPanelUI extends JPanel {
             this.setForeground(Color.WHITE);
             this.setFont(new Font("Arial", Font.PLAIN, 12));
             this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            this.setFocusPainted(false); // Clean visual styling
+            this.setFocusPainted(false);
         }
     }
     
-    public EquipmentPanelUI(boolean isSelecting) {
+    public EquipmentPanelUI(boolean isSelecting, core.SystemFacade facade) {
         this.isSelecting = isSelecting;
+        this.facade = facade;
+        
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         setBackground(uiConstants.LightPurple);
 
+        refreshData();
+    }
+
+    public void refreshData() {
+        // Clear all existing UI components currently drawn on the panel
+        this.removeAll();
+
+        // Fetch fresh state data from the backend facade
+        core.SystemFacade.EquipmentPanelContext data = facade.getEquipmentPanelData();
+        this.canEdit = data.canEdit();
+
+        // Build header layout
         JPanel header = createHeaderPanel();
         header.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(header);
         
         add(Box.createVerticalStrut(25));
-        
-        Category camerasAndLenses = new Category(1, "Cameras & Lenses", 100.0f, 0.1f, 0.05f, 0.3f);
-        Equipment test1 = new Equipment(101, "Camera Sony A7IV", camerasAndLenses, 100.0f, "Pending Return Confirmation");
-        Equipment test2 = new Equipment(102, "Lens 24-70mm f2.8", camerasAndLenses, 50.0f, "Rented Out");
-        List<Equipment> testList1 = new ArrayList<>();
-        testList1.add(test1);
-        testList1.add(test2);
-        add(createCategoryBlock(camerasAndLenses, testList1));
-        add(Box.createVerticalStrut(20));
 
-        JSeparator separator = new JSeparator(JSeparator.HORIZONTAL);
-        separator.setForeground(Color.WHITE);
-        separator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 2));
-        separator.setAlignmentX(Component.LEFT_ALIGNMENT);
-        add(separator);
-        add(Box.createVerticalStrut(20));
+        // Rebuild each equipment category block layout
+        data.equipments().forEach((category, equipmentList) -> {
+            add(createCategoryBlock(category, equipmentList));
+            add(Box.createVerticalStrut(20));
 
-        Category lightingEquipment = new Category(2, "Lighting Equipment", 70.0f, 0.05f, 0.05f, 0.2f);
-        Equipment test3 = new Equipment(103, "Tripod Manfrotto", lightingEquipment, 15.00f, "Available");
-        List<Equipment> testList2 = new ArrayList<>();
-        testList2.add(test3);
-        add(createCategoryBlock(lightingEquipment, testList2));
+            JSeparator separator = new JSeparator(JSeparator.HORIZONTAL);
+            separator.setForeground(Color.WHITE);
+            separator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 2));
+            separator.setAlignmentX(Component.LEFT_ALIGNMENT);
+            add(separator);
+            add(Box.createVerticalStrut(20));
+        });
+
+        this.revalidate();
+        this.repaint();
     }
 
     private JPanel createHeaderPanel() {
@@ -81,10 +91,12 @@ public class EquipmentPanelUI extends JPanel {
         newCategoryBtn.setForeground(Color.WHITE);
         newCategoryBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         newCategoryBtn.setFocusPainted(false);
+        newCategoryBtn.setVisible(canEdit);
         newCategoryBtn.addActionListener(e -> {
             Window window = SwingUtilities.getWindowAncestor(this);
-            JDialog createCategory = new AddCategoryUI(window);
+            JDialog createCategory = new AddCategoryUI(window, facade);
             createCategory.setVisible(true);
+            refreshData();
         });
 
         headerPanel.add(titleLabel, BorderLayout.WEST);
@@ -113,22 +125,25 @@ public class EquipmentPanelUI extends JPanel {
         editCategoryBtn.setForeground(Color.WHITE);
         editCategoryBtn.setFont(new Font("Arial", Font.PLAIN, 12));
         editCategoryBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        editCategoryBtn.setVisible(canEdit);
         editCategoryBtn.addActionListener(e -> {
             Window parent = SwingUtilities.getWindowAncestor(this);
-            JDialog editCategoryDialog = new EditCategoryUI(parent, category);
+            JDialog editCategoryDialog = new EditCategoryUI(parent, category, facade);
             editCategoryDialog.setVisible(true);
+            refreshData();
         });
        
-        
         JButton addEquipmentBtn = new JButton("+ Equipment");
         addEquipmentBtn.setBackground(Color.GRAY);
         addEquipmentBtn.setForeground(Color.WHITE);
         addEquipmentBtn.setFont(new Font("Arial", Font.PLAIN, 12));
         addEquipmentBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        addEquipmentBtn.setVisible(canEdit);
         addEquipmentBtn.addActionListener(e -> {
             Window parent = SwingUtilities.getWindowAncestor(this);
-            JDialog addEquipmentDialog = new AddEquipmentUI(parent);
+            JDialog addEquipmentDialog = new AddEquipmentUI(parent, category.getName(), facade);
             addEquipmentDialog.setVisible(true);
+            refreshData(); // 5. Refresh when this modal closes
         });
 
         labelRow.add(nameLabel);
@@ -139,51 +154,41 @@ public class EquipmentPanelUI extends JPanel {
         
         List<Object[]> data = new ArrayList<>();
         for(Equipment e: equipmentList){
-            Object[] row = new Object[this.isSelecting ? 5 : 4];
+            Object[] row = new Object[(this.isSelecting || this.canEdit) ? 5 : 4];
             row[0] = Integer.toString(e.getId());
             row[1] = e.getName();
             row[2] = Float.toString(e.getRate());
             row[3] = e.getStatus();
-            if(this.isSelecting){
+            if(this.isSelecting || this.canEdit){
                 row[4] = "Select";
             }
             data.add(row);
         }
         
-        // Corrected columns mismatch from previous mock data arrays
-//        Object[][] data = {
-//            {"101", "Camera Sony A7IV", "100.00", "Available", "Details"},
-//            {"102", "Lens 24-70mm f2.8", "50.00", "Rented Out", "Details"},
-//            {"103", "Tripod Manfrotto", "15.00", "Available", "Details"}
-//        };
-        Object[] columns = new Object[this.isSelecting ? 5 : 4];
+        Object[] columns = new Object[(this.isSelecting || this.canEdit) ? 5 : 4];
         columns[0] = "ID";
         columns[1] = "Equipment Name";
         columns[2] = "Daily Rental Rate";
         columns[3] = "Status";
-        if(this.isSelecting){
+        if(this.isSelecting || this.canEdit){
             columns[4] = "Select Resource";
         }
         
-        // Construct the Table Components
         DefaultTableModel model = new DefaultTableModel(data.toArray(new Object[0][]), columns);
         JTable table = new JTable(model);
         table.setRowHeight(32);
         
-        // Link custom handlers to column index 4 ("See Details")
-        if(this.isSelecting){
+        if(this.isSelecting || this.canEdit){
             table.getColumnModel().getColumn(4).setCellRenderer(new TableButtonRenderer());
             table.getColumnModel().getColumn(4).setCellEditor(new TableButtonEditor(table, equipmentList));
         }
-        
 
-        // Wrap the JTable inside a JScrollPane
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
        
         blockPanel.add(labelRow);
         blockPanel.add(Box.createVerticalStrut(10)); 
-        blockPanel.add(scrollPane); // Add the structured scroll pane layout
+        blockPanel.add(scrollPane);
 
         return blockPanel;
     }
@@ -210,27 +215,27 @@ public class EquipmentPanelUI extends JPanel {
         }
 
         @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                boolean isSelected, int row, int column) {
-            return editingButton;
-        }
-
-        @Override
         public Object getCellEditorValue() {
             return "Select";
         }
 
         @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            return editingButton;
+        }
+
+        @Override
         public void actionPerformed(ActionEvent e) {
-            int visualRow = table.getEditingRow();
-            if (visualRow != -1) {
-                int modelRow = table.convertRowIndexToModel(visualRow);
-                
-                Window parent = SwingUtilities.getWindowAncestor(table.getParent());
-                JDialog equipmentDetails = new EquipmentDetailsUI(parent, equipmentList.get(modelRow));
-                equipmentDetails.setVisible(true);
-            }
+            int modelRow = table.convertRowIndexToModel(table.getEditingRow());
             fireEditingStopped();
+
+            Window parent = SwingUtilities.getWindowAncestor(EquipmentPanelUI.this);
+            Equipment equipment = equipmentList.get(modelRow);
+
+            JDialog equipmentDetails = new EquipmentDetailsUI(parent, equipment, canEdit, facade);
+            equipmentDetails.setVisible(true);
+
+            refreshData(); 
         }
     }
 }
