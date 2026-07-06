@@ -1,9 +1,12 @@
 package User;
 import java.util.*;
 import java.awt.*;
+import java.time.LocalDate;
 //implemented singleton design pattern
 
 public class UserController {
+    
+    private User currentUser;
     
     //static bcs want it to be shared memory
     private static UserController userController = new UserController();
@@ -15,6 +18,27 @@ public class UserController {
         return userController;
     }
     
+    //UPDATING USER DETAILS BY HAVING SETTERS THROUGH USER CONTROLLER
+    public boolean updateUserProfile(User user, String newName, String newEmail, String newPassword, String newGender, LocalDate newDob, UserType newUserType ){
+        
+        if(!isValidName(newName)){
+            return false;
+        }
+        user.setName(newName);
+        user.setEmail(newEmail);
+        user.setPassword(newPassword);
+                       user.setGender(newGender);
+                              user.setGender(newGender);
+                                      user.setDateOfBirth(newDob);
+                                              user.setUserType(newUserType);
 
 
-}
+
+
+
+
+        
+        
+    }
+    
+    
