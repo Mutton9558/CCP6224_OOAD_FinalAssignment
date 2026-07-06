@@ -10,22 +10,23 @@ import java.sql.Statement;
 
 public class CategoryDB {
     public CategoryDB(){
-        String insertQuery = "INSERT INTO Categories (category_name, maintenance_fee, category_discount, late_penalty, damage_penalty) VALUES (?, ?, ?, ?, ?)";
+        String insertQuery = "INSERT OR IGNORE INTO Categories (category_id, category_name, maintenance_fee, category_discount, late_penalty, damage_penalty) VALUES (?, ?, ?, ?, ?, ?)";
 
         Object[][] testData = {
-            {"Camera and Lenses", 100.00f, 0.1f, 0.1f, 0.5f},
-            {"Lighting Equipment", 45.00f, 0.05f, 0.1f, 0.5f}
+            {1, "Camera and Lenses", 100.00f, 0.1f, 0.1f, 0.5f},
+            {2, "Lighting Equipment", 45.00f, 0.05f, 0.1f, 0.5f}
         };
 
         try (Connection conn = core.DatabaseManager.getConnection();
              PreparedStatement statement = conn.prepareStatement(insertQuery)) {
 
             for (Object[] row : testData) {
-                statement.setString(1, (String) row[0]);
-                statement.setFloat(2, (Float) row[1]);
+                statement.setInt(1, (Integer) row[0]);
+                statement.setString(2, (String) row[1]);
                 statement.setFloat(3, (Float) row[2]);
-                statement.setFloat(4, (Float) row[1]);
-                statement.setFloat(5, (Float) row[2]);
+                statement.setFloat(4, (Float) row[3]);
+                statement.setFloat(5, (Float) row[4]);
+                statement.setFloat(6, (Float) row[5]);
                 statement.addBatch();
             }
 
