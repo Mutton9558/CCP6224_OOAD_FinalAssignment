@@ -37,10 +37,24 @@ public class DatabaseManager {
                 FOREIGN KEY (category) REFERENCES Categories(category_id)
             );
             """;
+        
+        String createBillsTable = """
+            CREATE TABLE IF NOT EXISTS Bills (
+                bill_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                rental_id INTEGER,
+                base_fee FLOAT NOT NULL,
+                discount_amount FLOAT NOT NULL,
+                penalty_amount FLOAT NOT NULL,
+                net_payable FLOAT NOT NULL,
+                bill_type VARCHAR NOT NULL,
+                bill_status VARCHAR NOT NULL
+            );
+            """;    
 
         try (Statement stmt = conn.createStatement()) {
             stmt.execute(createCategoriesTable);
             stmt.execute(createEquipmentsTable);
+            stmt.execute(createBillsTable);
         } catch (SQLException e) {
             System.err.println("Failed to initialize database tables: " + e.getMessage());
         }
