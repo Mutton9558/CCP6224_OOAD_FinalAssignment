@@ -48,16 +48,6 @@ public class EditCategoryUI extends JDialog {
         maintenanceFeeTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, maintenanceFeeTextField.getPreferredSize().height));
         maintenanceFeeTextField.setText(Float.toString(category.getFee()));
         
-        JLabel discountLabel = new JLabel("Edit Category Discount");
-        discountLabel.setForeground(Color.WHITE);
-        discountLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        discountLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        JTextField discountTextField = new JTextField(30);
-        discountTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        discountTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, discountTextField.getPreferredSize().height));
-        discountTextField.setText(Float.toString(category.getDiscount()));
-        
         JLabel latePenaltyLabel = new JLabel("Edit Late Penalty");
         latePenaltyLabel.setForeground(Color.WHITE);
         latePenaltyLabel.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -85,12 +75,11 @@ public class EditCategoryUI extends JDialog {
         submitBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         submitBtn.addActionListener(e -> {
             String newFee = (String) maintenanceFeeTextField.getText();
-            String newDiscount = (String) discountTextField.getText();
             String newLatePenalty = (String) latePenaltyField.getText();
             String newDamagePenalty = (String) dmgPenaltyField.getText();
             
             try{
-                facade.editCategory(category.getId(), newFee, newDiscount, newLatePenalty, newDamagePenalty);
+                facade.editCategory(category.getId(), newFee, newLatePenalty, newDamagePenalty);
                 JOptionPane.showMessageDialog(null, "Successfully edited Category!");
                 dispose();
             } catch (IllegalArgumentException ex){
@@ -126,10 +115,6 @@ public class EditCategoryUI extends JDialog {
         contentPanel.add(maintenanceFeeLabel);
         contentPanel.add(Box.createVerticalStrut(5));
         contentPanel.add(maintenanceFeeTextField);
-        contentPanel.add(Box.createVerticalStrut(10));
-        contentPanel.add(discountLabel);
-        contentPanel.add(Box.createVerticalStrut(5));
-        contentPanel.add(discountTextField);
         contentPanel.add(Box.createVerticalStrut(10));
         contentPanel.add(latePenaltyLabel);
         contentPanel.add(Box.createVerticalStrut(5));

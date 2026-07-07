@@ -11,6 +11,7 @@ public class SystemFacade {
     
     public record EquipmentPanelContext(boolean canEdit, Map<Category, List<Equipment>> equipments) {}
     public record AddEquipmentContext(List<String> categoryNames){}
+    public record RentedEquipmentContext(List<Equipment> cur, List<Equipment> prev){}
     
     public SystemFacade(SystemServices services){
         this.services = services;
@@ -34,6 +35,13 @@ public class SystemFacade {
         }
         
         return new AddEquipmentContext(tempList2);
+    }
+    
+    public RentedEquipmentContext getRentedEquipmentContext(){
+        List<Equipment> cur = services.equipmentService().getRentedEquipments();
+        List<Equipment> prev = services.equipmentService().getPendingEquipments();
+        
+        return (new RentedEquipmentContext(cur, prev));
     }
     
     public void addNewEquipment(String name, String categoryName, String rentalRate, String status) {
@@ -86,45 +94,43 @@ public class SystemFacade {
         }
     }
     
-    public void addNewCategory(String name, String fee, String discount, String late_penalty, String dmg_penalty){
-        float parsedFee, parsedDiscount, parsedLatePenalty, parsedDmgPenalty;
+    public void addNewCategory(String name, String fee, String late_penalty, String dmg_penalty){
+        float parsedFee, parsedLatePenalty, parsedDmgPenalty;
         if(name == null || name.trim().isEmpty()){
             throw new IllegalArgumentException("Category name cannot be empty.");
         }
         
         try {
             parsedFee = Float.parseFloat(fee);
-            parsedDiscount = Float.parseFloat(discount);
             parsedLatePenalty = Float.parseFloat(late_penalty);
             parsedDmgPenalty = Float.parseFloat(dmg_penalty);
-            if (parsedFee < 0 || parsedDiscount < 0 || parsedLatePenalty < 0 || parsedDmgPenalty < 0) {
+            if (parsedFee < 0 || parsedLatePenalty < 0 || parsedDmgPenalty < 0) {
                 throw new IllegalArgumentException("Ensure all values are above 0!");
             }
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Non-name sections must be a valid numeric number (e.g., 10.50).");
         }
-        boolean success = services.categoryService().addCategory(name, parsedFee, parsedDiscount, parsedLatePenalty, parsedDmgPenalty);
+        boolean success = services.categoryService().addCategory(name, parsedFee, parsedLatePenalty, parsedDmgPenalty);
         
         if (!success) {
             throw new RuntimeException("Database insertion operation failed.");
         }
     }
     
-    public void editCategory(int id, String fee, String discount, String late_penalty, String dmg_penalty){
-        float parsedFee, parsedDiscount, parsedLatePenalty, parsedDmgPenalty;
+    public void editCategory(int id, String fee, String late_penalty, String dmg_penalty){
+        float parsedFee, parsedLatePenalty, parsedDmgPenalty;
         
         try {
             parsedFee = Float.parseFloat(fee);
-            parsedDiscount = Float.parseFloat(discount);
             parsedLatePenalty = Float.parseFloat(late_penalty);
             parsedDmgPenalty = Float.parseFloat(dmg_penalty);
-            if (parsedFee < 0 || parsedDiscount < 0 || parsedLatePenalty < 0 || parsedDmgPenalty < 0) {
+            if (parsedFee < 0 || parsedLatePenalty < 0 || parsedDmgPenalty < 0) {
                 throw new IllegalArgumentException("Ensure all values are above 0!");
             }
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Non-name sections must be a valid numeric number (e.g., 10.50).");
         }
-        boolean success = services.categoryService().editCategory(id, parsedFee, parsedDiscount, parsedLatePenalty, parsedLatePenalty);
+        boolean success = services.categoryService().editCategory(id, parsedFee, parsedLatePenalty, parsedLatePenalty);
         
         if (!success) {
             throw new RuntimeException("Database update operation failed.");

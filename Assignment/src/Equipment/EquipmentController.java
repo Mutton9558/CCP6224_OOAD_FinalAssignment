@@ -77,5 +77,26 @@ public class EquipmentController {
             this.equipmentMap.remove(id);
         } 
         return success;
-    }   
+    }
+    
+    public List<Equipment> getRentedEquipments(){
+        List<Equipment> rentedEquipments = new ArrayList<>();
+        this.equipmentMap.forEach((id, equipment) -> {
+            if(equipment.getStatus().equals("Rented Out")){
+                rentedEquipments.add(equipment);
+            }
+        });
+        return rentedEquipments;
+    }
+    
+    public List<Equipment> getPendingEquipments(){
+        List<Equipment> pendingEquipments = new ArrayList<>();
+        this.equipmentMap.forEach((id, equipment) -> {
+            if(equipment.getStatus().equals("Pending Return Confirmation")){
+                pendingEquipments.add(equipment);
+            }
+        });
+        
+        return pendingEquipments;
+    }
 }

@@ -70,5 +70,4 @@ public class RentalController {
         
         return success; 
     }
-
 }

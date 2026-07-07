@@ -45,15 +45,6 @@ public class AddCategoryUI extends JDialog {
         maintenanceFeeTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
         maintenanceFeeTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, maintenanceFeeTextField.getPreferredSize().height));
         
-        JLabel discountLabel = new JLabel("Set Category Discount");
-        discountLabel.setForeground(Color.WHITE);
-        discountLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        discountLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        JTextField discountTextField = new JTextField(30);
-        discountTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        discountTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, discountTextField.getPreferredSize().height));
-        
         JLabel latePenaltyLabel = new JLabel("Set Late Penalty");
         latePenaltyLabel.setForeground(Color.WHITE);
         latePenaltyLabel.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -81,13 +72,12 @@ public class AddCategoryUI extends JDialog {
             
             String name = (String) nameTextField.getText();
             String fee = (String) maintenanceFeeTextField.getText();
-            String discount = (String) discountTextField.getText();
             String latePenalty = (String) latePenaltyField.getText();
             String dmgPenalty = (String) dmgPenaltyField.getText();
             
             try {
                 // Send everything as strings to the facade
-                facade.addNewCategory(name, fee, discount, latePenalty, dmgPenalty);
+                facade.addNewCategory(name, fee, latePenalty, dmgPenalty);
 
                 JOptionPane.showMessageDialog(null, "Successfully added Category!");
                 dispose();
@@ -111,10 +101,6 @@ public class AddCategoryUI extends JDialog {
         contentPanel.add(maintenanceFeeLabel);
         contentPanel.add(Box.createVerticalStrut(5));
         contentPanel.add(maintenanceFeeTextField);
-        contentPanel.add(Box.createVerticalStrut(10));
-        contentPanel.add(discountLabel);
-        contentPanel.add(Box.createVerticalStrut(5));
-        contentPanel.add(discountTextField);
         contentPanel.add(Box.createVerticalStrut(10));
         contentPanel.add(latePenaltyLabel);
         contentPanel.add(Box.createVerticalStrut(5));
