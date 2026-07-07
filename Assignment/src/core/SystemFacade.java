@@ -190,4 +190,27 @@ public class SystemFacade {
         Equipment item = services.equipmentService().getEquipmentById(equipment_id);
         return services.equipmentService().editEquipment(equipment_id, item.getRate(), "Pending Return Confirmation");
     }
+    
+    public Map<Category, List<Equipment>> searchEquipment(String equipment_id){
+        
+        Map<Category, List<Equipment>> temp = new HashMap<>();
+        if(equipment_id == null || equipment_id.trim().isEmpty()){
+            return temp;
+        }
+        
+        try{
+            int id = Integer.parseInt(equipment_id);
+            Equipment item = services.equipmentService().getEquipmentById(id);
+            if(item == null){
+                return temp;
+            }
+            
+            List<Equipment> temp2 = new ArrayList<>();
+            temp2.add(item);
+            temp.put(item.getCategory(), temp2);
+            return temp;
+        } catch (NumberFormatException e){
+            return temp;
+        }
+    }
 }

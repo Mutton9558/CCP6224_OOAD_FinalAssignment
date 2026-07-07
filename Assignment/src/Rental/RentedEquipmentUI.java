@@ -146,15 +146,13 @@ public class RentedEquipmentUI extends JPanel{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-//            wrong
-//            int visualRow = table.getEditingRow();
-//            if (visualRow != -1) {
-//                int modelRow = table.convertRowIndexToModel(visualRow);
-//                fireEditingStopped();
-//                Window parent = SwingUtilities.getWindowAncestor(table.getParent());
-//                JDialog confirmDialog = new ReturnConfirmationDialog(parent, data.cur().get(modelRow).getId(), data.cur().get(modelRow).getName());
-//                confirmDialog.setVisible(true);
-//            }
+            int visualRow = table.getEditingRow();
+            if (visualRow != -1) {
+                int modelRow = table.convertRowIndexToModel(visualRow);
+                fireEditingStopped();
+                facade.returnEquipment(data.cur().get(modelRow).getId());
+                refreshData();
+            }
         }
     }
 }
