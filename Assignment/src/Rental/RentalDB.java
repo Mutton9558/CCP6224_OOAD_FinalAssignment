@@ -103,12 +103,11 @@ public class RentalDB {
             return -1;
         }
         
-        public boolean update(int id, int new_duration, boolean returnStatus, boolean lateStatus){
-            String updateQuery = "UPDATE Rental SET duration = ?, returnStatus = ?, lateStatus = ? WHERE equipment_id = ?";
+        public boolean update(int id, boolean returnStatus, boolean lateStatus){
+            String updateQuery = "UPDATE Rental SET returnStatus = ?, lateStatus = ? WHERE equipment_id = ?";
     
             try(Connection conn = core.DatabaseManager.getConnection()){
                 try(PreparedStatement statement = conn.prepareStatement(updateQuery)){
-                    statement.setInt(1, new_duration);
                     statement.setBoolean(2, returnStatus);
                     statement.setBoolean(3, lateStatus);
                     statement.setInt(4, id);
