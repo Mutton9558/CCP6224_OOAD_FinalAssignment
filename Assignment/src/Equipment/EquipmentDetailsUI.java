@@ -4,11 +4,13 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import ui.UIConstants;
+import core.SystemFacade;
+import javax.swing.JOptionPane;
 
 public class EquipmentDetailsUI extends JDialog {
     private UIConstants uiConst = new UIConstants();
 
-    public EquipmentDetailsUI(Window parent, Equipment equipment) {
+    public EquipmentDetailsUI(Window parent, Equipment equipment, boolean canEdit, SystemFacade facade) {
         super(parent, "Add Equipment", Dialog.ModalityType.APPLICATION_MODAL);
         this.setSize(800, 600);
         
@@ -36,7 +38,7 @@ public class EquipmentDetailsUI extends JDialog {
         nameTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, nameTextField.getPreferredSize().height));
         nameTextField.setText(equipment.getName());
 //        will change depending on user
-        nameTextField.setEnabled(false);
+        nameTextField.setEnabled(canEdit);
         
         JLabel categoryLabel = new JLabel("Category");
         categoryLabel.setForeground(Color.WHITE);
@@ -50,7 +52,7 @@ public class EquipmentDetailsUI extends JDialog {
         categoryDropdown.setMaximumSize(new Dimension(Integer.MAX_VALUE, categoryDropdown.getPreferredSize().height));
         categoryDropdown.setSelectedItem(equipment.getCategory());
 //        will change depending on user
-        categoryDropdown.setEnabled(false);
+        categoryDropdown.setEnabled(canEdit);
         
         JLabel rentalLabel = new JLabel("Daily Rental Rate");
         rentalLabel.setForeground(Color.WHITE);
@@ -62,7 +64,7 @@ public class EquipmentDetailsUI extends JDialog {
         rentalTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, rentalTextField.getPreferredSize().height));
         rentalTextField.setText(Float.toString(equipment.getRate()));
 //        will change depending on user
-        rentalTextField.setEnabled(false);
+        rentalTextField.setEnabled(canEdit);
         
         JLabel statusLabel = new JLabel("Status");
         statusLabel.setForeground(Color.WHITE);
@@ -75,16 +77,50 @@ public class EquipmentDetailsUI extends JDialog {
         statusDropdown.setAlignmentX(Component.LEFT_ALIGNMENT);
         statusDropdown.setMaximumSize(new Dimension(Integer.MAX_VALUE, statusDropdown.getPreferredSize().height));
         statusDropdown.setSelectedItem(equipment.getStatus());
-        statusDropdown.setEnabled(false);
-  
-//        enabled for resource manager, disabled for normal user        
-//        JPanel submitPanel = new JPanel();
-//        submitPanel.setBackground(uiConst.LightPurple);
-//        JButton submitBtn = new JButton("Submit");
-//        submitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-//        submitBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-//        submitPanel.add(submitBtn);
-//        submitPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        statusDropdown.setEnabled(canEdit);
+        
+        JPanel submitPanel = new JPanel();
+        submitPanel.setBackground(uiConst.LightPurple);
+        JButton submitBtn = new JButton("Submit");
+        submitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        submitBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        submitBtn.addActionListener(e -> {
+//            edit detail
+            String rentalRate = (String) rentalTextField.getText();
+            String status = (String) statusDropdown.getSelectedItem();
+            
+            try {
+                // Send everything as strings to the facade
+                facade.editEquipment(equipment.getId(), rentalRate, status);
+
+                JOptionPane.showMessageDialog(null, "Successfully edited equipment");
+                dispose();
+            } catch (IllegalArgumentException ex) {
+                // The facade rejected the input (e.g. empty string, negative rate, or letters instead of numbers)
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Input Validation Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                // Catch any database or system-level issues safely
+                JOptionPane.showMessageDialog(null, "Failed to edit equipment in system!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        
+        JButton deleteBtn = new JButton("Delete");
+        deleteBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        deleteBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        deleteBtn.addActionListener(e -> {
+            boolean success = facade.deleteEquipment(equipment.getId());
+            if(success){
+                JOptionPane.showMessageDialog(null, "Successfully deleted equipment");
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "Failed to delete equipment!", "Deletion Error", JOptionPane.ERROR_MESSAGE);
+            }
+            
+        });
+        submitPanel.add(submitBtn);
+        submitPanel.add(deleteBtn);
+        submitPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        submitPanel.setVisible(canEdit);
 
 //      enabled for normal user, disabled for resource manager
         JPanel selectPanel = new JPanel();
@@ -94,6 +130,7 @@ public class EquipmentDetailsUI extends JDialog {
         selectBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         selectPanel.add(selectBtn);
         selectPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        selectPanel.setVisible(!canEdit);
         
         contentPanel.add(headerLabel);
         contentPanel.add(Box.createVerticalStrut(20));
@@ -112,8 +149,8 @@ public class EquipmentDetailsUI extends JDialog {
         contentPanel.add(statusLabel);
         contentPanel.add(Box.createVerticalStrut(5));
         contentPanel.add(statusDropdown);
-//        contentPanel.add(Box.createVerticalStrut(10));
-//        contentPanel.add(submitPanel);
+        contentPanel.add(Box.createVerticalStrut(10));
+        contentPanel.add(submitPanel);
         contentPanel.add(Box.createVerticalStrut(10));
         contentPanel.add(selectPanel);
         

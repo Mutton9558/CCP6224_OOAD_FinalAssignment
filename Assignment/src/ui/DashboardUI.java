@@ -14,7 +14,7 @@ public class DashboardUI extends JPanel{
         UIConstants UIConst = new UIConstants();
         setLayout(new BorderLayout());
         
-        westPanel = new JPanel(cardlayout1);
+        westPanel = new JPanel(cardlayout1)S;
         contentPanel = new JPanel(cardlayout2);
         mainPanel = new JPanel(new BorderLayout());
         

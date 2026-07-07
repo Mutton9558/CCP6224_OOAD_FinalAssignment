@@ -1,12 +1,8 @@
 package ui;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
 
-public class DashboardPanel{
-    
-    public DashboardPanel(){
-        
-        
-    }
-    
+public interface DashboardPanel{
+    public String getName();
+    public boolean isVisible();
+    public JPanel getPanel();
 }

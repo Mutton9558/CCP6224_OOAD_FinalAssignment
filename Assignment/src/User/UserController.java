@@ -30,7 +30,7 @@ public class UserController {
     }
     
     //UPDATING USER DETAILS BY HAVING SETTERS THROUGH USER CONTROLLER
-    public boolean updateUserProfile(User user, String newName, String newEmail, String newPassword, String newGender, LocalDate newDob, UserType newUserType ){
+    public boolean updateUserProfile(User user, String newName, String newEmail, String newPassword, String newGender, LocalDate newDob ){
         
 //        if(!isValidName(newName)){
 //            return false;
@@ -41,7 +41,6 @@ public class UserController {
         user.setGender(newGender);
         user.setGender(newGender);
         user.setDateOfBirth(newDob);
-        user.setUserType(newUserType);
         return true;
        }
     

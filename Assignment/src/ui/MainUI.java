@@ -34,7 +34,7 @@ public class MainUI extends JFrame {
         mainPanel.add(dashboard, "DASHBOARD");
         
         profile = new UserProfileUI();
-        mainPanel.add(profile, "PROFILE");
+        mainPanel.add(profile, "PROFILE");S
 
         mainPanel.setOpaque(false);
         bgImage.add(mainPanel, BorderLayout.CENTER);
@@ -51,11 +51,6 @@ public class MainUI extends JFrame {
         }
         
         
-        
-        
-        
-        
-        
-        
+           
     
 }

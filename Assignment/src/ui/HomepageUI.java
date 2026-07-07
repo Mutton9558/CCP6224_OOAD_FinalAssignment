@@ -19,7 +19,7 @@ public class HomepageUI extends JPanel{
         upperPanel.setBackground(UIConst.DarkPurple);
         upperPanel.setPreferredSize(new Dimension(100, 140));
         
-        JPanel upperPanel_left = new Jpanel(new FlowLayout());
+        JPanel upperPanel_left = new JPanel(new FlowLayout());
         upperPanel_left.setBackground(UIConst.DarkPurple);
         
         //logo place at the left of upper panel 

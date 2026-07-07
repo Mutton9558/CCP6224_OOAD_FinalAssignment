@@ -4,11 +4,12 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import ui.UIConstants;
+import core.SystemFacade;
 
 public class EditCategoryUI extends JDialog {
     private UIConstants uiConst = new UIConstants();
 
-    public EditCategoryUI(Window parent, Category category) {
+    public EditCategoryUI(Window parent, Category category, SystemFacade facade) {
         super(parent, "Edit Category", Dialog.ModalityType.APPLICATION_MODAL);
         this.setSize(800, 600);
         
@@ -26,7 +27,7 @@ public class EditCategoryUI extends JDialog {
         headerLabel.setFont(new Font("Arial", Font.BOLD, 24));
         headerLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
-        JLabel nameFieldLabel = new JLabel("Edit Name");
+        JLabel nameFieldLabel = new JLabel("Name");
         nameFieldLabel.setForeground(Color.WHITE);
         nameFieldLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         nameFieldLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -35,6 +36,7 @@ public class EditCategoryUI extends JDialog {
         nameTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
         nameTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, nameTextField.getPreferredSize().height));
         nameTextField.setText(category.getName());
+        nameTextField.setEnabled(false);
         
         JLabel maintenanceFeeLabel = new JLabel("Edit Maintenance Fee");
         maintenanceFeeLabel.setForeground(Color.WHITE);
@@ -45,16 +47,6 @@ public class EditCategoryUI extends JDialog {
         maintenanceFeeTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
         maintenanceFeeTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, maintenanceFeeTextField.getPreferredSize().height));
         maintenanceFeeTextField.setText(Float.toString(category.getFee()));
-        
-        JLabel discountLabel = new JLabel("Edit Category Discount");
-        discountLabel.setForeground(Color.WHITE);
-        discountLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        discountLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        JTextField discountTextField = new JTextField(30);
-        discountTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        discountTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, discountTextField.getPreferredSize().height));
-        discountTextField.setText(Float.toString(category.getDiscount()));
         
         JLabel latePenaltyLabel = new JLabel("Edit Late Penalty");
         latePenaltyLabel.setForeground(Color.WHITE);
@@ -81,7 +73,37 @@ public class EditCategoryUI extends JDialog {
         JButton submitBtn = new JButton("Submit");
         submitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         submitBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        submitBtn.addActionListener(e -> {
+            String newFee = (String) maintenanceFeeTextField.getText();
+            String newLatePenalty = (String) latePenaltyField.getText();
+            String newDamagePenalty = (String) dmgPenaltyField.getText();
+            
+            try{
+                facade.editCategory(category.getId(), newFee, newLatePenalty, newDamagePenalty);
+                JOptionPane.showMessageDialog(null, "Successfully edited Category!");
+                dispose();
+            } catch (IllegalArgumentException ex){
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Input Validation Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex){
+                JOptionPane.showMessageDialog(null, "Failed to edit category to system!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        
+        JButton deleteBtn = new JButton("Delete");
+        deleteBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        deleteBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        deleteBtn.addActionListener(e -> {
+            boolean success = facade.deleteCategory(category.getId());
+            if(success){
+                JOptionPane.showMessageDialog(null, "Successfully deleted category!");
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "Failed to delete Category", "Database Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
         submitPanel.add(submitBtn);
+        submitPanel.add(deleteBtn);
         submitPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         contentPanel.add(headerLabel);
@@ -93,10 +115,6 @@ public class EditCategoryUI extends JDialog {
         contentPanel.add(maintenanceFeeLabel);
         contentPanel.add(Box.createVerticalStrut(5));
         contentPanel.add(maintenanceFeeTextField);
-        contentPanel.add(Box.createVerticalStrut(10));
-        contentPanel.add(discountLabel);
-        contentPanel.add(Box.createVerticalStrut(5));
-        contentPanel.add(discountTextField);
         contentPanel.add(Box.createVerticalStrut(10));
         contentPanel.add(latePenaltyLabel);
         contentPanel.add(Box.createVerticalStrut(5));

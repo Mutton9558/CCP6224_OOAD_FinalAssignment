@@ -1,6 +1,9 @@
 package Equipment;
 
 import javax.swing.*;
+import Rental.RentalRecordsUI;
+import Rental.RentalDB;
+import Rental.RentalController;
 
 public class temprunner{
   public static void main(String[] args){
@@ -9,9 +12,18 @@ public class temprunner{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1280, 720);
 
+        CategoryDB categoryRepo = new CategoryDB();
+        EquipmentDB equipmentRepo = new EquipmentDB();
+        RentalDB rentalRepo = new RentalDB();
+        CategoryController categoryService = CategoryController.getInstance(categoryRepo);
+        EquipmentController equipmentService = EquipmentController.getInstance(equipmentRepo, categoryService);
+        RentalController rentalService = RentalController.getInstance(rentalRepo, equipmentService);
+        
+        core.SystemServices services = new core.SystemServices(categoryService, equipmentService, rentalService);
+        core.SystemFacade facade = new core.SystemFacade(services);
+        
         // Instantiate your new JPanel
-        EquipmentPanelUI listPanel = new EquipmentPanelUI(true);
-
+        EquipmentPanelUI listPanel = new EquipmentPanelUI(false, facade);
         // Highly recommended: Wrap it in a scroll pane so content can scroll 
         JScrollPane scrollPane = new JScrollPane(listPanel);
         scrollPane.setBorder(null);

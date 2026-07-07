@@ -4,11 +4,12 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import ui.UIConstants;
+import core.SystemFacade;
 
 public class AddCategoryUI extends JDialog {
     private UIConstants uiConst = new UIConstants();
 
-    public AddCategoryUI(Window parent) {
+    public AddCategoryUI(Window parent, SystemFacade facade) {
         super(parent, "Add Category", Dialog.ModalityType.APPLICATION_MODAL);
         this.setSize(800, 600);
         
@@ -44,15 +45,6 @@ public class AddCategoryUI extends JDialog {
         maintenanceFeeTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
         maintenanceFeeTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, maintenanceFeeTextField.getPreferredSize().height));
         
-        JLabel discountLabel = new JLabel("Set Category Discount");
-        discountLabel.setForeground(Color.WHITE);
-        discountLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        discountLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        JTextField discountTextField = new JTextField(30);
-        discountTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        discountTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, discountTextField.getPreferredSize().height));
-        
         JLabel latePenaltyLabel = new JLabel("Set Late Penalty");
         latePenaltyLabel.setForeground(Color.WHITE);
         latePenaltyLabel.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -76,6 +68,27 @@ public class AddCategoryUI extends JDialog {
         JButton submitBtn = new JButton("Submit");
         submitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         submitBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        submitBtn.addActionListener(e -> {
+            
+            String name = (String) nameTextField.getText();
+            String fee = (String) maintenanceFeeTextField.getText();
+            String latePenalty = (String) latePenaltyField.getText();
+            String dmgPenalty = (String) dmgPenaltyField.getText();
+            
+            try {
+                // Send everything as strings to the facade
+                facade.addNewCategory(name, fee, latePenalty, dmgPenalty);
+
+                JOptionPane.showMessageDialog(null, "Successfully added Category!");
+                dispose();
+            } catch (IllegalArgumentException ex) {
+                // The facade rejected the input (e.g. empty string, negative rate, or letters instead of numbers)
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Input Validation Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                // Catch any database or system-level issues safely
+                JOptionPane.showMessageDialog(null, "Failed to add category to system!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
         submitPanel.add(submitBtn);
         submitPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
@@ -88,10 +101,6 @@ public class AddCategoryUI extends JDialog {
         contentPanel.add(maintenanceFeeLabel);
         contentPanel.add(Box.createVerticalStrut(5));
         contentPanel.add(maintenanceFeeTextField);
-        contentPanel.add(Box.createVerticalStrut(10));
-        contentPanel.add(discountLabel);
-        contentPanel.add(Box.createVerticalStrut(5));
-        contentPanel.add(discountTextField);
         contentPanel.add(Box.createVerticalStrut(10));
         contentPanel.add(latePenaltyLabel);
         contentPanel.add(Box.createVerticalStrut(5));
