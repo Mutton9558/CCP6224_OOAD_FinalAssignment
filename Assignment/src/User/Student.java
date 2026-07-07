@@ -25,5 +25,9 @@ public class Student extends User{
            Permission.RETURN,
            Permission.VIEW_RENTAL);   
     }
-
+        
+    @Override
+    public void setDiscountRate(){
+        setDiscount(0.25);
+    }
 }

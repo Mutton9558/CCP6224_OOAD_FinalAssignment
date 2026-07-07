@@ -25,5 +25,10 @@ public class Staff extends User{
            Permission.RETURN,
            Permission.VIEW_RENTAL);   
     }
-
+    
+        
+    @Override
+    public void setDiscountRate(){
+        setDiscount(0.3);
+    }
 }

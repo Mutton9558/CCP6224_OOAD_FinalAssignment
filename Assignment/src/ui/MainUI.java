@@ -27,6 +27,7 @@ public class MainUI extends JFrame {
         
         homepage = new HomepageUI();
         mainPanel.add(homepage, "HOME");
+        
         //always show homepage first 
         cardlayout.show(mainPanel, "HOME");
         
@@ -49,8 +50,6 @@ public class MainUI extends JFrame {
             MainUI mainUI = new MainUI();
             
         }
-        
-        
-           
+         
     
 }

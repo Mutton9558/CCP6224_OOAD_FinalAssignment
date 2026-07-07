@@ -29,6 +29,7 @@ public abstract class User{
     //abstract methods 
     public abstract String returnRole();
     public abstract void setPermissions();
+    public abstract void setDiscountRate();
     
 //setters
  //DB HANDLES THE USER ID ASSIGNING 
@@ -54,6 +55,11 @@ public abstract class User{
     
     public void setDateOfBirth(LocalDate dob){
         this.date_of_birth = dob;
+    }
+    
+                
+    public void setDiscount(double discount){
+        this.discount_rate= discount;
     }
     
  
@@ -84,11 +90,6 @@ public abstract class User{
     
         public double getDiscount(){
         return discount_rate;
-    }
-            
-    //setters
-    public void setDiscount(double discount){
-        this.discount_rate= discount;
     }
     
     // Permission functions 

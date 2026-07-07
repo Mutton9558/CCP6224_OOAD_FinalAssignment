@@ -22,5 +22,9 @@ public class Admin extends User{
            Permission.EDIT_PROFILE,
            Permission.REGISTER_ACCOUNT);   
     }
-
+    
+    @Override
+    public void setDiscountRate(){
+        setDiscount(0);
+    }
 }

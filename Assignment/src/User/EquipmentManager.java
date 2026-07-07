@@ -26,5 +26,9 @@ public class EquipmentManager extends User{
            Permission.EDIT_CATEGORY,
            Permission.VIEW_RENTAL);   
     }
-
+    
+    @Override
+    public void setDiscountRate(){
+        setDiscount(0);
+    }
 }

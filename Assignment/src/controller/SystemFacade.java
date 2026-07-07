@@ -1,19 +1,19 @@
 package controller;
-//import User.UserController;
+import User.UserController;
 //import Bill.BillController;
-//import Equipment.EquipmentController;
-//import Rental.RentalController;
+import Equipment.EquipmentController;
+import Rental.RentalController;
 
 //does the common user user cases by managing and controlling all the controllers 
 // HOW IT WORKS: 
 // UI ONLY CALLS THE FACADE, NEVER USING CONTROLLERS DIRECTLY !!!
 public class SystemFacade {
     
-//    private UserController userController;
+    private UserController userController;
 //    private BillController billController;
-//    private EquipmentController equipmentController;
-//    private RentalController rentalController;
-//    
+    private EquipmentController equipmentController;
+    private RentalController rentalController;
+    
     public void SystemFacade(){
         
     }
