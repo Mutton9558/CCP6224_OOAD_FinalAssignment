@@ -5,6 +5,6 @@ import Rental.*;
 
 public record SystemServices(
     CategoryController categoryService,
-    EquipmentController equipmentService,
-    RentalController rentalService
+    EquipmentController equipmentService
+//    RentalController rentalService
 ) {}

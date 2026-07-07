@@ -159,7 +159,7 @@ public class EquipmentPanelUI extends JPanel {
             row[1] = e.getName();
             row[2] = Float.toString(e.getRate());
             row[3] = e.getStatus();
-            if(this.isSelecting || this.canEdit){
+            if((this.isSelecting && e.getStatus().equals("Available")) || this.canEdit){
                 row[4] = "Select";
             }
             data.add(row);
@@ -174,7 +174,15 @@ public class EquipmentPanelUI extends JPanel {
             columns[4] = "Select Resource";
         }
         
-        DefaultTableModel model = new DefaultTableModel(data.toArray(new Object[0][]), columns);
+        DefaultTableModel model = new DefaultTableModel(data.toArray(new Object[0][]), columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column == 4) {
+                    return getValueAt(row, column) != null;
+                }
+                return false; // other columns are display-only anyway
+            }
+        };
         JTable table = new JTable(model);
         table.setRowHeight(32);
         
@@ -195,11 +203,16 @@ public class EquipmentPanelUI extends JPanel {
 
     private class TableButtonRenderer implements TableCellRenderer {
         private final ViewDetailsButton renderingButton = new ViewDetailsButton();
+        private final JPanel emptyPanel = new JPanel();
+        
+        public TableButtonRenderer() {
+            emptyPanel.setBackground(Color.WHITE);
+        }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
-            return renderingButton;
+            return (value == null) ? emptyPanel : renderingButton;
         }
     }
 
@@ -207,11 +220,13 @@ public class EquipmentPanelUI extends JPanel {
         private final ViewDetailsButton editingButton = new ViewDetailsButton();
         private final JTable table;
         private List<Equipment> equipmentList;
+        private final JPanel emptyPanel = new JPanel();
 
         public TableButtonEditor(JTable table, List<Equipment> equipmentList) {
             this.table = table;
             this.equipmentList = equipmentList;
             this.editingButton.addActionListener(this);
+            this.emptyPanel.setBackground(Color.WHITE);
         }
 
         @Override
@@ -221,7 +236,7 @@ public class EquipmentPanelUI extends JPanel {
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            return editingButton;
+            return (value == null) ? emptyPanel : editingButton;
         }
 
         @Override

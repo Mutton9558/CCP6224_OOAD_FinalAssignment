@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import core.SystemFacade;
+import core.SystemFacade.ReturnConfirmationContext;
+import Equipment.Equipment;
 
 public class ReturnConfirmationUI extends JPanel{
     private UIConstants uiConst = new UIConstants();
@@ -26,6 +29,7 @@ public class ReturnConfirmationUI extends JPanel{
     }
     
     public ReturnConfirmationUI(){
+        
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         setBackground(uiConst.LightPurple);
