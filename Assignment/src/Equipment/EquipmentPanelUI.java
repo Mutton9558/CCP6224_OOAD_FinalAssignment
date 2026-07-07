@@ -10,12 +10,15 @@ import javax.swing.table.TableCellRenderer;
 import ui.UIConstants;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class EquipmentPanelUI extends JPanel {
     private final UIConstants uiConstants = new UIConstants();
     private boolean isSelecting;
     private boolean canEdit;
     private core.SystemFacade facade;
+    private Map<Category, List<Equipment>> equipmentData;
+    private core.SystemFacade.EquipmentPanelContext data;
     
     private class ViewDetailsButton extends JButton {
         public ViewDetailsButton() {
@@ -36,6 +39,10 @@ public class EquipmentPanelUI extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         setBackground(uiConstants.LightPurple);
 
+        this.data = facade.getEquipmentPanelData();
+        this.canEdit = data.canEdit();
+        this.equipmentData = data.equipments();
+        
         refreshData();
     }
 
@@ -43,19 +50,45 @@ public class EquipmentPanelUI extends JPanel {
         // Clear all existing UI components currently drawn on the panel
         this.removeAll();
 
-        // Fetch fresh state data from the backend facade
-        core.SystemFacade.EquipmentPanelContext data = facade.getEquipmentPanelData();
-        this.canEdit = data.canEdit();
-
         // Build header layout
         JPanel header = createHeaderPanel();
         header.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(header);
+        add(Box.createVerticalStrut(5));
         
-        add(Box.createVerticalStrut(25));
+        JLabel titleLabel = new JLabel("Search Equipment (Enter ID)");
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        add(titleLabel);
+        
+        JPanel searchPanel = new JPanel();
+        searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.X_AXIS));
+        searchPanel.setBackground(uiConstants.LightPurple);
+        searchPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        
+        JTextField searchField = new JTextField(70);
+        JButton searchBtn = new JButton("Search");
+        JButton refreshBtn = new JButton("Refresh");
+        searchBtn.addActionListener(e -> {
+            this.equipmentData = this.facade.searchEquipment(searchField.getText());
+            refreshData();
+        });
+        
+        refreshBtn.addActionListener(e -> {
+            this.equipmentData = facade.getEquipmentPanelData().equipments();
+            refreshData();
+        });
+        
+        searchPanel.add(searchField);
+        searchPanel.add(searchBtn);
+        searchPanel.add(refreshBtn);
+        searchPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        add(searchPanel);
+        
+        add(Box.createVerticalStrut(20));
 
         // Rebuild each equipment category block layout
-        data.equipments().forEach((category, equipmentList) -> {
+        this.equipmentData.forEach((category, equipmentList) -> {
             add(createCategoryBlock(category, equipmentList));
             add(Box.createVerticalStrut(20));
 
@@ -96,6 +129,7 @@ public class EquipmentPanelUI extends JPanel {
             Window window = SwingUtilities.getWindowAncestor(this);
             JDialog createCategory = new AddCategoryUI(window, facade);
             createCategory.setVisible(true);
+            this.equipmentData = facade.getEquipmentPanelData().equipments();
             refreshData();
         });
 
@@ -130,6 +164,7 @@ public class EquipmentPanelUI extends JPanel {
             Window parent = SwingUtilities.getWindowAncestor(this);
             JDialog editCategoryDialog = new EditCategoryUI(parent, category, facade);
             editCategoryDialog.setVisible(true);
+            this.equipmentData = facade.getEquipmentPanelData().equipments();
             refreshData();
         });
        
@@ -143,6 +178,7 @@ public class EquipmentPanelUI extends JPanel {
             Window parent = SwingUtilities.getWindowAncestor(this);
             JDialog addEquipmentDialog = new AddEquipmentUI(parent, category.getName(), facade);
             addEquipmentDialog.setVisible(true);
+            this.equipmentData = facade.getEquipmentPanelData().equipments();
             refreshData(); // 5. Refresh when this modal closes
         });
 
@@ -152,17 +188,17 @@ public class EquipmentPanelUI extends JPanel {
         labelRow.add(Box.createHorizontalStrut(10));
         labelRow.add(addEquipmentBtn);
         
-        List<Object[]> data = new ArrayList<>();
+        List<Object[]> tempData = new ArrayList<>();
         for(Equipment e: equipmentList){
             Object[] row = new Object[(this.isSelecting || this.canEdit) ? 5 : 4];
             row[0] = Integer.toString(e.getId());
             row[1] = e.getName();
             row[2] = Float.toString(e.getRate());
             row[3] = e.getStatus();
-            if(this.isSelecting || this.canEdit){
+            if((this.isSelecting && e.getStatus().equals("Available")) || this.canEdit){
                 row[4] = "Select";
             }
-            data.add(row);
+            tempData.add(row);
         }
         
         Object[] columns = new Object[(this.isSelecting || this.canEdit) ? 5 : 4];
@@ -174,7 +210,15 @@ public class EquipmentPanelUI extends JPanel {
             columns[4] = "Select Resource";
         }
         
-        DefaultTableModel model = new DefaultTableModel(data.toArray(new Object[0][]), columns);
+        DefaultTableModel model = new DefaultTableModel(tempData.toArray(new Object[0][]), columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column == 4) {
+                    return getValueAt(row, column) != null;
+                }
+                return false; // other columns are display-only anyway
+            }
+        };
         JTable table = new JTable(model);
         table.setRowHeight(32);
         
@@ -195,11 +239,16 @@ public class EquipmentPanelUI extends JPanel {
 
     private class TableButtonRenderer implements TableCellRenderer {
         private final ViewDetailsButton renderingButton = new ViewDetailsButton();
+        private final JPanel emptyPanel = new JPanel();
+        
+        public TableButtonRenderer() {
+            emptyPanel.setBackground(Color.WHITE);
+        }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
-            return renderingButton;
+            return (value == null) ? emptyPanel : renderingButton;
         }
     }
 
@@ -207,11 +256,13 @@ public class EquipmentPanelUI extends JPanel {
         private final ViewDetailsButton editingButton = new ViewDetailsButton();
         private final JTable table;
         private List<Equipment> equipmentList;
+        private final JPanel emptyPanel = new JPanel();
 
         public TableButtonEditor(JTable table, List<Equipment> equipmentList) {
             this.table = table;
             this.equipmentList = equipmentList;
             this.editingButton.addActionListener(this);
+            this.emptyPanel.setBackground(Color.WHITE);
         }
 
         @Override
@@ -221,7 +272,7 @@ public class EquipmentPanelUI extends JPanel {
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            return editingButton;
+            return (value == null) ? emptyPanel : editingButton;
         }
 
         @Override
@@ -235,6 +286,7 @@ public class EquipmentPanelUI extends JPanel {
             JDialog equipmentDetails = new EquipmentDetailsUI(parent, equipment, canEdit, facade);
             equipmentDetails.setVisible(true);
 
+            equipmentData = facade.getEquipmentPanelData().equipments();
             refreshData(); 
         }
     }
