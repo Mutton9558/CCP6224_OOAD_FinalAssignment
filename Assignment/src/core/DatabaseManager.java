@@ -21,7 +21,6 @@ public class DatabaseManager {
                 category_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 category_name VARCHAR NOT NULL,
                 maintenance_fee FLOAT NOT NULL,
-                category_discount FLOAT NOT NULL,
                 late_penalty FLOAT NOT NULL,
                 damage_penalty FLOAT NOT NULL
             );
