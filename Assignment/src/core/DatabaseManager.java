@@ -37,14 +37,18 @@ public class DatabaseManager {
             );
             """;
         
-//        String createRentalTable = """
-//            CREATE TABLE IF NOT EXISTS Rental(
-//               rental_id INTEGER PRIMARY KEY AUTOINCREMENT,
-//               user_id INTEGER,
-//               equipment INTEGER,
-//               
-//            )
-//                                   """;
+        String createBillsTable = """
+            CREATE TABLE IF NOT EXISTS Bills (
+                bill_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                rental_id INTEGER,
+                base_fee FLOAT NOT NULL,
+                discount_amount FLOAT NOT NULL,
+                penalty_amount FLOAT NOT NULL,
+                net_payable FLOAT NOT NULL,
+                bill_type VARCHAR NOT NULL,
+                bill_status VARCHAR NOT NULL
+            );
+            """;    
 
         String createRentalsTable = """
             CREATE TABLE IF NOT EXISTS Rentals (
@@ -63,6 +67,7 @@ public class DatabaseManager {
         try (Statement stmt = conn.createStatement()) {
             stmt.execute(createCategoriesTable);
             stmt.execute(createEquipmentsTable);
+            stmt.execute(createBillsTable);
             stmt.execute(createRentalsTable);
 
         } catch (SQLException e) {

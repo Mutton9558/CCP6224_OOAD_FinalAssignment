@@ -11,6 +11,8 @@ import java.time.format.DateTimeFormatter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import core.SystemFacade;
+import core.SystemFacade.ReturnConfirmationContext;
 import Equipment.Equipment;
 
 public class ReturnConfirmationUI extends JPanel{

@@ -10,9 +10,14 @@ import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import core.SystemFacade;
+import core.SystemFacade.RentedEquipmentContext;
+import Equipment.Equipment;
 
 public class RentedEquipmentUI extends JPanel{
     private UIConstants uiConst = new UIConstants();
+    private final SystemFacade facade;
+    private RentedEquipmentContext data;
     
     private class returnEquipmentBtn extends JButton {
         public returnEquipmentBtn() {
@@ -25,10 +30,20 @@ public class RentedEquipmentUI extends JPanel{
         }
     }
     
-    public RentedEquipmentUI(){
+    public RentedEquipmentUI(SystemFacade facade){
+        this.facade = facade;
+        
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         setBackground(uiConst.LightPurple);
+        
+        refreshData();
+    }
+    
+    private void refreshData(){
+        this.removeAll();
+        
+        this.data = facade.getRentedEquipmentContext();
         
         JLabel headerLabel = new JLabel("Rented Equipments");
         headerLabel.setForeground(Color.WHITE);
@@ -37,12 +52,15 @@ public class RentedEquipmentUI extends JPanel{
         
 //        table
         List<Object[]> rentedEquipments = new ArrayList<>();
-        Object[] row = new Object[4];
-        row[0] = "102";
-        row[1] = "Lens 24-70mm f2.8";
-        row[2] = "Camera and Lenses";
-        row[3] = "Return";
-        rentedEquipments.add(row);
+        for(Equipment e: data.cur()){
+            Object[] row = new Object[4];
+            row[0] = e.getId();
+            row[1] = e.getName();
+            row[2] = e.getCategory().getName();
+            row[3] = "Return";
+            rentedEquipments.add(row);
+        }
+        
         
         String[] columns = {"Equipment ID", "Equipment Name", "Category", "Return Item"};
         
@@ -68,11 +86,13 @@ public class RentedEquipmentUI extends JPanel{
         
 //        table
         List<Object[]> previouslyRentedEquipments = new ArrayList<>();
-        Object[] previousEqRow = new Object[3];
-        previousEqRow[0] = "103";
-        previousEqRow[1] = "Tripod Manfrotto";
-        previousEqRow[2] = "Lighting Equipment";
-        previouslyRentedEquipments.add(previousEqRow);
+        for(Equipment eq: data.prev()){
+            Object[] previousEqRow = new Object[3];
+            previousEqRow[0] = eq.getId();
+            previousEqRow[1] = eq.getName();
+            previousEqRow[2] = eq.getCategory().getName();
+            previouslyRentedEquipments.add(previousEqRow);
+        }        
         
         String[] columns2 = {"Equipment ID", "Equipment Name", "Category"};
         
@@ -126,15 +146,18 @@ public class RentedEquipmentUI extends JPanel{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-//            int visualRow = table.getEditingRow();
-//            if (visualRow != -1) {
-//                int modelRow = table.convertRowIndexToModel(visualRow);
-//                fireEditingStopped();
-//                Window parent = SwingUtilities.getWindowAncestor(table.getParent());
-//                JDialog equipmentDetails = new EquipmentDetailsUI(parent, equipmentList.get(modelRow));
-//                equipmentDetails.setVisible(true);
-//            }
-            System.out.println("Returned");
+            int visualRow = table.getEditingRow();
+            if (visualRow != -1) {
+                int modelRow = table.convertRowIndexToModel(visualRow);
+                fireEditingStopped();
+                boolean success = facade.returnEquipment(data.cur().get(modelRow).getId());
+                if(success){
+                    JOptionPane.showMessageDialog(null, "Successfully sent return confirmation request.");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Failed to return equipment", "Failure", JOptionPane.ERROR_MESSAGE);
+                }
+                refreshData();
+            }
         }
     }
 }
