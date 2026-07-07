@@ -27,7 +27,7 @@ public class temprunner{
         core.SystemFacade facade = new core.SystemFacade(services);
         
         // Instantiate your new JPanel
-        EquipmentPanelUI listPanel = new EquipmentPanelUI(true, facade);
+        EquipmentPanelUI listPanel = new EquipmentPanelUI(facade);
         // Highly recommended: Wrap it in a scroll pane so content can scroll 
         JScrollPane scrollPane = new JScrollPane(listPanel);
         scrollPane.setBorder(null);

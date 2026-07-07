@@ -14,7 +14,6 @@ import java.util.Map;
 
 public class EquipmentPanelUI extends JPanel {
     private final UIConstants uiConstants = new UIConstants();
-    private boolean isSelecting;
     private boolean canEdit;
     private core.SystemFacade facade;
     private Map<Category, List<Equipment>> equipmentData;
@@ -31,8 +30,7 @@ public class EquipmentPanelUI extends JPanel {
         }
     }
     
-    public EquipmentPanelUI(boolean isSelecting, core.SystemFacade facade) {
-        this.isSelecting = isSelecting;
+    public EquipmentPanelUI(core.SystemFacade facade) {
         this.facade = facade;
         
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -190,25 +188,23 @@ public class EquipmentPanelUI extends JPanel {
         
         List<Object[]> tempData = new ArrayList<>();
         for(Equipment e: equipmentList){
-            Object[] row = new Object[(this.isSelecting || this.canEdit) ? 5 : 4];
+            Object[] row = new Object[5];
             row[0] = Integer.toString(e.getId());
             row[1] = e.getName();
             row[2] = Float.toString(e.getRate());
             row[3] = e.getStatus();
-            if((this.isSelecting && e.getStatus().equals("Available")) || this.canEdit){
+            if(e.getStatus().equals("Available")){
                 row[4] = "Select";
             }
             tempData.add(row);
         }
         
-        Object[] columns = new Object[(this.isSelecting || this.canEdit) ? 5 : 4];
+        Object[] columns = new Object[5];
         columns[0] = "ID";
         columns[1] = "Equipment Name";
         columns[2] = "Daily Rental Rate";
         columns[3] = "Status";
-        if(this.isSelecting || this.canEdit){
-            columns[4] = "Select Resource";
-        }
+        columns[4] = "Select Resource";
         
         DefaultTableModel model = new DefaultTableModel(tempData.toArray(new Object[0][]), columns) {
             @Override
@@ -222,10 +218,8 @@ public class EquipmentPanelUI extends JPanel {
         JTable table = new JTable(model);
         table.setRowHeight(32);
         
-        if(this.isSelecting || this.canEdit){
-            table.getColumnModel().getColumn(4).setCellRenderer(new TableButtonRenderer());
-            table.getColumnModel().getColumn(4).setCellEditor(new TableButtonEditor(table, equipmentList));
-        }
+        table.getColumnModel().getColumn(4).setCellRenderer(new TableButtonRenderer());
+        table.getColumnModel().getColumn(4).setCellEditor(new TableButtonEditor(table, equipmentList));
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
