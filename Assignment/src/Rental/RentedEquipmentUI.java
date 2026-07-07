@@ -150,7 +150,12 @@ public class RentedEquipmentUI extends JPanel{
             if (visualRow != -1) {
                 int modelRow = table.convertRowIndexToModel(visualRow);
                 fireEditingStopped();
-                facade.returnEquipment(data.cur().get(modelRow).getId());
+                boolean success = facade.returnEquipment(data.cur().get(modelRow).getId());
+                if(success){
+                    JOptionPane.showMessageDialog(null, "Successfully sent return confirmation request.");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Failed to return equipment", "Failure", JOptionPane.ERROR_MESSAGE);
+                }
                 refreshData();
             }
         }

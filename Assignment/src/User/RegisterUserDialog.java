@@ -64,6 +64,17 @@ public class RegisterUserDialog extends JDialog {
         genderDropdown.setAlignmentX(Component.LEFT_ALIGNMENT);
         genderDropdown.setMaximumSize(new Dimension(Integer.MAX_VALUE, genderDropdown.getPreferredSize().height));
         
+        JLabel roleLabel = new JLabel("Select User Role");
+        roleLabel.setForeground(Color.WHITE);
+        roleLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        roleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        String[] roleOptions = {"Student", "Staff", "Equipment Manager", "Admin"};
+        
+        JComboBox roleDropdown = new JComboBox<>(roleOptions);
+        roleDropdown.setAlignmentX(Component.LEFT_ALIGNMENT);
+        roleDropdown.setMaximumSize(new Dimension(Integer.MAX_VALUE, roleDropdown.getPreferredSize().height));
+        
         JLabel dobLabel = new JLabel("Select Date of Birth");
         dobLabel.setForeground(Color.WHITE);
         dobLabel.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -107,6 +118,10 @@ public class RegisterUserDialog extends JDialog {
         contentPanel.add(genderLabel);
         contentPanel.add(Box.createVerticalStrut(5));
         contentPanel.add(genderDropdown);
+        contentPanel.add(Box.createVerticalStrut(10));
+        contentPanel.add(roleLabel);
+        contentPanel.add(Box.createVerticalStrut(5));
+        contentPanel.add(roleDropdown);
         contentPanel.add(Box.createVerticalStrut(10));
         contentPanel.add(dobLabel);
         contentPanel.add(Box.createVerticalStrut(5));

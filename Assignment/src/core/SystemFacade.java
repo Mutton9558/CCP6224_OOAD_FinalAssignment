@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import Billing.Bill;
 
 public class SystemFacade {
     private final SystemServices services;
@@ -212,5 +213,13 @@ public class SystemFacade {
         } catch (NumberFormatException e){
             return temp;
         }
+    }
+    
+    public List<Bill> fetchUnpaidBills(){
+        return services.billingService().getUnpaidBills();
+    }
+    
+    public boolean payBill(int billId){
+        return services.billingService().payBill(billId);
     }
 }

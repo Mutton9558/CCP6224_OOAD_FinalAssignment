@@ -54,15 +54,23 @@ public class ReturnConfirmationDialog extends JDialog {
         nameTextField.setEnabled(false);
         
         JCheckBox returnStatus = new JCheckBox("Equipment returned fully?");
-        returnStatus.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                this.isReturned = true;
-            }
-        });
+        
         returnStatus.setBackground(uiConst.LightPurple);
         
         JCheckBox damageStatus = new JCheckBox("Equipment damaged?");
+        damageStatus.setEnabled(false);
+        
         returnStatus.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                this.isReturned = true;
+                damageStatus.setEnabled(true);
+            } else {
+                damageStatus.setEnabled(false);
+                this.isDamaged = false;
+            }
+        });
+        
+        damageStatus.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 this.isDamaged = true;
             }
