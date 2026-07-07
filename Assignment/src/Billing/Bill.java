@@ -1,50 +1,59 @@
-//package Billing;
-//import java.time.*;
-//import Equipment.*;
-//
-//
-//public class Bill {
-//    private final int rental_id;
-//    private final int user_id;
-//    private final Bill bill;
-//    private final Equipment equipment;
-//    private LocalTime duration;
-//    private Boolean lateStatus;
-//    
-//    public Bill(int id, int userID, Bill bill, Equipment equipment, LocalTime duration, Boolean lateStatus){
-//        this.rental_id = id;
-//        this.user_id = userID;
-//        this.bill = bill;
-//        this.equipment = equipment;
-//        this.duration = duration;
-//        this.lateStatus = lateStatus;
-//    }
-//    
-//    public int getId(){
-//        return this.rental_id;
-//    }
-//    
-//    public float getBaseFee(){
-//        return this.name;
-//    }
-//    
-//    public Category getCategory(){
-//        return this.category;
-//    }
-//    
-//    public float getRate(){
-//        return this.daily_rental_rate;
-//    }
-//    
-//    public String getStatus(){
-//        return this.status;
-//    }
-//    
-//    public void setRate(float rate){
-//        this.daily_rental_rate = rate;
-//    }
-//    
-//    public void setStatus(String status){
-//        this.status = status;
-//    }
-//}
+package Billing;
+
+public class Bill {
+    private final int bill_id;
+    private final int rental_id;
+    private final float base_fee;
+    private final float discount_amount;
+    private final float penalty_amount;
+    private final float net_payable;
+    private final String bill_type;
+    private String bill_status;
+    
+    public Bill(int id, int rental_id, float base_fee, float discount_amount, float penalty_amount, float net_payable, String bill_type, String bill_status){
+        this.bill_id = id;
+        this.rental_id = rental_id;
+        this.base_fee = base_fee;
+        this.discount_amount = discount_amount;
+        this.penalty_amount = penalty_amount;
+        this.net_payable = net_payable;
+        this.bill_type = bill_type;
+        this.bill_status = bill_status;
+    }
+    
+    public int getId(){
+        return this.bill_id;
+    }
+    
+    public int getRentalId(){
+        return this.rental_id;
+    }
+    
+    public float getBaseFee(){
+        return this.base_fee;
+    }
+    
+    public float getDiscount(){
+        return this.discount_amount;
+    }
+    
+    public float getPenalty(){
+        return this.penalty_amount;
+    }
+    
+    public float getNetPayable(){
+        return this.net_payable;
+    }
+    
+    public String getBillType(){
+        return this.bill_type;
+    }
+    
+    public String getStatus(){
+        return this.bill_status;
+    }
+    
+    public void setStatus(String status){
+        this.bill_status = status;
+    }
+}
