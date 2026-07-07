@@ -4,9 +4,12 @@ public enum Permission {
     
     //GENERAL PERMISSIONS
     VIEW_PROFILE,
-    EDIT_PROFILE,
     MAKE_PAYMENT,
     VIEW_FINANCE_HISTORY,
+    
+    //ADMIN PERMISSIONS
+    EDIT_PROFILE,
+    REGISTER_ACCOUNT,
     
     //RENTAL PERMISSIONS
     RENT,
@@ -21,9 +24,9 @@ public enum Permission {
     EDIT_CATEGORY,
     
     //USER TYPE EDITING PERMISSIONS
-    VIEW_USER_TYPE,
-    ADD_USER_TYPE,
-    EDIT_USER_TYPE,
-    EDIT_DISCOUNT
+//    VIEW_USER_TYPE,
+//    ADD_USER_TYPE,
+//    EDIT_USER_TYPE,
+//    EDIT_DISCOUNT
     
 }
