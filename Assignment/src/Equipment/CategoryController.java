@@ -36,12 +36,12 @@ public class CategoryController {
         return temp;
     }
     
-    public boolean addCategory(String name, float fee, float discount, float late_penalty, float dmg_penalty){
+    public boolean addCategory(String name, float fee, float late_penalty, float dmg_penalty){
         
-        int id = this.repository.create(name, fee, discount, late_penalty, dmg_penalty);
+        int id = this.repository.create(name, fee, late_penalty, dmg_penalty);
         
         if(id != -1){
-            Category newCategory = new Category(id, name, fee, discount, late_penalty, dmg_penalty);
+            Category newCategory = new Category(id, name, fee, late_penalty, dmg_penalty);
             categoryMap.put(id, newCategory);
         }
         
@@ -49,14 +49,13 @@ public class CategoryController {
         return id != -1;
     }
     
-    public boolean editCategory(int id, float fee, float discount, float latePenalty, float damagePenalty){
+    public boolean editCategory(int id, float fee, float latePenalty, float damagePenalty){
         
-        boolean success = this.repository.update(id, fee, discount, latePenalty, damagePenalty);
+        boolean success = this.repository.update(id, fee, latePenalty, damagePenalty);
         
         if(success){
             Category record = categoryMap.get(id);
             record.setFee(fee);
-            record.setDiscount(discount);
             record.setLatePenalty(latePenalty);
             record.setDamagePenalty(damagePenalty);
         }

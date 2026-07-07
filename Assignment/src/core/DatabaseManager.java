@@ -21,7 +21,6 @@ public class DatabaseManager {
                 category_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 category_name VARCHAR NOT NULL,
                 maintenance_fee FLOAT NOT NULL,
-                category_discount FLOAT NOT NULL,
                 late_penalty FLOAT NOT NULL,
                 damage_penalty FLOAT NOT NULL
             );
@@ -37,6 +36,15 @@ public class DatabaseManager {
                 FOREIGN KEY (category) REFERENCES Categories(category_id)
             );
             """;
+        
+//        String createRentalTable = """
+//            CREATE TABLE IF NOT EXISTS Rental(
+//               rental_id INTEGER PRIMARY KEY AUTOINCREMENT,
+//               user_id INTEGER,
+//               equipment INTEGER,
+//               
+//            )
+//                                   """;
 
         String createRentalsTable = """
             CREATE TABLE IF NOT EXISTS Rentals (
