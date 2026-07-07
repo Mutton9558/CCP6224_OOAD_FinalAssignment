@@ -61,7 +61,7 @@ public class RentedEquipmentUI extends JPanel{
         separator.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         
-        JLabel headerLabel2 = new JLabel("Previously Rented Equipments");
+        JLabel headerLabel2 = new JLabel("Equipments Awaiting Return Confirmation");
         headerLabel2.setForeground(Color.WHITE);
         headerLabel2.setFont(new Font("Arial", Font.BOLD, 28));
         headerLabel2.setAlignmentX(Component.LEFT_ALIGNMENT);
