@@ -61,13 +61,12 @@ public class RentalRecordsUI extends JPanel {
         searchConstraints.gridy = 1;
         add(searchPanel, searchConstraints);
 
-        String[] columns = new String[6];
+        String[] columns = new String[5];
         columns[0] = "Rental ID";
         columns[1] = "Booked User";
         columns[2] = "Equipment";
         columns[3] = "Due Date";
         columns[4] = "Status";
-        columns[5] = "Action";
 
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -78,8 +77,6 @@ public class RentalRecordsUI extends JPanel {
 
         table = new JTable(tableModel);
         table.setRowHeight(32);
-        table.getColumnModel().getColumn(5).setCellRenderer(new TableButtonRenderer());
-        table.getColumnModel().getColumn(5).setCellEditor(new TableButtonEditor(table));
 
         adj.gridwidth = GridBagConstraints.REMAINDER;
         adj.gridy = 2;
@@ -237,55 +234,5 @@ public class RentalRecordsUI extends JPanel {
     private void resetSearch() {
         searchField.setText("");
         loadRentals();
-    }
-
-    private class TableButtonRenderer implements TableCellRenderer {
-        private final JButton renderingButton = new JButton("Damage Report");
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
-            return renderingButton;
-        }
-    }
-
-    private class TableButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
-        private final JButton editingButton = new JButton("Damage Report");
-        private final JTable table;
-        private int currentRow;
-
-        public TableButtonEditor(JTable table) {
-            this.table = table;
-            this.editingButton.addActionListener(this);
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                boolean isSelected, int row, int column) {
-            currentRow = row; // capture which row is being edited
-            return editingButton;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return "Damage Report";
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            fireEditingStopped();
-
-            Rental selectedRental = rentalList.get(currentRow);
-            openDamageReportDialog(selectedRental);
-        }
-
-        private void openDamageReportDialog(Rental rental) {
-            Window owner = SwingUtilities.getWindowAncestor(editingButton);
-            EquipmentDamageUI dialog = new EquipmentDamageUI((Frame) owner, rental);
-            dialog.setModal(true);
-            dialog.setVisible(true);
-
-            loadRentals();
-        }
     }
 }

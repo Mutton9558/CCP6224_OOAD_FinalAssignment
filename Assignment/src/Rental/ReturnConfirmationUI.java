@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import ui.UIConstants;
 import java.util.List;
 import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -16,6 +17,7 @@ import Equipment.Equipment;
 
 public class ReturnConfirmationUI extends JPanel{
     private UIConstants uiConst = new UIConstants();
+    private RentalController rentalController;
     
     private class confirmBtn extends JButton {
         public confirmBtn() {
@@ -24,11 +26,12 @@ public class ReturnConfirmationUI extends JPanel{
             this.setForeground(Color.WHITE);
             this.setFont(new Font("Arial", Font.PLAIN, 12));
             this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            this.setFocusPainted(false); // Clean visual styling
+            this.setFocusPainted(false);
         }
     }
     
-    public ReturnConfirmationUI(){
+    public ReturnConfirmationUI(RentalController rentalController){
+        this.rentalController = rentalController;
         
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -39,19 +42,32 @@ public class ReturnConfirmationUI extends JPanel{
         headerLabel.setFont(new Font("Arial", Font.BOLD, 28));
         headerLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
-//        table
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        List<Rental> rentals = rentalController.getAllRentals();
         List<Object[]> rentedEquipments = new ArrayList<>();
-        Object[] row = new Object[5];
-        row[0] = "101";
-        row[1] = "Camera Sony A7IV";
-        row[2] = "Camera and Lenses";
-        row[3] = "06-11-2026";
-        row[4] = "Confirm Return";
-        rentedEquipments.add(row);
+        
+        for (Rental r : rentals) {
+            if (Boolean.TRUE.equals(r.getReturnStatus())) continue;
+            
+            Equipment eq = r.getEquipment();
+            Object[] row = new Object[5];
+            row[0] = String.valueOf(r.getId());
+            row[1] = eq.getName();
+            row[2] = eq.getCategory();
+            row[3] = r.getDueDate().format(dateFormatter);
+            row[4] = "Confirm Return";
+            rentedEquipments.add(row);
+        }
         
         String[] columns = {"Equipment ID", "Equipment Name", "Category", "Expected Return Date", "Confirm Return"};
         
-        DefaultTableModel model = new DefaultTableModel(rentedEquipments.toArray(new Object[0][]), columns);
+        DefaultTableModel model = new DefaultTableModel(rentedEquipments.toArray(new Object[0][]), columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 4; 
+            }
+        };
+        
         JTable rentedEquipmentTable = new JTable(model);
         rentedEquipmentTable.setAutoCreateRowSorter(true);
         rentedEquipmentTable.setRowHeight(32);
@@ -102,7 +118,7 @@ public class ReturnConfirmationUI extends JPanel{
             if (visualRow != -1) {
                 int modelRow = table.convertRowIndexToModel(visualRow);
                 
-                Window parent = SwingUtilities.getWindowAncestor(table.getParent());
+                Window parent = SwingUtilities.getWindowAncestor(table);
                 int id = Integer.parseInt((String) table.getModel().getValueAt(modelRow, 0));
                 String name = (String) table.getModel().getValueAt(modelRow, 1);
                 JDialog returnConfirmation = new ReturnConfirmationDialog(parent, id, name);
