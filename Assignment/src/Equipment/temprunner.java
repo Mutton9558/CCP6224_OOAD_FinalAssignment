@@ -4,6 +4,8 @@ import javax.swing.*;
 import Rental.RentalRecordsUI;
 import Rental.RentalDB;
 import Rental.RentalController;
+import Billing.BillingController;
+import Billing.BillDB;
 
 public class temprunner{
   public static void main(String[] args){
@@ -14,12 +16,14 @@ public class temprunner{
 
         CategoryDB categoryRepo = new CategoryDB();
         EquipmentDB equipmentRepo = new EquipmentDB();
+        BillDB billingRepo = new BillDB();
 //        RentalDB rentalRepo = new RentalDB();
         CategoryController categoryService = CategoryController.getInstance(categoryRepo);
         EquipmentController equipmentService = EquipmentController.getInstance(equipmentRepo, categoryService);
 //        RentalController rentalService = RentalController.getInstance(rentalRepo, equipmentService);
+        BillingController billingService = BillingController.getInstance(billingRepo);
         
-        core.SystemServices services = new core.SystemServices(categoryService, equipmentService);
+        core.SystemServices services = new core.SystemServices(categoryService, equipmentService, billingService);
         core.SystemFacade facade = new core.SystemFacade(services);
         
         // Instantiate your new JPanel

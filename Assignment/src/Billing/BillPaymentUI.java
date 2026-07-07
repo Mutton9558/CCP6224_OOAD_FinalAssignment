@@ -10,10 +10,11 @@ import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import core.SystemFacade;
 
 public class BillPaymentUI extends JPanel {
     private UIConstants uiConst = new UIConstants();
-    private BillingController controller;
+    private SystemFacade facade;
     private List<Bill> billList = new ArrayList<>();
     private DefaultTableModel tableModel;
     private JTable table;
@@ -29,9 +30,9 @@ public class BillPaymentUI extends JPanel {
         }
     }
     
-//    swap to facade once Shawn adds the billing methods there
-    public BillPaymentUI(BillingController controller){
-        this.controller = controller;
+//    I saw and I have
+    public BillPaymentUI(SystemFacade facade){
+        this.facade = facade;
         
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -67,7 +68,7 @@ public class BillPaymentUI extends JPanel {
     }
     
     public void loadBills(){
-        billList = controller.getUnpaidBills();
+        billList = this.facade.fetchUnpaidBills();
         tableModel.setRowCount(0);
         for(Bill b : billList){
             Object[] row = new Object[4];
@@ -116,7 +117,7 @@ public class BillPaymentUI extends JPanel {
             fireEditingStopped();
             
             Bill selectedBill = billList.get(currentRow);
-            controller.payBill(selectedBill.getId());
+            facade.payBill(selectedBill.getId());
             loadBills();
         }
     }
