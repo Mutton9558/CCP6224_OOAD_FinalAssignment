@@ -64,7 +64,7 @@ public class RentalRecordsUI extends JPanel {
 
         String[] columns = new String[5];
         columns[0] = "Rental ID";
-        columns[1] = "Booked User UI";
+        columns[1] = "Booked User ID";
         columns[2] = "Equipment";
         columns[3] = "Due Date";
         columns[4] = "Status";
