@@ -3,6 +3,12 @@ import java.time.LocalDate;
 
 public class Student extends User{
     
+    //no id constructor
+    public Student(String name, String email, String password, String gender, LocalDate dob){
+        super(0, name, email, password, gender, dob);
+        setPermissions();
+    }
+    
     public Student(int id, String name, String email, String password, String gender, LocalDate dob){
         super(id, name, email, password, gender, dob);
         setPermissions();
