@@ -33,6 +33,11 @@ public class UserController {
         newStudent.setId(id);
         userMap.put(id, newStudent);
     }
+    
+    //delete user 
+    public boolean deleteUser(int user_id){
+        return repository.deleteUser(user_id);
+  }
         
     //login
     public void login(int id, String password){
@@ -88,6 +93,8 @@ public class UserController {
          }
          return true;
      }
+     
+     
           
     }
 
