@@ -4,14 +4,18 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import Equipment.Equipment;
+import Billing.BillingController;
 import ui.UIConstants;
 
 public class ReturnConfirmationDialog extends JDialog {
     private UIConstants uiConst = new UIConstants();
     private boolean isReturned = false;
     private boolean isDamaged = false;
+    private BillingController billingInstance;
 
-    public ReturnConfirmationDialog(Window parent, int id, String name) {
+    public ReturnConfirmationDialog(Window parent, int id, String name, Rental rental) {
         super(parent, "Return Confirmation", Dialog.ModalityType.APPLICATION_MODAL);
         this.setSize(800, 600);
         
@@ -54,7 +58,6 @@ public class ReturnConfirmationDialog extends JDialog {
         nameTextField.setEnabled(false);
         
         JCheckBox returnStatus = new JCheckBox("Equipment returned fully?");
-        
         returnStatus.setBackground(uiConst.LightPurple);
         
         JCheckBox damageStatus = new JCheckBox("Equipment damaged?");
@@ -82,6 +85,7 @@ public class ReturnConfirmationDialog extends JDialog {
         JButton confirmBtn = new JButton("Confirm");
         confirmBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         confirmBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        confirmBtn.addActionListener(e -> onConfirm(billingInstance, rental));
         confirmPanel.add(confirmBtn);
         confirmPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
@@ -104,5 +108,19 @@ public class ReturnConfirmationDialog extends JDialog {
         this.add(contentPanel);
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(parent);
+    }
+
+    public void onConfirm(BillingController billingInstance, Rental rental) {
+        if (isDamaged) {
+            billingInstance.createDamageBill(rental);
+            JOptionPane.showMessageDialog(this, "Equipment returned successfully with damage bill.");
+            this.dispose();
+        } else if (isReturned){
+            JOptionPane.showMessageDialog(this, "Equipment returned successfully.");
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to confirm return. Please try again.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
