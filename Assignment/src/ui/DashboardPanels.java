@@ -72,7 +72,7 @@ public class DashboardPanels{
         
         @Override
         public String getName(){
-            return "My Rentals";
+            return "Rentals";
         }
         
         @Override
