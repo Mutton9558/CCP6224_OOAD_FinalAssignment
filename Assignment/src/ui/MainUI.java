@@ -8,7 +8,6 @@ import User.*;
 public class MainUI extends JFrame {
     
     private DashboardUI dashboard;
-    private UserProfileUI profile;
     private HomepageUI homepage;
     private final core.SystemFacade facade;
 
@@ -73,7 +72,6 @@ public class MainUI extends JFrame {
      
         //add Action listeners to the buttons that exist in those pages 
         homepage.dashboard_btn.addActionListener(event -> { cardlayout.show(mainPanel, "DASHBOARD");});
-        homepage.profile_btn.addActionListener(event -> { cardlayout.show(mainPanel, "PROFILE"); });
 
         //action listener for Logout
         homepage.logout_btn.addActionListener(event ->{
@@ -82,10 +80,6 @@ public class MainUI extends JFrame {
             if(dashboard != null){
                 mainPanel.remove(dashboard);
                 dashboard = null;
-            }
-            if(profile != null){
-                mainPanel.remove(profile);
-                profile = null;
             }
             cardlayout.show(mainPanel, "HOME");
         }
@@ -101,12 +95,10 @@ public class MainUI extends JFrame {
     private void buildLoggedInPanels(User user, JPanel mainPanel, CardLayout cardlayout) {
         DashboardPanels panelList = new DashboardPanels(facade, user, this);
         dashboard = new DashboardUI(panelList.returnDashboardPanels());
-        profile = new UserProfileUI();
 
         dashboard.back_btn.addActionListener(e -> cardlayout.show(mainPanel, "HOME"));
 
         mainPanel.add(dashboard, "DASHBOARD");
-        mainPanel.add(profile, "PROFILE");
         mainPanel.revalidate();
         mainPanel.repaint();
     }
@@ -117,13 +109,11 @@ public class MainUI extends JFrame {
             homepage.dashboard_btn.setVisible(true);
             homepage.login_btn.setVisible(false);
             homepage.logout_btn.setVisible(true);
-            homepage.profile_btn.setVisible(true);
         }
         
         void loggedOutButtonState(HomepageUI homepage){
             homepage.dashboard_btn.setVisible(false);
             homepage.login_btn.setVisible(true);
             homepage.logout_btn.setVisible(false);
-            homepage.profile_btn.setVisible(false);
         }
 }

@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 
 public class HomepageUI extends JPanel{
     
-    public JButton contact_btn, about_btn, login_btn, logout_btn, dashboard_btn, profile_btn;
+    public JButton contact_btn, about_btn, login_btn, logout_btn, dashboard_btn;
     private JDialog aboutDialog, contactDialog;
     
     public HomepageUI(){
@@ -53,10 +53,6 @@ public class HomepageUI extends JPanel{
         dashboard_btn.setBackground(UIConst.DarkPurple);
         dashboard_btn.setForeground(Color.WHITE);
         
-        profile_btn = new JButton("My Profile");
-        profile_btn.setBackground(UIConst.DarkPurple);
-        profile_btn.setForeground(Color.WHITE);
-        
         JPanel upperPanel_right = new JPanel(new FlowLayout());
         upperPanel_right.setBackground(UIConst.DarkPurple);
         upperPanel_right.setPreferredSize(new Dimension(100, 40));
@@ -65,7 +61,6 @@ public class HomepageUI extends JPanel{
         upperPanel_right.add(logout_btn);
         upperPanel_right.add(login_btn);
         upperPanel_right.add(dashboard_btn);
-        upperPanel_right.add(profile_btn);
         upperPanel.add(upperPanel_right, BorderLayout.SOUTH);
         
         JPanel centerPanel = new JPanel();
