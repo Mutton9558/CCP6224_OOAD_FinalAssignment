@@ -8,7 +8,7 @@ public class Rental {
     private final Equipment equipment;
     private LocalDate bookedDate;
     private int duration;
-    private Boolean returnStatus;
+    private String returnStatus;
     private Boolean lateStatus;
     
     public Rental(int id, int userID, Equipment equipment, int duration){
@@ -17,11 +17,11 @@ public class Rental {
         this.equipment = equipment;
         this.bookedDate = LocalDate.now();
         this.duration = duration;
-        this.returnStatus = false;
+        this.returnStatus = "Not Returned";
         this.lateStatus = false;
     }
 
-    public Rental(int id, int userID, Equipment equipment, LocalDate bookedDate, int duration, boolean returnStatus, boolean lateStatus){
+    public Rental(int id, int userID, Equipment equipment, LocalDate bookedDate, int duration, String returnStatus, boolean lateStatus){
         this.rental_id = id;
         this.user_id = userID;
         this.equipment = equipment;
@@ -47,7 +47,7 @@ public class Rental {
         return this.duration;
     }
     
-    public Boolean getReturnStatus(){
+    public String getReturnStatus(){
         return this.returnStatus;
     }
 
@@ -71,7 +71,7 @@ public class Rental {
         this.lateStatus = status;
     }
 
-    public void setReturnStatus(Boolean status){
+    public void setReturnStatus(String status){
         this.returnStatus = status;
     }
 }

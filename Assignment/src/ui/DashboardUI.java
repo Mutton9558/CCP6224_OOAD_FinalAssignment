@@ -49,6 +49,16 @@ public class DashboardUI extends JPanel{
            sidebarButton.setVisible(i.isVisible());
            contentPanel.add(i.getPanel(), i.getName());
            sidebarButton.addActionListener(event -> {
+                JPanel targetPanel = i.getPanel();
+
+                // Use Java Reflection to look for and execute the public refreshData() method if it exists
+                try {
+                    java.lang.reflect.Method refreshMethod = targetPanel.getClass().getMethod("refreshData");
+                    refreshMethod.invoke(targetPanel); 
+                } catch (NoSuchMethodException ex) {
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 cardlayout2.show(contentPanel, i.getName());
             });
            sidePanel.add(sidebarButton);

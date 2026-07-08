@@ -70,7 +70,7 @@ public class DatabaseManager {
                 equipment INTEGER NOT NULL,
                 bookedDate DATE NOT NULL,
                 duration INTEGER NOT NULL,
-                returnStatus BOOLEAN,
+                returnStatus VARCHAR NOT NULL,
                 lateStatus BOOLEAN,    
                 FOREIGN KEY (equipment) REFERENCES Equipments(equipment_id)
             );

@@ -92,9 +92,9 @@ public class BillingController {
         
         float netPenalty = totalPayable * penalty_amount;
         
-        int id = repository.create(rental.getId(), 0, 0, netPenalty, totalPayable + netPenalty, "Damage Fee", "Unpaid");
+        int id = repository.create(rental.getId(), 0, 0, netPenalty, netPenalty, "Damage Fee", "Unpaid");
         if(id != -1){
-            Bill newBill = new Bill(id, rental.getId(), 0, 0, netPenalty, totalPayable + netPenalty, "Damage Fee", "Unpaid");
+            Bill newBill = new Bill(id, rental.getId(), 0, 0, netPenalty, netPenalty, "Damage Fee", "Unpaid");
             billMap.put(id, newBill);
         }
         return id != -1;

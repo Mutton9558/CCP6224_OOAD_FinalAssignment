@@ -13,6 +13,7 @@ import javax.swing.table.TableCellRenderer;
 import core.SystemFacade;
 import core.SystemFacade.RentedEquipmentContext;
 import Equipment.Equipment;
+import java.util.Map;
 
 public class RentedEquipmentUI extends JPanel{
     private UIConstants uiConst = new UIConstants();
@@ -40,7 +41,7 @@ public class RentedEquipmentUI extends JPanel{
         refreshData();
     }
     
-    private void refreshData(){
+    public void refreshData(){
         this.removeAll();
         
         this.data = facade.getRentedEquipmentContext();
@@ -52,24 +53,26 @@ public class RentedEquipmentUI extends JPanel{
         
 //        table
         List<Object[]> rentedEquipments = new ArrayList<>();
-        for(Equipment e: data.cur()){
-            Object[] row = new Object[4];
-            row[0] = e.getId();
-            row[1] = e.getName();
-            row[2] = e.getCategory().getName();
-            row[3] = "Return";
+        Map<Integer, Equipment> cur = data.cur();
+        cur.forEach((rentalId, e) -> {
+            Object[] row = new Object[5];
+            row[0] = rentalId;
+            row[1] = e.getId();
+            row[2] = e.getName();
+            row[3] = e.getCategory().getName();
+            row[4] = "Return";
             rentedEquipments.add(row);
-        }
+        });
         
         
-        String[] columns = {"Equipment ID", "Equipment Name", "Category", "Return Item"};
+        String[] columns = {"Rental ID", "Equipment ID", "Equipment Name", "Category", "Return Item"};
         
         DefaultTableModel model = new DefaultTableModel(rentedEquipments.toArray(new Object[0][]), columns);
         JTable rentedEquipmentTable = new JTable(model);
         rentedEquipmentTable.setAutoCreateRowSorter(true);
         rentedEquipmentTable.setRowHeight(32);
-        rentedEquipmentTable.getColumnModel().getColumn(3).setCellRenderer(new TableButtonRenderer());
-        rentedEquipmentTable.getColumnModel().getColumn(3).setCellEditor(new TableButtonEditor(rentedEquipmentTable));
+        rentedEquipmentTable.getColumnModel().getColumn(4).setCellRenderer(new TableButtonRenderer());
+        rentedEquipmentTable.getColumnModel().getColumn(4).setCellEditor(new TableButtonEditor(rentedEquipmentTable));
         JScrollPane rentedEquipmentScrollPane = new JScrollPane(rentedEquipmentTable);
         rentedEquipmentScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -86,15 +89,17 @@ public class RentedEquipmentUI extends JPanel{
         
 //        table
         List<Object[]> previouslyRentedEquipments = new ArrayList<>();
-        for(Equipment eq: data.prev()){
-            Object[] previousEqRow = new Object[3];
-            previousEqRow[0] = eq.getId();
-            previousEqRow[1] = eq.getName();
-            previousEqRow[2] = eq.getCategory().getName();
-            previouslyRentedEquipments.add(previousEqRow);
-        }        
+        Map<Integer, Equipment> prev = data.prev();
+        cur.forEach((rentalId, e) -> {
+            Object[] row = new Object[4];
+            row[0] = rentalId;
+            row[1] = e.getId();
+            row[2] = e.getName();
+            row[3] = e.getCategory().getName();
+            rentedEquipments.add(row);
+        });       
         
-        String[] columns2 = {"Equipment ID", "Equipment Name", "Category"};
+        String[] columns2 = {"Rental ID", "Equipment ID", "Equipment Name", "Category"};
         
         DefaultTableModel model2 = new DefaultTableModel(previouslyRentedEquipments.toArray(new Object[0][]), columns2);
         JTable previouslyRentedTable = new JTable(model2);
@@ -112,6 +117,9 @@ public class RentedEquipmentUI extends JPanel{
         this.add(headerLabel2);
         this.add(Box.createVerticalStrut(20));
         this.add(prevEquipmentScrollPane);
+        
+        this.revalidate();
+        this.repaint();
     }
     
     private class TableButtonRenderer implements TableCellRenderer {
@@ -150,7 +158,9 @@ public class RentedEquipmentUI extends JPanel{
             if (visualRow != -1) {
                 int modelRow = table.convertRowIndexToModel(visualRow);
                 fireEditingStopped();
-                boolean success = facade.returnEquipment(data.cur().get(modelRow).getId());
+                int rentalId = (Integer) table.getModel().getValueAt(modelRow, 0);
+                int equipmentId = (Integer) table.getModel().getValueAt(modelRow, 1);
+                boolean success = facade.returnEquipment(rentalId, equipmentId);
                 if(success){
                     JOptionPane.showMessageDialog(null, "Successfully sent return confirmation request.");
                 } else {

@@ -46,7 +46,7 @@ public class RegisterUserDialog extends JDialog {
         emailTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
         emailTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, emailTextField.getPreferredSize().height));
         
-        JLabel passwordLabel = new JLabel("Password");
+        JLabel passwordLabel = new JLabel("Password (6 or more chars)");
         passwordLabel.setForeground(Color.WHITE);
         passwordLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         passwordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -141,7 +141,7 @@ public class RegisterUserDialog extends JDialog {
             String email = emailTextField.getText().trim();
             String password = passwordTextField.getText().trim();
             String gender = (String)genderDropdown.getSelectedItem();
-            String role = (String)roleDropdown.getSelectedItem();
+            String role = ((String)roleDropdown.getSelectedItem()).replace(" ", "");
             LocalDate dob = ((Date) dateInput.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             facade.register(name, email, password, gender, role, dob);
             JOptionPane.showMessageDialog(this, "User has been registered successfully!");

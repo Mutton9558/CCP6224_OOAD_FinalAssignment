@@ -21,9 +21,9 @@ public class RentalDB {
             String insertQuery = "INSERT OR IGNORE INTO Rentals (rental_id, user_id, equipment, bookedDate, duration, returnStatus, lateStatus) VALUES (?, ?, ?, ?, ?, ?, ?)";
     
             Object[][] testData = {
-                {1, 1, 1, LocalDate.now(), 2, true, false},
-                {2, 1, 2, LocalDate.now(), 8, false, false},
-                {3, 3, 3, LocalDate.now(), 4, false, false}
+                {1, 1, 1, LocalDate.now(), 2, "Returned", false},
+                {2, 1, 2, LocalDate.now(), 8, "Pending", false},
+                {3, 3, 3, LocalDate.now(), 4, "Not Returned", false}
             };
     
             try (Connection conn = core.DatabaseManager.getConnection();
@@ -35,7 +35,7 @@ public class RentalDB {
                     statement.setInt(3, (Integer) row[2]);
                     statement.setDate(4, Date.valueOf((LocalDate) row[3]));
                     statement.setInt(5, (Integer) row[4]);
-                    statement.setBoolean(6, (Boolean) row[5]);
+                    statement.setString(6, (String) row[5]);
                     statement.setBoolean(7, (Boolean) row[6]);
                     statement.addBatch();
                 }
@@ -60,7 +60,7 @@ public class RentalDB {
                         int equipment = res2.getInt("equipment");
                         LocalDate bookedDate = res2.getDate("bookedDate").toLocalDate();
                         int duration = res2.getInt("duration");
-                        boolean returnStatus = res2.getBoolean("returnStatus");
+                        String returnStatus = res2.getString("returnStatus");
                         boolean lateStatus = res2.getBoolean("lateStatus");
                         
                         Rental newRental = new Rental(id, user_id, equipmentMap.get(equipment), bookedDate, duration, returnStatus, lateStatus);
@@ -78,7 +78,7 @@ public class RentalDB {
         public int create(int user_id, Equipment equipment, int duration){
             String insertReq = "INSERT INTO Rentals (user_id, equipment, bookedDate, duration, returnStatus, lateStatus) VALUES (?, ?, ?, ?, ?, ?)";
             LocalDate bookedDate = LocalDate.now();
-            boolean returnStatus = false;
+            String returnStatus = "Not Returned";
             boolean lateStatus = false;
             try(Connection conn = core.DatabaseManager.getConnection()){
                 try(PreparedStatement statement = conn.prepareStatement(insertReq, Statement.RETURN_GENERATED_KEYS)){
@@ -86,7 +86,7 @@ public class RentalDB {
                     statement.setInt(2, equipment.getId());
                     statement.setDate(3, Date.valueOf(bookedDate));
                     statement.setInt(4, duration);
-                    statement.setBoolean(5, returnStatus);
+                    statement.setString(5, returnStatus);
                     statement.setBoolean(6, lateStatus);
                     statement.executeUpdate();
                     try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -101,12 +101,12 @@ public class RentalDB {
             return -1;
         }
         
-        public boolean update(int id, boolean returnStatus, boolean lateStatus){
+        public boolean update(int id, String returnStatus, boolean lateStatus){
             String updateQuery = "UPDATE Rentals SET returnStatus = ?, lateStatus = ? WHERE rental_id = ?";
     
             try(Connection conn = core.DatabaseManager.getConnection()){
                 try(PreparedStatement statement = conn.prepareStatement(updateQuery)){
-                    statement.setBoolean(1, returnStatus);
+                    statement.setString(1, returnStatus);
                     statement.setBoolean(2, lateStatus);
                     statement.setInt(3, id);
                     int rowsUpdated = statement.executeUpdate();

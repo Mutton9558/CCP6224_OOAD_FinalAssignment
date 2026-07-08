@@ -127,7 +127,7 @@ public class UserController {
          if(newEmail == null || !newEmail.matches("^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$")){
              return false;
          }
-         if(newPassword == null || newPassword.length()<8){
+         if(newPassword == null || newPassword.length()<6){
             return false;
          }
          if (newGender == null || !(newGender.equals("Male") || newGender.equals("Female"))) {

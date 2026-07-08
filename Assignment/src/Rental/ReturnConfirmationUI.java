@@ -91,7 +91,7 @@ public class ReturnConfirmationUI extends JPanel{
             Object[] row = new Object[5];
             row[0] = String.valueOf(r.getId());
             row[1] = eq.getName();
-            row[2] = eq.getCategory();
+            row[2] = eq.getCategory().getName();
             row[3] = (LocalDate) r.getDueDate();
             row[4] = "Confirm Return";
 
