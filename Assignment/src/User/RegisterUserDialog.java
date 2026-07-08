@@ -1,5 +1,5 @@
 package User;
-
+import core.*;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.border.EmptyBorder;
@@ -8,11 +8,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JFormattedTextField;
 import javax.swing.text.DateFormatter;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 public class RegisterUserDialog extends JDialog {
     private UIConstants uiConst = new UIConstants();
     
-    public RegisterUserDialog(Window parent){
+    public RegisterUserDialog(Window parent, SystemFacade facade){
         super(parent, "Register User", Dialog.ModalityType.APPLICATION_MODAL);
         this.setSize(800,600);
         
@@ -132,5 +134,22 @@ public class RegisterUserDialog extends JDialog {
         this.add(contentPanel);
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(parent);
+        
+        submitBtn.addActionListener(e ->{
+        try{
+            String name = nameTextField.getText().trim();
+            String email = emailTextField.getText().trim();
+            String password = passwordTextField.getText().trim();
+            String gender = (String)genderDropdown.getSelectedItem();
+            String role = (String)roleDropdown.getSelectedItem();
+            LocalDate dob = ((Date) dateInput.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            facade.register(name, email, password, gender, role, dob);
+            JOptionPane.showMessageDialog(this, "User has been registered successfully!");
+            this.dispose();
+
+        }  catch(IllegalArgumentException e2){
+            JOptionPane.showMessageDialog(this, e2.getMessage());
+        }  
+    });
     }
 }

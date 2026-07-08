@@ -32,7 +32,11 @@ public class SystemFacade {
 //        }
 //        return user;
 //    }
-//    
+// 
+    public void register(String name, String email, String password, String gender, String role, LocalDate dob){
+        services.userService().registerUser(name, email, password, gender, role, dob);
+    }      
+                
     public void logout(){
         services.userService().logoutUser();
     }
@@ -42,7 +46,7 @@ public class SystemFacade {
     }
 
     public boolean login(int userId, String password){
-         User user = services.userService().loginUser(userId, password);
+        User user = services.userService().loginUser(userId, password);
         return services.userService().getCurUser() != null;
     }
     
