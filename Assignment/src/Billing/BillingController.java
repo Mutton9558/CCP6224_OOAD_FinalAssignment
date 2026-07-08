@@ -33,7 +33,7 @@ public class BillingController {
     }
     
     public float calculateFee(Rental rental){
-        return rental.getEquipment().getRate() * rental.getDuration();
+        return (rental.getEquipment().getRate() * rental.getDuration()) + rental.getEquipment().getCategory().getFee();
     }
     
     public float applyDiscount(Rental rental){

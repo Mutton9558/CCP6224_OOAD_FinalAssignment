@@ -313,7 +313,7 @@ public class SystemFacade {
         try{
             int dur = Integer.parseInt(duration);
             
-            Equipment target = services.equipmentService().getEquipmentByID(equipmentId);
+            Equipment target = services.equipmentService().getEquipmentById(equipmentId);
             if(target == null){
                 throw new IllegalArgumentException("No such equipment");
             }

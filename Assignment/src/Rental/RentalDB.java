@@ -18,11 +18,11 @@ import java.util.HashMap;
 public class RentalDB {
     
         public RentalDB(){
-            String insertQuery = "INSERT INTO Rentals (user_id, equipment, bookedDate, duration, returnStatus, lateStatus) VALUES (?, ?, ?, ?, ?, ?)";
+            String insertQuery = "INSERT OR IGNORE INTO Rentals (user_id, equipment, bookedDate, duration, returnStatus, lateStatus) VALUES (?, ?, ?, ?, ?, ?)";
     
             Object[][] testData = {
-                {1, 1, LocalDate.now(), 2, false, false},
-                {1, 2, LocalDate.now(), 8, false, false},
+                {1, 1, LocalDate.now(), 2, true, false},
+                {1, 2, LocalDate.now(), 8, true, false},
                 {3, 3, LocalDate.now(), 4, false, false}
             };
     
