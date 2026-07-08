@@ -30,10 +30,10 @@ public class Main {
         UserController userService = UserController.getInstance(userRepo);
         CategoryController categoryService = CategoryController.getInstance(categoryRepo);
         EquipmentController equipmentService = EquipmentController.getInstance(equipmentRepo, categoryService);
-        RentalController rentalController = RentalController.getInstance(rentalRepo, equipmentService);
-        BillingController billingService = BillingController.getInstance(billingRepo);
+        RentalController rentalService = RentalController.getInstance(rentalRepo, equipmentService);
+        BillingController billingService = BillingController.getInstance(billingRepo, userService);
         
-        core.SystemServices services = new core.SystemServices(userService, categoryService, equipmentService, billingService);
+        core.SystemServices services = new core.SystemServices(userService, categoryService, equipmentService, rentalService, billingService);
         core.SystemFacade facade = new core.SystemFacade(services);
        //Create new MainUI
         MainUI mainScreen = new MainUI(facade);

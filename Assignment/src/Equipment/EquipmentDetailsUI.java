@@ -6,6 +6,7 @@ import javax.swing.border.EmptyBorder;
 import ui.UIConstants;
 import core.SystemFacade;
 import javax.swing.JOptionPane;
+import Rental.RentalCreationDialog;
 
 public class EquipmentDetailsUI extends JDialog {
     private UIConstants uiConst = new UIConstants();
@@ -126,6 +127,10 @@ public class EquipmentDetailsUI extends JDialog {
         JPanel selectPanel = new JPanel();
         selectPanel.setBackground(uiConst.LightPurple);
         JButton selectBtn = new JButton("Select");
+        selectBtn.addActionListener(e -> {
+            Window parent2 = SwingUtilities.getWindowAncestor(this);
+            JDialog addRental = new RentalCreationDialog(parent2, facade, equipment.getId());
+        });
         selectBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         selectBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         selectPanel.add(selectBtn);
