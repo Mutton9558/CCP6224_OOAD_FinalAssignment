@@ -11,8 +11,6 @@ import java.util.HashMap;
 import java.time.LocalDate;
 
 public class UserDB {
-    
-    public UserDB(){}
 
     public UserDB(){
         

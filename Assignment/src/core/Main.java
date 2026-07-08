@@ -27,10 +27,6 @@ public class Main {
         RentalDB rentalRepo = new RentalDB();
         BillDB billingRepo = new BillDB();
         
-        //SEED USERS
-        userRepo.seedTestUsers();
-
-        
         UserController userService = UserController.getInstance(userRepo);
         CategoryController categoryService = CategoryController.getInstance(categoryRepo);
         EquipmentController equipmentService = EquipmentController.getInstance(equipmentRepo, categoryService);
