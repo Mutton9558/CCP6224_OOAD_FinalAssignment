@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import core.SystemFacade;
 
 import Equipment.*;
 import ui.UIConstants;
@@ -27,12 +28,12 @@ public class RentalRecordsUI extends JPanel {
     private JTable table;
 
     // Kept so the search feature can call back into the controller/user context
-    private RentalController controller;
+    private final SystemFacade facade;
 
     private JTextField searchField;
 
-    public RentalRecordsUI(RentalController controller) {
-        this.controller = controller;
+    public RentalRecordsUI(SystemFacade facade) {
+        this.facade = facade;
 
         this.setLayout(new GridBagLayout());
         GridBagConstraints adj = new GridBagConstraints();
@@ -63,7 +64,7 @@ public class RentalRecordsUI extends JPanel {
 
         String[] columns = new String[5];
         columns[0] = "Rental ID";
-        columns[1] = "Booked User";
+        columns[1] = "Booked User UI";
         columns[2] = "Equipment";
         columns[3] = "Due Date";
         columns[4] = "Status";
@@ -116,9 +117,9 @@ public class RentalRecordsUI extends JPanel {
 
     private void addRow(Rental r) {
         Object[] row = new Object[6];
-        row[0] = r.getId(); // Rental ID
-        row[1] = r.getUserId(); // Booked User [Fix when Elsa pushes to main her User stuff]
-        row[2] = r.getEquipment().getName(); // Equipment Name
+        row[0] = r.getId();
+        row[1] = r.getUserId();
+        row[2] = r.getEquipment().getName();
         row[3] = r.getDueDate() != null ? r.getDueDate().format(DATE_FORMAT) : "N/A";
         row[4] = Boolean.TRUE.equals(r.getReturnStatus())
                 ? "Returned"
@@ -219,7 +220,7 @@ public class RentalRecordsUI extends JPanel {
             return;
         }
 
-        List<Rental> results = controller.getRentalsByUserID(userID);
+        List<Rental> results = facade.getRentalsByUserID(userID);
         this.rentalList = (results != null) ? results : new ArrayList<>();
         loadRentals();
 

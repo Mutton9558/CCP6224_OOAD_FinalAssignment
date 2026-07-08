@@ -123,6 +123,17 @@ public class SystemFacade {
         });
         return (new ReturnConfirmationContext(cur));
     }
+
+    public List<Rental>getRentalsByUserID( int userID){
+        Map<Integer, Rental> rentalMap = services.rentalService().fetchMap();
+        List<Rental> temp = new ArrayList<>();
+        rentalMap.forEach((id, val) -> {
+            if(val.getId() == id && val.getUserId() == userID){
+                temp.add(val);
+            }
+        });
+        return temp;
+    }
     
     public void addNewEquipment(String name, String categoryName, String rentalRate, String status) {
         // validate empty fields
@@ -312,7 +323,7 @@ public class SystemFacade {
         Rental target = services.rentalService().fetchMap().get(rental_id);
         Equipment e = target.getEquipment();
         if(!fully_return){
-            services.rentalService().editRental(rental_id, target.getDuration(), false, LocalDate.now().isAfter(target.getDueDate()));
+            services.rentalService().editRental(rental_id, false, LocalDate.now().isAfter(target.getDueDate()));
             services.equipmentService().editEquipment(e.getId(), e.getRate(), "Rented Out");
         } else {
             if(damaged){
