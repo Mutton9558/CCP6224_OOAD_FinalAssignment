@@ -4,6 +4,10 @@ import javax.swing.*;
 import Rental.RentalRecordsUI;
 import Rental.RentalDB;
 import Rental.RentalController;
+import Billing.BillingController;
+import Billing.BillDB;
+import User.UserDB;
+import User.UserController;
 
 public class temprunner{
   public static void main(String[] args){
@@ -14,16 +18,20 @@ public class temprunner{
 
         CategoryDB categoryRepo = new CategoryDB();
         EquipmentDB equipmentRepo = new EquipmentDB();
-//        RentalDB rentalRepo = new RentalDB();
+        BillDB billingRepo = new BillDB();
+        RentalDB rentalRepo = new RentalDB();
+        UserDB userRepo = new UserDB();
         CategoryController categoryService = CategoryController.getInstance(categoryRepo);
         EquipmentController equipmentService = EquipmentController.getInstance(equipmentRepo, categoryService);
-//        RentalController rentalService = RentalController.getInstance(rentalRepo, equipmentService);
+        RentalController rentalService = RentalController.getInstance(rentalRepo, equipmentService);
+        BillingController billingService = BillingController.getInstance(billingRepo);
+        UserController userService = UserController.getInstance(userRepo);
         
-        core.SystemServices services = new core.SystemServices(categoryService, equipmentService);
+        core.SystemServices services = new core.SystemServices(categoryService, equipmentService, rentalService, billingService, userService);
         core.SystemFacade facade = new core.SystemFacade(services);
         
         // Instantiate your new JPanel
-        EquipmentPanelUI listPanel = new EquipmentPanelUI(true, facade);
+        EquipmentPanelUI listPanel = new EquipmentPanelUI(facade);
         // Highly recommended: Wrap it in a scroll pane so content can scroll 
         JScrollPane scrollPane = new JScrollPane(listPanel);
         scrollPane.setBorder(null);

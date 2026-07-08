@@ -16,6 +16,19 @@ public class DatabaseManager {
     }
     
     private static void initializeSchema(Connection conn) {
+        
+        String createUsersTable = """
+            CREATE TABLE IF NOT EXISTS Users (
+                user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_name VARCHAR NOT NULL,
+                email VARCHAR NOT NULL UNIQUE,
+                password VARCHAR NOT NULL,
+                gender VARCHAR NOT NULL,
+                date_of_birth DATE NOT NULL,
+                role TEXT NOT NULL
+                );
+                                  """;
+        
         String createCategoriesTable = """
             CREATE TABLE IF NOT EXISTS Categories (
                 category_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,10 +63,26 @@ public class DatabaseManager {
             );
             """;    
 
+        String createRentalsTable = """
+            CREATE TABLE IF NOT EXISTS Rentals (
+                rental_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                equipment INTEGER NOT NULL,
+                bookedDate DATE NOT NULL,
+                duration INTEGER NOT NULL,
+                returnStatus BOOLEAN,
+                lateStatus BOOLEAN NOT NULL,    
+                FOREIGN KEY (equipment) REFERENCES Equipments(equipment_id)
+            );
+            """;
+
         try (Statement stmt = conn.createStatement()) {
+            stmt.execute(createUsersTable);
             stmt.execute(createCategoriesTable);
             stmt.execute(createEquipmentsTable);
             stmt.execute(createBillsTable);
+            stmt.execute(createRentalsTable);
+
         } catch (SQLException e) {
             System.err.println("Failed to initialize database tables: " + e.getMessage());
         }

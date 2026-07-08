@@ -53,6 +53,18 @@ public class EquipmentController {
         });
         return temp;
     }
+
+    public Equipment getEquipmentByID(int equipment_id){
+        Equipment temp = null;
+        for(Integer id : equipmentMap.keySet()){
+            Equipment val = equipmentMap.get(id);
+            if(val.getId() == equipment_id){
+                temp = val;
+                break;
+            }
+        }
+        return temp;
+    }
     
     public boolean addEquipment(String name, Category category, float rate, String status){
         int id = repository.create(name, category, rate, status);

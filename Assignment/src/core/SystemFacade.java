@@ -5,14 +5,19 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import Billing.Bill;
+import Rental.Rental;
+import java.time.LocalDate;
+import User.User;
+import User.Permission;
 
 public class SystemFacade {
     private final SystemServices services;
     
-    public record EquipmentPanelContext(boolean canEdit, Map<Category, List<Equipment>> equipments) {}
+    public record EquipmentPanelContext(User user, Map<Category, List<Equipment>> equipments) {}
     public record AddEquipmentContext(List<String> categoryNames){}
     public record RentedEquipmentContext(List<Equipment> cur, List<Equipment> prev){}
-    public record ReturnConfirmationContext(List<Equipment> cur){}
+    public record ReturnConfirmationContext(List<Rental> rentCur){}
     
     public SystemFacade(SystemServices services){
         this.services = services;
@@ -20,12 +25,13 @@ public class SystemFacade {
     
     public EquipmentPanelContext getEquipmentPanelData(){
         Map<Category, List<Equipment>> equipmentsByCategoryMap = new HashMap<>();
+        User curUser = services.userService().getCurUser();
         services.categoryService().fetchMap().forEach((id, category) -> {
             List<Equipment> tempList = services.equipmentService().getEquipmentsByCategory(id);
             equipmentsByCategoryMap.put(category, tempList);
         });
-//        will change the true to getting user perm
-        return new EquipmentPanelContext(false, equipmentsByCategoryMap);
+        
+        return new EquipmentPanelContext(curUser, equipmentsByCategoryMap);
     }
     
     public AddEquipmentContext getAddEquipmentContext(){
@@ -59,16 +65,17 @@ public class SystemFacade {
         return (new RentedEquipmentContext(cur, prev));
     }
     
-//    public ReturnConfirmationContext getReturnConfirmationContext(){
-//        Map<Integer, Equipment> equipmentMap = services.equipmentService().fetchMap();
-//        List<Equipment> cur = new ArrayList<>();
-//        equipmentMap.forEach((id, equipment) -> {
-//            if(equipment.getStatus().equals("Rented Out")){
-//                cur.add(equipment);
-//            }
-//        });
-//        return (new ReturnConfirmationContext(cur));
-//    }
+    public ReturnConfirmationContext getReturnConfirmationContext(){    
+        Map<Integer, Rental> rentalMap = services.rentalService().fetchMap();
+        List<Rental> cur = new ArrayList<>();
+        User curUser = services.userService().getCurUser();
+        rentalMap.forEach((id, rental) -> {
+            if(rental.getUserId() == curUser.getId()){
+                cur.add(rental);
+            }
+        });
+        return (new ReturnConfirmationContext(cur));
+    }
     
     public void addNewEquipment(String name, String categoryName, String rentalRate, String status) {
         // validate empty fields
@@ -211,6 +218,60 @@ public class SystemFacade {
             return temp;
         } catch (NumberFormatException e){
             return temp;
+        }
+    }
+    
+    public List<Bill> fetchUnpaidBills(){
+        List<Bill> temp = services.billingService().getUnpaidBills();
+        List<Bill> temp2 = new ArrayList<>();
+        for(Bill b: temp){
+            int rentalId = b.getRentalId();
+            int userId = services.rentalService().fetchMap().get(rentalId).getUserId();
+            if(services.userService().getCurUser().getId() == userId){
+                temp2.add(b);
+            }
+        }
+        return temp2;
+    }
+    
+    public boolean payBill(int billId){
+        return services.billingService().payBill(billId);
+    }
+    
+    public void createRental(int equipmentId, String duration){
+        int uid = services.userService().getCurUser().getId();
+        if(duration.trim().isEmpty()){
+            throw new IllegalArgumentException("User or booking duration cannot be empty.");
+        }
+        
+        try{
+            int dur = Integer.parseInt(duration);
+            
+            Equipment target = services.equipmentService().getEquipmentByID(equipmentId);
+            if(target == null){
+                throw new IllegalArgumentException("No such equipment");
+            }
+            
+            boolean success = services.rentalService().addRental(uid, target, dur);
+            if(!success){
+                throw new RuntimeException("Database add operation failed.");
+            }
+        } catch (NumberFormatException e){
+            throw new IllegalArgumentException("Duration must be int!");
+        }
+    }
+    
+    public void returnEquipmentConfirmation(int rental_id, boolean fully_return, boolean damaged){
+        Rental target = services.rentalService().fetchMap().get(rental_id);
+        Equipment e = target.getEquipment();
+        if(!fully_return){
+            services.rentalService().editRental(rental_id, target.getDuration(), false, LocalDate.now().isAfter(target.getDueDate()));
+            services.equipmentService().editEquipment(e.getId(), e.getRate(), "Rented Out");
+        } else {
+            if(damaged){
+                services.billingService().createDamageBill(target);
+                services.equipmentService().editEquipment(e.getId(), e.getRate(), "Available");
+            }
         }
     }
 }

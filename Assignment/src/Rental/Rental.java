@@ -7,19 +7,27 @@ public class Rental {
     private final int user_id;
     private final Equipment equipment;
     private LocalDate bookedDate;
-    private LocalDate dueDate;
     private int duration;
     private Boolean returnStatus;
     private Boolean lateStatus;
     
-    public Rental(int id, int userID, Equipment equipment, int duration, Boolean lateStatus){
+    public Rental(int id, int userID, Equipment equipment, int duration){
         this.rental_id = id;
         this.user_id = userID;
         this.equipment = equipment;
         this.bookedDate = LocalDate.now();
-        this.dueDate = bookedDate.plusDays(duration);
         this.duration = duration;
         this.returnStatus = false;
+        this.lateStatus = false;
+    }
+
+    public Rental(int id, int userID, Equipment equipment, LocalDate bookedDate, int duration, boolean returnStatus, boolean lateStatus){
+        this.rental_id = id;
+        this.user_id = userID;
+        this.equipment = equipment;
+        this.bookedDate = bookedDate;
+        this.duration = duration;
+        this.returnStatus = returnStatus;
         this.lateStatus = lateStatus;
     }
     
@@ -52,15 +60,18 @@ public class Rental {
     }
 
     public LocalDate getDueDate(){
-        return this.dueDate;
+        return this.bookedDate.plusDays(this.duration);
     }
     
     public void setDuration(int time){
         this.duration = time;
-        this.dueDate = bookedDate.plusDays(this.duration);
     }
     
     public void setLateStatus(Boolean status){
         this.lateStatus = status;
+    }
+
+    public void setReturnStatus(Boolean status){
+        this.returnStatus = status;
     }
 }

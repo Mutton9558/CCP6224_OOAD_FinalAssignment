@@ -6,6 +6,7 @@ import java.util.Map;
 
 import java.util.HashMap;
 import java.util.List;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 
@@ -51,21 +52,22 @@ public class RentalController {
    }
 
 
-    public boolean addRental(int userID, Equipment equipment, int duration, Boolean lateStatus){
-        int id = repository.create(userID, equipment, duration, lateStatus);
+    public boolean addRental(int userID, Equipment equipment, int duration){
+        int id = repository.create(userID, equipment, duration);
         if(id != -1){
-            Rental newRental = new Rental(id, userID, equipment, duration, lateStatus);
+            Rental newRental = new Rental(id, userID, equipment, duration);
             rentalMap.put(id, newRental);
         }
         return id != -1;
     }
     
-    public boolean editRental(int id, int new_duration, Boolean new_status){
-        boolean success = repository.update(id, new_duration, new_status);
+    public boolean editRental(int id, int new_duration, Boolean return_status, boolean late_status){
+        boolean success = repository.update(id, return_status, late_status);
         if(success){
             Rental record = rentalMap.get(id);
             record.setDuration(new_duration);
-            record.setLateStatus(new_status);
+            record.setReturnStatus(return_status);
+            record.setLateStatus(late_status);
         }
         
         return success; 

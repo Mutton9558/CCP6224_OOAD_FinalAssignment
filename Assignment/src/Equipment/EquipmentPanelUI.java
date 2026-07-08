@@ -11,11 +11,12 @@ import ui.UIConstants;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import User.User;
+import User.Permission;
 
 public class EquipmentPanelUI extends JPanel {
     private final UIConstants uiConstants = new UIConstants();
-    private boolean isSelecting;
-    private boolean canEdit;
+    private User curUser;
     private core.SystemFacade facade;
     private Map<Category, List<Equipment>> equipmentData;
     private core.SystemFacade.EquipmentPanelContext data;
@@ -31,8 +32,7 @@ public class EquipmentPanelUI extends JPanel {
         }
     }
     
-    public EquipmentPanelUI(boolean isSelecting, core.SystemFacade facade) {
-        this.isSelecting = isSelecting;
+    public EquipmentPanelUI(core.SystemFacade facade) {
         this.facade = facade;
         
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -40,7 +40,7 @@ public class EquipmentPanelUI extends JPanel {
         setBackground(uiConstants.LightPurple);
 
         this.data = facade.getEquipmentPanelData();
-        this.canEdit = data.canEdit();
+        this.curUser = data.user();
         this.equipmentData = data.equipments();
         
         refreshData();
@@ -124,7 +124,7 @@ public class EquipmentPanelUI extends JPanel {
         newCategoryBtn.setForeground(Color.WHITE);
         newCategoryBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         newCategoryBtn.setFocusPainted(false);
-        newCategoryBtn.setVisible(canEdit);
+        newCategoryBtn.setVisible(this.curUser.hasPermission(Permission.ADD_CATEGORY));
         newCategoryBtn.addActionListener(e -> {
             Window window = SwingUtilities.getWindowAncestor(this);
             JDialog createCategory = new AddCategoryUI(window, facade);
@@ -159,7 +159,7 @@ public class EquipmentPanelUI extends JPanel {
         editCategoryBtn.setForeground(Color.WHITE);
         editCategoryBtn.setFont(new Font("Arial", Font.PLAIN, 12));
         editCategoryBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        editCategoryBtn.setVisible(canEdit);
+        editCategoryBtn.setVisible(this.curUser.hasPermission(Permission.EDIT_CATEGORY));
         editCategoryBtn.addActionListener(e -> {
             Window parent = SwingUtilities.getWindowAncestor(this);
             JDialog editCategoryDialog = new EditCategoryUI(parent, category, facade);
@@ -173,7 +173,7 @@ public class EquipmentPanelUI extends JPanel {
         addEquipmentBtn.setForeground(Color.WHITE);
         addEquipmentBtn.setFont(new Font("Arial", Font.PLAIN, 12));
         addEquipmentBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        addEquipmentBtn.setVisible(canEdit);
+        addEquipmentBtn.setVisible(this.curUser.hasPermission(Permission.ADD_EQUIPMENT));
         addEquipmentBtn.addActionListener(e -> {
             Window parent = SwingUtilities.getWindowAncestor(this);
             JDialog addEquipmentDialog = new AddEquipmentUI(parent, category.getName(), facade);
@@ -190,25 +190,23 @@ public class EquipmentPanelUI extends JPanel {
         
         List<Object[]> tempData = new ArrayList<>();
         for(Equipment e: equipmentList){
-            Object[] row = new Object[(this.isSelecting || this.canEdit) ? 5 : 4];
+            Object[] row = new Object[5];
             row[0] = Integer.toString(e.getId());
             row[1] = e.getName();
             row[2] = Float.toString(e.getRate());
             row[3] = e.getStatus();
-            if((this.isSelecting && e.getStatus().equals("Available")) || this.canEdit){
+            if(e.getStatus().equals("Available")){
                 row[4] = "Select";
             }
             tempData.add(row);
         }
         
-        Object[] columns = new Object[(this.isSelecting || this.canEdit) ? 5 : 4];
+        Object[] columns = new Object[5];
         columns[0] = "ID";
         columns[1] = "Equipment Name";
         columns[2] = "Daily Rental Rate";
         columns[3] = "Status";
-        if(this.isSelecting || this.canEdit){
-            columns[4] = "Select Resource";
-        }
+        columns[4] = "Select Resource";
         
         DefaultTableModel model = new DefaultTableModel(tempData.toArray(new Object[0][]), columns) {
             @Override
@@ -222,10 +220,8 @@ public class EquipmentPanelUI extends JPanel {
         JTable table = new JTable(model);
         table.setRowHeight(32);
         
-        if(this.isSelecting || this.canEdit){
-            table.getColumnModel().getColumn(4).setCellRenderer(new TableButtonRenderer());
-            table.getColumnModel().getColumn(4).setCellEditor(new TableButtonEditor(table, equipmentList));
-        }
+        table.getColumnModel().getColumn(4).setCellRenderer(new TableButtonRenderer());
+        table.getColumnModel().getColumn(4).setCellEditor(new TableButtonEditor(table, equipmentList));
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -283,7 +279,7 @@ public class EquipmentPanelUI extends JPanel {
             Window parent = SwingUtilities.getWindowAncestor(EquipmentPanelUI.this);
             Equipment equipment = equipmentList.get(modelRow);
 
-            JDialog equipmentDetails = new EquipmentDetailsUI(parent, equipment, canEdit, facade);
+            JDialog equipmentDetails = new EquipmentDetailsUI(parent, equipment, curUser.hasPermission(Permission.EDIT_EQUIPMENT), facade);
             equipmentDetails.setVisible(true);
 
             equipmentData = facade.getEquipmentPanelData().equipments();

@@ -93,6 +93,26 @@ public class BillDB {
         return -1;
     }
     
+    public boolean update(int id, float penalty_amount, float net_payable){
+        String updateQuery = "UPDATE Bills SET penalty_amount = ?, net_payable = ? WHERE bill_id = ?";
+
+        try(Connection conn = core.DatabaseManager.getConnection()){
+            try(PreparedStatement statement = conn.prepareStatement(updateQuery)){
+                statement.setFloat(1, penalty_amount);
+                 statement.setFloat(2, net_payable);
+                statement.setInt(3, id);
+                int rowsUpdated = statement.executeUpdate();
+                if(rowsUpdated > 0){
+                    return true;
+                }
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        
+        return false;
+    }
+    
     public boolean updateStatus(int id, String new_status){
         String updateQuery = "UPDATE Bills SET bill_status = ? WHERE bill_id = ?";
 
