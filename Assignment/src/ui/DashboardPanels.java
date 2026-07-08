@@ -52,7 +52,7 @@ public class DashboardPanels{
         
         @Override
         public boolean isVisible(){
-            return current_user.hasPermission(Permission.VIEW_PROFILE);
+            return current_user.hasPermission(Permission.VIEW_RENTAL);
         }
         
         @Override
@@ -77,7 +77,7 @@ public class DashboardPanels{
         
         @Override
         public boolean isVisible(){
-            return current_user.hasPermission(Permission.VIEW_PROFILE);
+            return current_user.hasPermission(Permission.VIEW_RENTAL);
         }
         
         @Override
@@ -100,7 +100,7 @@ public class DashboardPanels{
         
         @Override
         public boolean isVisible(){
-            return current_user.hasPermission(Permission.VIEW_PROFILE);
+            return current_user.hasPermission(Permission.MAKE_PAYMENT);
         }
         
         @Override
@@ -123,7 +123,7 @@ public class DashboardPanels{
         
         @Override
         public boolean isVisible(){
-            return current_user.hasPermission(Permission.VIEW_PROFILE);
+            return current_user.hasPermission(Permission.EDIT_EQUIPMENT);
         }
         
         @Override
@@ -154,7 +154,7 @@ public class DashboardPanels{
         
         @Override
         public boolean isVisible(){
-            return current_user.hasPermission(Permission.VIEW_PROFILE);
+            return current_user.hasPermission(Permission.REGISTER_ACCOUNT);
         }
         
         @Override

@@ -16,7 +16,7 @@ public class SystemFacade {
     
     public record EquipmentPanelContext(User user, Map<Category, List<Equipment>> equipments) {}
     public record AddEquipmentContext(List<String> categoryNames){}
-    public record RentedEquipmentContext(List<Equipment> cur, List<Equipment> prev){}
+    public record RentedEquipmentContext(Map<Integer, Equipment> cur, Map<Integer, Equipment> prev){}
     public record UserProfileContext(String name, String email, String gender, LocalDate dob, String role, double discount){}
     public record ReturnConfirmationContext(List<Rental> rentCur){}
     
@@ -105,20 +105,16 @@ public class SystemFacade {
     }
     
     public RentedEquipmentContext getRentedEquipmentContext(){
-        
-        Map<Integer, Equipment> equipmentMap = services.equipmentService().fetchMap();
-        
-        List<Equipment> cur = new ArrayList<>();
-        equipmentMap.forEach((id, equipment) -> {
-            if(equipment.getStatus().equals("Rented Out")){
-                cur.add(equipment);
-            }
-        });
-        
-        List<Equipment> prev = new ArrayList<>();
-        equipmentMap.forEach((id, equipment) -> {
-            if(equipment.getStatus().equals("Pending Return Confirmation")){
-                prev.add(equipment);
+        Map<Integer, Rental> rentalMap = services.rentalService().fetchMap();
+        Map<Integer, Equipment> cur = new HashMap<>();
+        Map<Integer, Equipment> prev = new HashMap<>();
+        rentalMap.forEach((id, rental) -> {
+            if(rental.getUserId() == services.userService().getCurUser().getId()){
+                if(rental.getEquipment().getStatus().equals("Rented Out") && !rental.getReturnStatus().equals("Returned")){
+                    cur.put(id, rental.getEquipment());
+                } else if(rental.getEquipment().getStatus().equals("Pending Return Confirmation") && !rental.getReturnStatus().equals("Returned")){
+                    prev.put(id, rental.getEquipment());
+                }
             }
         });
         
@@ -128,9 +124,8 @@ public class SystemFacade {
     public ReturnConfirmationContext getReturnConfirmationContext(){    
         Map<Integer, Rental> rentalMap = services.rentalService().fetchMap();
         List<Rental> cur = new ArrayList<>();
-        User curUser = services.userService().getCurUser();
         rentalMap.forEach((id, rental) -> {
-            if(rental.getUserId() == curUser.getId()){
+            if(rental.getEquipment().getStatus().equals("Pending Return Confirmation")){
                 cur.add(rental);
             }
         });
@@ -142,6 +137,17 @@ public class SystemFacade {
         List<Rental> temp = new ArrayList<>();
         rentalMap.forEach((id, val) -> {
             if(val.getId() == id && val.getUserId() == userID){
+                temp.add(val);
+            }
+        });
+        return temp;
+    }
+    
+    public List<Rental>getMyRentals(){
+        Map<Integer, Rental> rentalMap = services.rentalService().fetchMap();
+        List<Rental> temp = new ArrayList<>();
+        rentalMap.forEach((id, val) -> {
+            if(val.getId() == id && val.getUserId() == services.userService().getCurUser().getId()){
                 temp.add(val);
             }
         });
@@ -273,9 +279,16 @@ public class SystemFacade {
         return success2;
     }
     
-    public boolean returnEquipment(int equipment_id){
-        Equipment item = services.equipmentService().getEquipmentById(equipment_id);
-        return services.equipmentService().editEquipment(equipment_id, item.getRate(), "Pending Return Confirmation");
+    public boolean returnEquipment(int rentalId, int equipmentId){
+        try{          
+            Rental rental = services.rentalService().fetchMap().get(rentalId);
+            services.billingService().createRentalBill(rental);
+            Equipment item = services.equipmentService().getEquipmentById(equipmentId);
+            return services.equipmentService().editEquipment(equipmentId, item.getRate(), "Pending Return Confirmation");
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
     
     public Map<Category, List<Equipment>> searchEquipment(String equipment_id){
@@ -351,13 +364,13 @@ public class SystemFacade {
         Rental target = services.rentalService().fetchMap().get(rental_id);
         Equipment e = target.getEquipment();
         if(!fully_return){
-            services.rentalService().editRental(rental_id, false, LocalDate.now().isAfter(target.getDueDate()));
+            services.rentalService().editRental(rental_id, "Not Returned", LocalDate.now().isAfter(target.getDueDate()));
             services.equipmentService().editEquipment(e.getId(), e.getRate(), "Rented Out");
             return;
         }
 
         boolean isLate = LocalDate.now().isAfter(target.getDueDate());
-        services.rentalService().editRental(rental_id, true, isLate);
+        services.rentalService().editRental(rental_id, "Returned", isLate);
         if(damaged){
             services.billingService().createDamageBill(target);
             services.equipmentService().editEquipment(e.getId(), e.getRate(), "Available");

@@ -95,13 +95,13 @@ public class RentalRecordsUI extends JPanel {
         adj.insets = new Insets(0, 40, 25, 40);
         this.add(scrollPane, adj);
 
-        this.rentalList = facade.getAllRentals();
+        this.rentalList = facade.getMyRentals();
         loadRentals();
         this.setFocusable(true);
     }
 
-    public void refresh() {
-        this.rentalList = facade.getAllRentals();
+    public void refreshData() {
+        this.rentalList = facade.getMyRentals();
         loadRentals();
     }
 
@@ -119,9 +119,7 @@ public class RentalRecordsUI extends JPanel {
         row[1] = r.getUserId();
         row[2] = r.getEquipment().getName();
         row[3] = r.getDueDate() != null ? r.getDueDate(): "N/A";
-        row[4] = Boolean.TRUE.equals(r.getReturnStatus())
-                ? "Returned"
-                : (Boolean.TRUE.equals(r.getLateStatus()) ? "Overdue" : "Active");
+        row[4] = r.getReturnStatus();
         tableModel.addRow(row);
     }
 

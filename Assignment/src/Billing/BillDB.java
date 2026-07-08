@@ -13,8 +13,8 @@ public class BillDB {
         String insertQuery = "INSERT OR IGNORE INTO Bills (bill_id, rental_id, base_fee, discount_amount, penalty_amount, net_payable, bill_type, bill_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         Object[][] testData = {
-            {1, 1, 500.00f, 50.00f, 0.00f, 450.00f, "Rental Fee", "Unpaid"},
-            {2, 2, 640.00f, 0.00f, 0.00f, 640.00f, "Rental Fee", "Paid"}
+            {1, 1, 500.00f, 50.00f, 0.00f, 450.00f, "Rental Fee", "Paid"},
+            {2, 2, 640.00f, 0.00f, 0.00f, 640.00f, "Rental Fee", "Unpaid"}
         };
 
         try (Connection conn = core.DatabaseManager.getConnection();

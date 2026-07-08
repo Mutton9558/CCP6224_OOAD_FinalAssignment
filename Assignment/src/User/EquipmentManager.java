@@ -28,8 +28,7 @@ public class EquipmentManager extends User{
            Permission.ADD_EQUIPMENT,
            Permission.EDIT_EQUIPMENT,
            Permission.ADD_CATEGORY,
-           Permission.EDIT_CATEGORY,
-           Permission.VIEW_RENTAL);   
+           Permission.EDIT_CATEGORY);   
     }
     
     @Override

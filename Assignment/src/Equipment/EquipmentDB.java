@@ -15,8 +15,8 @@ public class EquipmentDB {
         String insertQuery = "INSERT OR IGNORE INTO Equipments (equipment_id, name, category, daily_rental_rate, status) VALUES (?, ?, ?, ?, ?)";
 
         Object[][] testData = {
-            {1, "Camera Sony A7IV", 1, 250.00f, "Pending Return Confirmation"},
-            {2, "Lens 24-70mm f2.8", 1, 80.00f, "Available"},
+            {1, "Camera Sony A7IV", 1, 250.00f, "Available"},
+            {2, "Lens 24-70mm f2.8", 1, 80.00f, "Pending Return Confirmation"},
             {3, "Tripod Manfrotto", 2, 45.00f, "Rented Out"}
         };
 

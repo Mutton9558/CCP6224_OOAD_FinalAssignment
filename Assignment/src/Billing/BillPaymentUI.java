@@ -30,7 +30,6 @@ public class BillPaymentUI extends JPanel {
         }
     }
     
-//    I saw and I have
     public BillPaymentUI(SystemFacade facade){
         this.facade = facade;
         
@@ -64,10 +63,16 @@ public class BillPaymentUI extends JPanel {
         this.add(scrollPane);
         this.add(Box.createVerticalStrut(20));
         
+        // Initial data pull
+        refreshData();
+    }
+    
+    // Public wrapper that matches your Dashboard's refresh cycle
+    public void refreshData() {
         loadBills();
     }
     
-    public void loadBills(){
+    private void loadBills(){
         billList = this.facade.fetchUnpaidBills();
         tableModel.setRowCount(0);
         for(Bill b : billList){
@@ -118,7 +123,9 @@ public class BillPaymentUI extends JPanel {
             
             Bill selectedBill = billList.get(currentRow);
             facade.payBill(selectedBill.getId());
-            loadBills();
+            
+            // Refresh internally after action completes
+            refreshData();
         }
     }
 }

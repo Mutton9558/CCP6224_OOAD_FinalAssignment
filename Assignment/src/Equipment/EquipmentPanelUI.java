@@ -195,7 +195,7 @@ public class EquipmentPanelUI extends JPanel {
             row[1] = e.getName();
             row[2] = Float.toString(e.getRate());
             row[3] = e.getStatus();
-            if(e.getStatus().equals("Available")){
+            if(e.getStatus().equals("Available") || curUser.hasPermission(Permission.EDIT_EQUIPMENT)){
                 row[4] = "Select";
             }
             tempData.add(row);
