@@ -46,7 +46,7 @@ public class RentalDB {
                 e.printStackTrace();
             }
         }
-        
+
         public Map<Integer, Rental> fetchAllRentals(Map<Integer, Equipment> equipmentMap){
             Map<Integer, Rental> temp = new HashMap<>();
             

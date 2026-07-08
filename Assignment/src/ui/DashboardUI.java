@@ -1,6 +1,7 @@
 package ui;
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class DashboardUI extends JPanel{
     
@@ -13,6 +14,7 @@ public class DashboardUI extends JPanel{
         
         UIConstants UIConst = new UIConstants();
         setLayout(new BorderLayout());
+        setOpaque(false); 
         
         westPanel = new JPanel(cardlayout1);
         contentPanel = new JPanel(cardlayout2);
