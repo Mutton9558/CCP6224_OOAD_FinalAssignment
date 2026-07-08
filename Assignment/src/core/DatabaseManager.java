@@ -16,6 +16,19 @@ public class DatabaseManager {
     }
     
     private static void initializeSchema(Connection conn) {
+        
+        String createUsersTable = """
+            CREATE TABLE IF NOT EXISTS Users (
+                user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_name VARCHAR NOT NULL,
+                email VARCHAR NOT NULL UNIQUE,
+                password VARCHAR NOT NULL,
+                gender VARCHAR NOT NULL,
+                date_of_birth DATE NOT NULL,
+                role TEXT NOT NULL
+                );
+                                  """;
+        
         String createCategoriesTable = """
             CREATE TABLE IF NOT EXISTS Categories (
                 category_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -65,6 +78,7 @@ public class DatabaseManager {
             """;
 
         try (Statement stmt = conn.createStatement()) {
+            stmt.execute(createUsersTable);
             stmt.execute(createCategoriesTable);
             stmt.execute(createEquipmentsTable);
             stmt.execute(createBillsTable);
