@@ -12,7 +12,7 @@ import java.time.LocalDate;
 
 public class UserDB {
 
-    public void seedTestUsers(){
+    public UserDB(){
         
         String insertQuery = "INSERT OR IGNORE INTO Users (user_id, user_name, email, password, gender, date_of_birth, role) VALUES (?,?,?,?,?,?,?)";
         Object[][] testData = {

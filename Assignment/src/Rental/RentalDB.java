@@ -18,11 +18,11 @@ import java.util.HashMap;
 public class RentalDB {
     
         public RentalDB(){
-            String insertQuery = "INSERT INTO Rental (user_id, equipment, bookedDate, duration, returnStatus, lateStatus) VALUES (?, ?, ?, ?, ?, ?)";
+            String insertQuery = "INSERT OR IGNORE INTO Rentals (user_id, equipment, bookedDate, duration, returnStatus, lateStatus) VALUES (?, ?, ?, ?, ?, ?)";
     
             Object[][] testData = {
-                {1, 1, LocalDate.now(), 2, false, false},
-                {1, 2, LocalDate.now(), 8, false, false},
+                {1, 1, LocalDate.now(), 2, true, false},
+                {1, 2, LocalDate.now(), 8, true, false},
                 {3, 3, LocalDate.now(), 4, false, false}
             };
     
@@ -50,7 +50,7 @@ public class RentalDB {
         public Map<Integer, Rental> fetchAllRentals(Map<Integer, Equipment> equipmentMap){
             Map<Integer, Rental> temp = new HashMap<>();
             
-            String query = "SELECT * FROM Rental";
+            String query = "SELECT * FROM Rentals";
             
             try (Connection conn = core.DatabaseManager.getConnection()){
                 try(PreparedStatement statement = conn.prepareStatement(query);
@@ -77,7 +77,7 @@ public class RentalDB {
         }
         
         public int create(int user_id, Equipment equipment, int duration){
-            String insertReq = "INSERT INTO Rental VALUES (?, ?, ?, ?, ?, ?)";
+            String insertReq = "INSERT OR IGNORE INTO Rentals VALUES (?, ?, ?, ?, ?, ?)";
             LocalDate bookedDate = LocalDate.now();
             LocalDate dueDate = bookedDate.plusDays(duration);
             boolean returnStatus = false;
@@ -104,7 +104,7 @@ public class RentalDB {
         }
         
         public boolean update(int id, boolean returnStatus, boolean lateStatus){
-            String updateQuery = "UPDATE Rental SET returnStatus = ?, lateStatus = ? WHERE equipment_id = ?";
+            String updateQuery = "UPDATE Rentals SET returnStatus = ?, lateStatus = ? WHERE equipment_id = ?";
     
             try(Connection conn = core.DatabaseManager.getConnection()){
                 try(PreparedStatement statement = conn.prepareStatement(updateQuery)){
@@ -124,7 +124,7 @@ public class RentalDB {
         }
         
         public boolean delete(int id){
-            String deleteQuery = "DELETE FROM Rental WHERE id = ?";
+            String deleteQuery = "DELETE FROM Rentals WHERE id = ?";
             
             try(Connection conn = core.DatabaseManager.getConnection()){
                 try (PreparedStatement pstmt = conn.prepareStatement(deleteQuery)) {

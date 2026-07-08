@@ -67,6 +67,18 @@ public class EquipmentDetailsUI extends JDialog {
 //        will change depending on user
         rentalTextField.setEnabled(canEdit);
         
+        JLabel categoryMaintenanceFee = new JLabel("Category Maintenance Fee");
+        categoryMaintenanceFee.setForeground(Color.WHITE);
+        categoryMaintenanceFee.setFont(new Font("Arial", Font.PLAIN, 16));
+        categoryMaintenanceFee.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        JTextField maintenanceTextField = new JTextField(30);
+        maintenanceTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        maintenanceTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, rentalTextField.getPreferredSize().height));
+        maintenanceTextField.setText(Float.toString(equipment.getCategory().getFee()));
+//        will change depending on user
+        maintenanceTextField.setEnabled(false);
+        
         JLabel statusLabel = new JLabel("Status");
         statusLabel.setForeground(Color.WHITE);
         statusLabel.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -150,6 +162,10 @@ public class EquipmentDetailsUI extends JDialog {
         contentPanel.add(rentalLabel);
         contentPanel.add(Box.createVerticalStrut(5));
         contentPanel.add(rentalTextField);
+        contentPanel.add(Box.createVerticalStrut(10));
+        contentPanel.add(categoryMaintenanceFee);
+        contentPanel.add(Box.createVerticalStrut(5));
+        contentPanel.add(maintenanceTextField);
         contentPanel.add(Box.createVerticalStrut(10));
         contentPanel.add(statusLabel);
         contentPanel.add(Box.createVerticalStrut(5));
