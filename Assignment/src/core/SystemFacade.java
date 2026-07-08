@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import Billing.Bill;
 
 public class SystemFacade {
     private final SystemServices services;
@@ -12,6 +13,7 @@ public class SystemFacade {
     public record EquipmentPanelContext(boolean canEdit, Map<Category, List<Equipment>> equipments) {}
     public record AddEquipmentContext(List<String> categoryNames){}
     public record RentedEquipmentContext(List<Equipment> cur, List<Equipment> prev){}
+    public record ReturnConfirmationContext(List<Equipment> cur){}
     
     public SystemFacade(SystemServices services){
         this.services = services;
@@ -24,7 +26,7 @@ public class SystemFacade {
             equipmentsByCategoryMap.put(category, tempList);
         });
 //        will change the true to getting user perm
-        return new EquipmentPanelContext(true, equipmentsByCategoryMap);
+        return new EquipmentPanelContext(false, equipmentsByCategoryMap);
     }
     
     public AddEquipmentContext getAddEquipmentContext(){
@@ -38,11 +40,36 @@ public class SystemFacade {
     }
     
     public RentedEquipmentContext getRentedEquipmentContext(){
-        List<Equipment> cur = services.equipmentService().getRentedEquipments();
-        List<Equipment> prev = services.equipmentService().getPendingEquipments();
+        
+        Map<Integer, Equipment> equipmentMap = services.equipmentService().fetchMap();
+        
+        List<Equipment> cur = new ArrayList<>();
+        equipmentMap.forEach((id, equipment) -> {
+            if(equipment.getStatus().equals("Rented Out")){
+                cur.add(equipment);
+            }
+        });
+        
+        List<Equipment> prev = new ArrayList<>();
+        equipmentMap.forEach((id, equipment) -> {
+            if(equipment.getStatus().equals("Pending Return Confirmation")){
+                prev.add(equipment);
+            }
+        });
         
         return (new RentedEquipmentContext(cur, prev));
     }
+    
+//    public ReturnConfirmationContext getReturnConfirmationContext(){
+//        Map<Integer, Equipment> equipmentMap = services.equipmentService().fetchMap();
+//        List<Equipment> cur = new ArrayList<>();
+//        equipmentMap.forEach((id, equipment) -> {
+//            if(equipment.getStatus().equals("Rented Out")){
+//                cur.add(equipment);
+//            }
+//        });
+//        return (new ReturnConfirmationContext(cur));
+//    }
     
     public void addNewEquipment(String name, String categoryName, String rentalRate, String status) {
         // validate empty fields
@@ -158,5 +185,41 @@ public class SystemFacade {
 
         boolean success2 = services.categoryService().deleteCategory(category_id);
         return success2;
+    }
+    
+    public boolean returnEquipment(int equipment_id){
+        Equipment item = services.equipmentService().getEquipmentById(equipment_id);
+        return services.equipmentService().editEquipment(equipment_id, item.getRate(), "Pending Return Confirmation");
+    }
+    
+    public Map<Category, List<Equipment>> searchEquipment(String equipment_id){
+        
+        Map<Category, List<Equipment>> temp = new HashMap<>();
+        if(equipment_id == null || equipment_id.trim().isEmpty()){
+            return temp;
+        }
+        
+        try{
+            int id = Integer.parseInt(equipment_id);
+            Equipment item = services.equipmentService().getEquipmentById(id);
+            if(item == null){
+                return temp;
+            }
+            
+            List<Equipment> temp2 = new ArrayList<>();
+            temp2.add(item);
+            temp.put(item.getCategory(), temp2);
+            return temp;
+        } catch (NumberFormatException e){
+            return temp;
+        }
+    }
+    
+    public List<Bill> fetchUnpaidBills(){
+        return services.billingService().getUnpaidBills();
+    }
+    
+    public boolean payBill(int billId){
+        return services.billingService().payBill(billId);
     }
 }

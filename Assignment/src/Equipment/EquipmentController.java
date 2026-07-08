@@ -40,6 +40,9 @@ public class EquipmentController {
 //        });
 //        return temp;
 //    }
+    public Equipment getEquipmentById(int equipment_id){
+        return this.equipmentMap.get(equipment_id);
+    }
     
     public List<Equipment> getEquipmentsByCategory(int category_id){
         List<Equipment> temp = new ArrayList<>();
@@ -48,6 +51,18 @@ public class EquipmentController {
                 temp.add(val);
             }
         });
+        return temp;
+    }
+
+    public Equipment getEquipmentByID(int equipment_id){
+        Equipment temp = null;
+        for(Integer id : equipmentMap.keySet()){
+            Equipment val = equipmentMap.get(id);
+            if(val.getId() == equipment_id){
+                temp = val;
+                break;
+            }
+        }
         return temp;
     }
     
@@ -79,24 +94,24 @@ public class EquipmentController {
         return success;
     }
     
-    public List<Equipment> getRentedEquipments(){
-        List<Equipment> rentedEquipments = new ArrayList<>();
-        this.equipmentMap.forEach((id, equipment) -> {
-            if(equipment.getStatus().equals("Rented Out")){
-                rentedEquipments.add(equipment);
-            }
-        });
-        return rentedEquipments;
-    }
-    
-    public List<Equipment> getPendingEquipments(){
-        List<Equipment> pendingEquipments = new ArrayList<>();
-        this.equipmentMap.forEach((id, equipment) -> {
-            if(equipment.getStatus().equals("Pending Return Confirmation")){
-                pendingEquipments.add(equipment);
-            }
-        });
-        
-        return pendingEquipments;
-    }
+//    public List<Equipment> getRentedEquipments(){
+//        List<Equipment> rentedEquipments = new ArrayList<>();
+//        this.equipmentMap.forEach((id, equipment) -> {
+//            if(equipment.getStatus().equals("Rented Out")){
+//                rentedEquipments.add(equipment);
+//            }
+//        });
+//        return rentedEquipments;
+//    }
+//    
+//    public List<Equipment> getPendingEquipments(){
+//        List<Equipment> pendingEquipments = new ArrayList<>();
+//        this.equipmentMap.forEach((id, equipment) -> {
+//            if(equipment.getStatus().equals("Pending Return Confirmation")){
+//                pendingEquipments.add(equipment);
+//            }
+//        });
+//        
+//        return pendingEquipments;
+//    }
 }
