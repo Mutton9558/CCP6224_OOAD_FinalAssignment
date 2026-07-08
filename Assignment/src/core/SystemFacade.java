@@ -237,6 +237,11 @@ public class SystemFacade {
     public boolean payBill(int billId){
         return services.billingService().payBill(billId);
     }
+
+    public boolean login(int userId, String password){
+        services.userService().login(userId, password);
+        return services.userService().getCurUser() != null;
+    }
     
     public void createRental(int equipmentId, String duration){
         int uid = services.userService().getCurUser().getId();
