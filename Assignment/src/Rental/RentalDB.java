@@ -103,7 +103,7 @@ public class RentalDB {
         }
         
         public boolean update(int id, boolean returnStatus, boolean lateStatus){
-            String updateQuery = "UPDATE Rentals SET returnStatus = ?, lateStatus = ? WHERE equipment_id = ?";
+            String updateQuery = "UPDATE Rentals SET returnStatus = ?, lateStatus = ? WHERE rental_id = ?";
     
             try(Connection conn = core.DatabaseManager.getConnection()){
                 try(PreparedStatement statement = conn.prepareStatement(updateQuery)){
@@ -123,7 +123,7 @@ public class RentalDB {
         }
         
         public boolean delete(int id){
-            String deleteQuery = "DELETE FROM Rentals WHERE id = ?";
+            String deleteQuery = "DELETE FROM Rentals WHERE rental_id = ?";
             
             try(Connection conn = core.DatabaseManager.getConnection()){
                 try (PreparedStatement pstmt = conn.prepareStatement(deleteQuery)) {
