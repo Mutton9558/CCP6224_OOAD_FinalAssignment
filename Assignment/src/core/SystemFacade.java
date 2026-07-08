@@ -24,17 +24,26 @@ public class SystemFacade {
         this.services = services;
     }
     
-    //ALL USER CONTEXTS
-    public User login(int user_id, String password){
-        User user = services.userService().loginUser(user_id, password);
-        if(user==null){
-            throw new IllegalArgumentException("Invalid user ID or password");
-        }
-        return user;
-    }
-    
+//    //ALL USER CONTEXTS
+//    public User login(int user_id, String password){
+//        User user = services.userService().loginUser(user_id, password);
+//        if(user==null){
+//            throw new IllegalArgumentException("Invalid user ID or password");
+//        }
+//        return user;
+//    }
+//    
     public void logout(){
         services.userService().logoutUser();
+    }
+    
+    public User CurrentUser(){
+        return services.userService().getCurrentUser();
+    }
+
+    public boolean login(int userId, String password){
+         User user = services.userService().loginUser(userId, password);
+        return services.userService().getCurUser() != null;
     }
     
     public UserProfileContext getUserProfileData(){

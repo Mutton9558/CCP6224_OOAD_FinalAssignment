@@ -46,18 +46,29 @@ public class MainUI extends JFrame {
 //        mainPanel.add(profile, "PROFILE");
 
         //TEMPORARY
+//        homepage.login_btn.addActionListener(event -> {
+//            LoginUI loginDialog = new LoginUI(this, facade,
+//            try {
+//                User testUser = facade.login(1, "test01"); // Elsa, from your seedTestUsers data
+//                buildLoggedInPanels(testUser, mainPanel, cardlayout);
+//                loggedInButtonState(homepage);
+//                cardlayout.show(mainPanel, "DASHBOARD");
+//            } catch (IllegalArgumentException ex) {
+//                JOptionPane.showMessageDialog(this, ex.getMessage());
+//            }
+//        });
+        //TEMPORARY
+        
         homepage.login_btn.addActionListener(event -> {
-            System.out.println("Login button clicked"); // TEMP debug
-            try {
-                User testUser = facade.login(1, "test01"); // Elsa, from your seedTestUsers data
-                buildLoggedInPanels(testUser, mainPanel, cardlayout);
+            LoginUI loginDialog = new LoginUI(this, facade, () ->{
+                User loggedUser = facade.CurrentUser();
+                buildLoggedInPanels(loggedUser, mainPanel, cardlayout);
                 loggedInButtonState(homepage);
                 cardlayout.show(mainPanel, "DASHBOARD");
-            } catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage());
-            }
+            });
+            loginDialog.setModal(true);
+            loginDialog.setVisible(true);
         });
-        //TEMPORARY
         
      
         //add Action listeners to the buttons that exist in those pages 
