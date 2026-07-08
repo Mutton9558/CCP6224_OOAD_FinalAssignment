@@ -1,11 +1,12 @@
 package core;
-
+import User.*;
 import Equipment.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import Billing.Bill;
+import java.time.LocalDate;
 
 public class SystemFacade {
     private final SystemServices services;
@@ -14,10 +15,57 @@ public class SystemFacade {
     public record AddEquipmentContext(List<String> categoryNames){}
     public record RentedEquipmentContext(List<Equipment> cur, List<Equipment> prev){}
     public record ReturnConfirmationContext(List<Equipment> cur){}
+    public record UserProfileContext(String name, String email, String gender, LocalDate dob, String role, double discount){}
     
     public SystemFacade(SystemServices services){
         this.services = services;
     }
+    
+    //ALL USER CONTEXTS
+    public User login(int user_id, String password){
+        User user = services.userService().loginUser(user_id, password);
+        if(user==null){
+            throw new IllegalArgumentException("Invalid user ID or password");
+        }
+        return user;
+    }
+    
+    public void logout(int user_id){
+        services.userService().logoutUser();
+    }
+    
+    public UserProfileContext getUserProfileData(){
+        User user = services.userService().getCurrentUser();
+        if(user == null){
+            throw new IllegalStateException("No user is currently logged in");
+        }
+        return new UserProfileContext(user.getName(), user.getEmail(), user.getGender(), user.getDateOfBirth(), user.returnRole(), user.getDiscount());
+    }
+    
+    public void updateProfile(String newName, String newEmail, String newPassword, String newGender, LocalDate newDob){
+        User user = services.userService().getCurrentUser();
+        if(user == null){
+            throw new IllegalStateException("No user is currently logged in");
+        }
+        boolean success = services.userService().updateUserProfile(user, newName, newEmail, newPassword, newGender, newDob);
+        if(!success){
+            throw new RuntimeException("Failed to updated user profile!");
+        }
+    }
+    
+    public boolean deleteCurrentUser(){
+        User user = services.userService().getCurrentUser();
+        if(user == null){
+            throw new IllegalStateException("No user is currently logged in");
+        }
+        boolean success = services.userService().deleteUser(user.getId());
+        if(success){
+            services.userService().logoutUser();
+        }
+        return success;
+    }
+    
+    //END OF USER CONTEXTS
     
     public EquipmentPanelContext getEquipmentPanelData(){
         Map<Category, List<Equipment>> equipmentsByCategoryMap = new HashMap<>();

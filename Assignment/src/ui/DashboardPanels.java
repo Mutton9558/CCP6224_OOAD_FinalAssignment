@@ -9,17 +9,17 @@ import User.Permission;
 
 public class DashboardPanels{
     
-    User current_user;
+    private final User current_user;
+    private final core.SystemFacade facade;
     
     private ArrayList<DashboardPanel> panels = new ArrayList<>();
     
-    public class EquipmentPanelUI implements DashboardPanel{
+    public class EquipmentPanel implements DashboardPanel{
         
-        private core.SystemFacade facade;
-        private final EquipmentPanelUI panelUI;
+        private final Equipment.EquipmentPanelUI panelUI;
         
-        public EquipmentPanelUI(){ 
-            this.panelUI = new EquipmentPanelUI(true, facade);
+        public EquipmentPanel(core.SystemFacade facade){ 
+            this.panelUI = new Equipment.EquipmentPanelUI(true, facade);
         }
         
         @Override
@@ -36,18 +36,18 @@ public class DashboardPanels{
         public JPanel getPanel(){
             return panelUI;
         }
+
+    }
+    
+    public DashboardPanels(core.SystemFacade facade, User current_user){
         
-        
+        this.facade = facade;
+        this.current_user = current_user;
+        this.panels(new EquipmentPanel(facade));
         
     }
     
-    public DashboardPanels(){
-        
-        
-    }
-    
-    
-    
-    
-    
+    public ArrayList<DashboardPanel> returnDashboardPanels(){
+        return this.panels;
+    }   
 }

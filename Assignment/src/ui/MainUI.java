@@ -1,4 +1,5 @@
 package ui;
+import core.*;
 import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
@@ -8,10 +9,12 @@ public class MainUI extends JFrame {
     private DashboardUI dashboard;
     private UserProfileUI profile;
     private HomepageUI homepage;
+    private final core.SystemFacade facade;
 
-    public MainUI(){
+    public MainUI(core.SystemFacade facade){
         
         super("MaoMao University Equipment Rental Service!");
+        this.facade = facade;
         CardLayout cardlayout = new CardLayout();
         UIConstants UIConst = new UIConstants();
         
@@ -35,7 +38,7 @@ public class MainUI extends JFrame {
         mainPanel.add(dashboard, "DASHBOARD");
         
         profile = new UserProfileUI();
-        mainPanel.add(profile, "PROFILE");S
+        mainPanel.add(profile, "PROFILE");
 
         mainPanel.setOpaque(false);
         bgImage.add(mainPanel, BorderLayout.CENTER);
@@ -43,13 +46,8 @@ public class MainUI extends JFrame {
         setVisible(true);
     
     }
-        
         //RUNNER TEMPORARY 
         public static void main(String[] args){
-            
-            MainUI mainUI = new MainUI();
-            
+                        
         }
-         
-    
 }

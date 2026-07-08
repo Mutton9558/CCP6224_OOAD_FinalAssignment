@@ -1,6 +1,7 @@
 package ui;
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class DashboardUI extends JPanel{
     
