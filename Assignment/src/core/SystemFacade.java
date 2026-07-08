@@ -144,6 +144,15 @@ public class SystemFacade {
         return temp;
     }
     
+    public List<Rental> getAllRentals(){
+       Map<Integer, Rental> rentalMap = services.rentalService().fetchMap();
+       List<Rental> temp = new ArrayList<>();
+       rentalMap.forEach((id, val) -> {
+           temp.add(val);
+       });
+       return temp;
+   }
+
     public void addNewEquipment(String name, String categoryName, String rentalRate, String status) {
         // validate empty fields
         if (name == null || name.trim().isEmpty()) {

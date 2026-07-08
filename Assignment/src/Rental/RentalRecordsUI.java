@@ -101,6 +101,7 @@ public class RentalRecordsUI extends JPanel {
         adj.insets = new Insets(0, 40, 25, 40);
         this.add(scrollPane, adj);
 
+        this.rentalList = facade.getAllRentals();
         loadRentals();
         this.setFocusable(true);
     }
