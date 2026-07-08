@@ -17,13 +17,13 @@ public class temprunner{
         CategoryDB categoryRepo = new CategoryDB();
         EquipmentDB equipmentRepo = new EquipmentDB();
         BillDB billingRepo = new BillDB();
-//        RentalDB rentalRepo = new RentalDB();
+        RentalDB rentalRepo = new RentalDB();
         CategoryController categoryService = CategoryController.getInstance(categoryRepo);
         EquipmentController equipmentService = EquipmentController.getInstance(equipmentRepo, categoryService);
-//        RentalController rentalService = RentalController.getInstance(rentalRepo, equipmentService);
+        RentalController rentalService = RentalController.getInstance(rentalRepo, equipmentService);
         BillingController billingService = BillingController.getInstance(billingRepo);
         
-        core.SystemServices services = new core.SystemServices(categoryService, equipmentService, billingService);
+        core.SystemServices services = new core.SystemServices(categoryService, equipmentService, rentalService, billingService);
         core.SystemFacade facade = new core.SystemFacade(services);
         
         // Instantiate your new JPanel

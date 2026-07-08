@@ -56,7 +56,6 @@ public class DatabaseManager {
                 user_id INTEGER NOT NULL,
                 equipment INTEGER NOT NULL,
                 bookedDate DATE NOT NULL,
-                dueDate DATE NOT NULL,
                 duration INTEGER NOT NULL,
                 returnStatus BOOLEAN,
                 lateStatus BOOLEAN NOT NULL,    
