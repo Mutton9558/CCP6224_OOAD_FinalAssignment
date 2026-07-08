@@ -2,14 +2,9 @@ package Rental;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import java.awt.*;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +22,6 @@ public class RentalRecordsUI extends JPanel {
     private DefaultTableModel tableModel;
     private JTable table;
 
-    // Kept so the search feature can call back into the controller/user context
     private final SystemFacade facade;
 
     private JTextField searchField;
@@ -72,7 +66,7 @@ public class RentalRecordsUI extends JPanel {
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int col) {
-                return col == 5;
+                return false;
             }
         };
 
@@ -101,11 +95,15 @@ public class RentalRecordsUI extends JPanel {
         adj.insets = new Insets(0, 40, 25, 40);
         this.add(scrollPane, adj);
 
+        this.rentalList = facade.getAllRentals();
         loadRentals();
         this.setFocusable(true);
     }
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    public void refresh() {
+        this.rentalList = facade.getAllRentals();
+        loadRentals();
+    }
 
     public void loadRentals() {
         tableModel.setRowCount(0);
@@ -116,15 +114,14 @@ public class RentalRecordsUI extends JPanel {
     }
 
     private void addRow(Rental r) {
-        Object[] row = new Object[6];
+        Object[] row = new Object[5];
         row[0] = r.getId();
         row[1] = r.getUserId();
         row[2] = r.getEquipment().getName();
-        row[3] = r.getDueDate() != null ? r.getDueDate().format(DATE_FORMAT) : "N/A";
+        row[3] = r.getDueDate() != null ? r.getDueDate(): "N/A";
         row[4] = Boolean.TRUE.equals(r.getReturnStatus())
                 ? "Returned"
                 : (Boolean.TRUE.equals(r.getLateStatus()) ? "Overdue" : "Active");
-        row[5] = "Damage Report";
         tableModel.addRow(row);
     }
 
@@ -184,7 +181,6 @@ public class RentalRecordsUI extends JPanel {
 
         JButton searchButton = new JButton("Search");
         searchButton.addActionListener(e -> performSearch());
-        // accepts enter as an input to search
         searchField.addActionListener(e -> performSearch());
 
         JButton resetButton = new JButton("Reset");

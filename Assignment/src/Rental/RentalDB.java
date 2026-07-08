@@ -18,12 +18,12 @@ import java.util.HashMap;
 public class RentalDB {
     
         public RentalDB(){
-            String insertQuery = "INSERT OR IGNORE INTO Rentals (user_id, equipment, bookedDate, duration, returnStatus, lateStatus) VALUES (?, ?, ?, ?, ?, ?)";
+            String insertQuery = "INSERT OR IGNORE INTO Rentals (rental_id, user_id, equipment, bookedDate, duration, returnStatus, lateStatus) VALUES (?, ?, ?, ?, ?, ?, ?)";
     
             Object[][] testData = {
-                {1, 1, LocalDate.now(), 2, true, false},
-                {1, 2, LocalDate.now(), 8, true, false},
-                {3, 3, LocalDate.now(), 4, false, false}
+                {1, 1, 1, LocalDate.now(), 2, true, false},
+                {2, 1, 2, LocalDate.now(), 8, false, false},
+                {3, 3, 3, LocalDate.now(), 4, false, false}
             };
     
             try (Connection conn = core.DatabaseManager.getConnection();
@@ -32,16 +32,15 @@ public class RentalDB {
                 for (Object[] row : testData) {
                     statement.setInt(1, (Integer) row[0]);
                     statement.setInt(2, (Integer) row[1]);
-                    statement.setObject(3, row[2]);
-                    statement.setInt(3, (Integer) row[3]);
-                    statement.setBoolean(4, (Boolean) row[4]);
-                    statement.setBoolean(5, (Boolean) row[5]);
+                    statement.setInt(3, (Integer) row[2]);
+                    statement.setDate(4, Date.valueOf((LocalDate) row[3]));
+                    statement.setInt(5, (Integer) row[4]);
+                    statement.setBoolean(6, (Boolean) row[5]);
+                    statement.setBoolean(7, (Boolean) row[6]);
                     statement.addBatch();
                 }
     
-                statement.executeBatch();
-                System.out.println("Test data inserted successfully.");
-    
+                statement.executeBatch();    
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -77,9 +76,8 @@ public class RentalDB {
         }
         
         public int create(int user_id, Equipment equipment, int duration){
-            String insertReq = "INSERT INTO Rentals VALUES (?, ?, ?, ?, ?, ?)";
+            String insertReq = "INSERT INTO Rentals (user_id, equipment, bookedDate, duration, returnStatus, lateStatus) VALUES (?, ?, ?, ?, ?, ?)";
             LocalDate bookedDate = LocalDate.now();
-            LocalDate dueDate = bookedDate.plusDays(duration);
             boolean returnStatus = false;
             boolean lateStatus = false;
             try(Connection conn = core.DatabaseManager.getConnection()){
@@ -104,13 +102,13 @@ public class RentalDB {
         }
         
         public boolean update(int id, boolean returnStatus, boolean lateStatus){
-            String updateQuery = "UPDATE Rentals SET returnStatus = ?, lateStatus = ? WHERE equipment_id = ?";
+            String updateQuery = "UPDATE Rentals SET returnStatus = ?, lateStatus = ? WHERE rental_id = ?";
     
             try(Connection conn = core.DatabaseManager.getConnection()){
                 try(PreparedStatement statement = conn.prepareStatement(updateQuery)){
-                    statement.setBoolean(2, returnStatus);
-                    statement.setBoolean(3, lateStatus);
-                    statement.setInt(4, id);
+                    statement.setBoolean(1, returnStatus);
+                    statement.setBoolean(2, lateStatus);
+                    statement.setInt(3, id);
                     int rowsUpdated = statement.executeUpdate();
                     if(rowsUpdated > 0){
                         return true;
@@ -124,10 +122,11 @@ public class RentalDB {
         }
         
         public boolean delete(int id){
-            String deleteQuery = "DELETE FROM Rentals WHERE id = ?";
+            String deleteQuery = "DELETE FROM Rentals WHERE rental_id = ?";
             
             try(Connection conn = core.DatabaseManager.getConnection()){
                 try (PreparedStatement pstmt = conn.prepareStatement(deleteQuery)) {
+                    pstmt.setInt(1, id);
                     int rowsDeleted = pstmt.executeUpdate(); 
                     if(rowsDeleted > 0){
                         return true;

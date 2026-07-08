@@ -148,6 +148,15 @@ public class SystemFacade {
         return temp;
     }
     
+    public List<Rental> getAllRentals(){
+       Map<Integer, Rental> rentalMap = services.rentalService().fetchMap();
+       List<Rental> temp = new ArrayList<>();
+       rentalMap.forEach((id, val) -> {
+           temp.add(val);
+       });
+       return temp;
+   }
+
     public void addNewEquipment(String name, String categoryName, String rentalRate, String status) {
         // validate empty fields
         if (name == null || name.trim().isEmpty()) {
@@ -317,21 +326,19 @@ public class SystemFacade {
         return services.billingService().payBill(billId);
     }
     
-    public void createRental(int equipmentId, String duration){
+    public void createRental(int equipmentId, int duration){
         int uid = services.userService().getCurUser().getId();
-        if(duration.trim().isEmpty()){
+        if(duration <= 0){
             throw new IllegalArgumentException("User or booking duration cannot be empty.");
         }
         
-        try{
-            int dur = Integer.parseInt(duration);
-            
+        try{            
             Equipment target = services.equipmentService().getEquipmentById(equipmentId);
             if(target == null){
                 throw new IllegalArgumentException("No such equipment");
             }
             
-            boolean success = services.rentalService().addRental(uid, target, dur);
+            boolean success = services.rentalService().addRental(uid, target, duration);
             if(!success){
                 throw new RuntimeException("Database add operation failed.");
             }
@@ -346,11 +353,18 @@ public class SystemFacade {
         if(!fully_return){
             services.rentalService().editRental(rental_id, false, LocalDate.now().isAfter(target.getDueDate()));
             services.equipmentService().editEquipment(e.getId(), e.getRate(), "Rented Out");
-        } else {
-            if(damaged){
-                services.billingService().createDamageBill(target);
-                services.equipmentService().editEquipment(e.getId(), e.getRate(), "Available");
-            }
+            return;
+        }
+
+        boolean isLate = LocalDate.now().isAfter(target.getDueDate());
+        services.rentalService().editRental(rental_id, true, isLate);
+        if(damaged){
+            services.billingService().createDamageBill(target);
+            services.equipmentService().editEquipment(e.getId(), e.getRate(), "Available");
+        
+        }else{
+            services.equipmentService().editEquipment(e.getId(), e.getRate(), "Available");
         }
     }
+
 }

@@ -72,14 +72,6 @@ public class RentalCreationDialog extends JDialog {
 
         contentPanel.add(headerLabel);
         contentPanel.add(Box.createVerticalStrut(20));
-//        contentPanel.add(idLabel);
-//        contentPanel.add(Box.createVerticalStrut(5));
-//        contentPanel.add(userIdTextField);
-//        contentPanel.add(Box.createVerticalStrut(10));
-//        contentPanel.add(equipmentFieldLabel);
-//        contentPanel.add(Box.createVerticalStrut(5));
-//        contentPanel.add(equipmentTextField);
-//        contentPanel.add(Box.createVerticalStrut(10));
         contentPanel.add(durationLabel);
         contentPanel.add(Box.createVerticalStrut(5));
         contentPanel.add(durationSpinner);
@@ -92,8 +84,7 @@ public class RentalCreationDialog extends JDialog {
     }
 
     public void onCreate() {
-        String userIdText = (String) userIdTextField.getText();
-        String duration = (String) durationSpinner.getValue();
+        Integer duration = (Integer) durationSpinner.getValue();
         
         try{
             this.facade.createRental(equipment_id, duration);
