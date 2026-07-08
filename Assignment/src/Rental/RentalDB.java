@@ -18,7 +18,7 @@ import java.util.HashMap;
 public class RentalDB {
     
         public RentalDB(){
-            String insertQuery = "INSERT INTO Rentals (user_id, equipment, bookedDate, duration, returnStatus, lateStatus) VALUES (?, ?, ?, ?, ?, ?)";
+            String insertQuery = "INSERT OR IGNORE INTO Rentals (user_id, equipment, bookedDate, duration, returnStatus, lateStatus) VALUES (?, ?, ?, ?, ?, ?)";
     
             Object[][] testData = {
                 {1, 1, LocalDate.now(), 2, false, false},
@@ -32,10 +32,10 @@ public class RentalDB {
                 for (Object[] row : testData) {
                     statement.setInt(1, (Integer) row[0]);
                     statement.setInt(2, (Integer) row[1]);
-                    statement.setObject(3, row[2]);
-                    statement.setInt(3, (Integer) row[3]);
-                    statement.setBoolean(4, (Boolean) row[4]);
-                    statement.setBoolean(5, (Boolean) row[5]);
+                    statement.setDate(3, Date.valueOf((LocalDate) row[2]));
+                    statement.setInt(4, (Integer) row[3]);
+                    statement.setBoolean(5, (Boolean) row[4]);
+                    statement.setBoolean(6, (Boolean) row[5]);
                     statement.addBatch();
                 }
     
@@ -79,7 +79,6 @@ public class RentalDB {
         public int create(int user_id, Equipment equipment, int duration){
             String insertReq = "INSERT INTO Rentals VALUES (?, ?, ?, ?, ?, ?)";
             LocalDate bookedDate = LocalDate.now();
-            LocalDate dueDate = bookedDate.plusDays(duration);
             boolean returnStatus = false;
             boolean lateStatus = false;
             try(Connection conn = core.DatabaseManager.getConnection()){
@@ -108,9 +107,9 @@ public class RentalDB {
     
             try(Connection conn = core.DatabaseManager.getConnection()){
                 try(PreparedStatement statement = conn.prepareStatement(updateQuery)){
-                    statement.setBoolean(2, returnStatus);
-                    statement.setBoolean(3, lateStatus);
-                    statement.setInt(4, id);
+                    statement.setBoolean(1, returnStatus);
+                    statement.setBoolean(2, lateStatus);
+                    statement.setInt(3, id);
                     int rowsUpdated = statement.executeUpdate();
                     if(rowsUpdated > 0){
                         return true;
@@ -128,6 +127,7 @@ public class RentalDB {
             
             try(Connection conn = core.DatabaseManager.getConnection()){
                 try (PreparedStatement pstmt = conn.prepareStatement(deleteQuery)) {
+                    pstmt.setInt(1, id);
                     int rowsDeleted = pstmt.executeUpdate(); 
                     if(rowsDeleted > 0){
                         return true;
