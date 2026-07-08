@@ -16,7 +16,7 @@ public class LoginUI extends JDialog {
         this.setSize(500, 450);
         
         JPanel contentPanel = new JPanel();
-        contentPanel.setBackground(UIConstants.LightPurple);
+        contentPanel.setBackground(UIConstants.DarkPurple);
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         
@@ -26,38 +26,38 @@ public class LoginUI extends JDialog {
         JLabel headerLabel = new JLabel("Login");
         headerLabel.setForeground(Color.WHITE);
         headerLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        headerLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        headerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JLabel idLabel = new JLabel("User ID");
         idLabel.setForeground(Color.WHITE);
         idLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        idLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        idLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JTextField idTextField = new JTextField(30);
-        idTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        idTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
         idTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, idTextField.getPreferredSize().height));
         
         JLabel passwordLabel = new JLabel("Password");
         passwordLabel.setForeground(Color.WHITE);
         passwordLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        passwordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        passwordLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JPasswordField passwordField = new JPasswordField(30);
-        passwordField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
         passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, passwordField.getPreferredSize().height));
         
         JLabel messageLabel = new JLabel(" ");
         messageLabel.setForeground(Color.RED);
         messageLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        messageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        messageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JPanel submitPanel = new JPanel();
-        submitPanel.setBackground(UIConstants.LightPurple);
+        submitPanel.setBackground(UIConstants.DarkPurple);
         JButton submitBtn = new JButton("Sign In");
         submitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         submitBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         submitPanel.add(submitBtn);
-        submitPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        submitPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         submitBtn.addActionListener(e -> {
             String idText = idTextField.getText().trim();
