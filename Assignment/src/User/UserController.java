@@ -47,11 +47,32 @@ public class UserController {
     }
     
     //register
-    public void registerUser(UserDB repository, String name, String email, String password, String gender, LocalDate dob){
-        User newStudent = new Student(name, email, password, gender, dob);
-        int id = repository.addUser(newStudent);
-        newStudent.setId(id);
-        userMap.put(id, newStudent);
+    public void registerUser(String name, String email, String password, String gender,String role, LocalDate dob){
+        User newUser;
+        if(!isValid(name, email, password, gender, dob)){
+            throw new IllegalArgumentException("Invalid Registration details");
+        }
+        switch(role){
+                       
+            case "Student":
+                newUser = new Student(name,  email,  password,  gender,  dob);
+                break;
+            case "Staff":
+                newUser = new Staff(name,  email,  password,  gender,  dob);
+                break;
+            case "EquipmentManager":
+                newUser = new EquipmentManager(name,  email,  password,  gender,  dob);
+                break;
+            case "Admin":
+                newUser = new Admin(name,  email,  password,  gender,  dob);
+                break;
+            default :
+                throw new IllegalArgumentException("Unknown role: " + role);
+        }
+        
+        int id = repository.addUser(newUser);
+        newUser.setId(id);
+        userMap.put(id, newUser);
     }
     
     //delete user 
