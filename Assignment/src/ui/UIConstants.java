@@ -19,7 +19,7 @@ public static ImageIcon windowIcon = new ImageIcon(UIConstants.class.getResource
     public static ImageIcon MMlogo_square = new ImageIcon(sizedMMlogo_square);
 
     // main background image(readily scaled) thats used everywhere
-    public static ImageIcon bgImage = new ImageIcon(UIConstants.class.getResource("/images/mainbg.jpg"));
+    public static ImageIcon bgImage = new ImageIcon(UIConstants.class.getResource("/images/mainbg.png"));
     public static Image sizedBgImage = bgImage.getImage().getScaledInstance(1366, 768, Image.SCALE_SMOOTH);
     public static ImageIcon mainBg = new ImageIcon(sizedBgImage);
     

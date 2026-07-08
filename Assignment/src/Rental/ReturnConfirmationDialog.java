@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import Equipment.Equipment;
+import Billing.BillingController;
 import ui.UIConstants;
 import core.SystemFacade;
 
@@ -11,6 +14,7 @@ public class ReturnConfirmationDialog extends JDialog {
     private UIConstants uiConst = new UIConstants();
     private boolean isReturned = false;
     private boolean isDamaged = false;
+    private BillingController billingInstance;
 
     public ReturnConfirmationDialog(Window parent, int rentalId, int id, String name, SystemFacade facade) {
         super(parent, "Return Confirmation", Dialog.ModalityType.APPLICATION_MODAL);
@@ -53,7 +57,6 @@ public class ReturnConfirmationDialog extends JDialog {
         nameTextField.setEnabled(false);
         
         JCheckBox returnStatus = new JCheckBox("Equipment returned fully?");
-        
         returnStatus.setBackground(uiConst.LightPurple);
         
         JCheckBox damageStatus = new JCheckBox("Equipment damaged?");

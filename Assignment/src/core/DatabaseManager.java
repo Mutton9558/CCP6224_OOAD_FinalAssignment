@@ -71,7 +71,7 @@ public class DatabaseManager {
                 bookedDate DATE NOT NULL,
                 duration INTEGER NOT NULL,
                 returnStatus BOOLEAN,
-                lateStatus BOOLEAN NOT NULL,    
+                lateStatus BOOLEAN,    
                 FOREIGN KEY (equipment) REFERENCES Equipments(equipment_id)
             );
             """;

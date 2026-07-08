@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.time.LocalDate;
 
 public class UserDB {
+    
+    public UserDB(){}
 
     public UserDB(){
         
@@ -44,7 +46,7 @@ public class UserDB {
     
     public int addUser(User user){
         
-        String insertReq =  "INSERT OR IGNORE INTO Users ( user_name, email, password, gender, dob, role) VALUES (?,?,?,?,?,?)";
+        String insertReq =  "INSERT OR IGNORE INTO Users ( user_name, email, password, gender, date_of_birth, role) VALUES (?,?,?,?,?,?)";
         try(Connection conn = core.DatabaseManager.getConnection()){
             try(PreparedStatement statement = conn.prepareStatement(insertReq, Statement.RETURN_GENERATED_KEYS)){
                 statement.setString(1, user.getName());

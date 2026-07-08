@@ -1,5 +1,5 @@
 package core;
-
+import User.*;
 import Equipment.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -17,11 +17,58 @@ public class SystemFacade {
     public record EquipmentPanelContext(User user, Map<Category, List<Equipment>> equipments) {}
     public record AddEquipmentContext(List<String> categoryNames){}
     public record RentedEquipmentContext(List<Equipment> cur, List<Equipment> prev){}
+    public record UserProfileContext(String name, String email, String gender, LocalDate dob, String role, double discount){}
     public record ReturnConfirmationContext(List<Rental> rentCur){}
     
     public SystemFacade(SystemServices services){
         this.services = services;
     }
+    
+    //ALL USER CONTEXTS
+    public User login(int user_id, String password){
+        User user = services.userService().loginUser(user_id, password);
+        if(user==null){
+            throw new IllegalArgumentException("Invalid user ID or password");
+        }
+        return user;
+    }
+    
+    public void logout(){
+        services.userService().logoutUser();
+    }
+    
+    public UserProfileContext getUserProfileData(){
+        User user = services.userService().getCurrentUser();
+        if(user == null){
+            throw new IllegalStateException("No user is currently logged in");
+        }
+        return new UserProfileContext(user.getName(), user.getEmail(), user.getGender(), user.getDateOfBirth(), user.returnRole(), user.getDiscount());
+    }
+    
+    public void updateProfile(String newName, String newEmail, String newPassword, String newGender, LocalDate newDob){
+        User user = services.userService().getCurrentUser();
+        if(user == null){
+            throw new IllegalStateException("No user is currently logged in");
+        }
+        boolean success = services.userService().updateUserProfile(user, newName, newEmail, newPassword, newGender, newDob);
+        if(!success){
+            throw new RuntimeException("Failed to updated user profile!");
+        }
+    }
+    
+    public boolean deleteCurrentUser(){
+        User user = services.userService().getCurrentUser();
+        if(user == null){
+            throw new IllegalStateException("No user is currently logged in");
+        }
+        boolean success = services.userService().deleteUser(user.getId());
+        if(success){
+            services.userService().logoutUser();
+        }
+        return success;
+    }
+    
+    //END OF USER CONTEXTS
     
     public EquipmentPanelContext getEquipmentPanelData(){
         Map<Category, List<Equipment>> equipmentsByCategoryMap = new HashMap<>();
@@ -75,6 +122,17 @@ public class SystemFacade {
             }
         });
         return (new ReturnConfirmationContext(cur));
+    }
+
+    public List<Rental>getRentalsByUserID( int userID){
+        Map<Integer, Rental> rentalMap = services.rentalService().fetchMap();
+        List<Rental> temp = new ArrayList<>();
+        rentalMap.forEach((id, val) -> {
+            if(val.getId() == id && val.getUserId() == userID){
+                temp.add(val);
+            }
+        });
+        return temp;
     }
     
     public void addNewEquipment(String name, String categoryName, String rentalRate, String status) {
@@ -224,10 +282,18 @@ public class SystemFacade {
     public List<Bill> fetchUnpaidBills(){
         List<Bill> temp = services.billingService().getUnpaidBills();
         List<Bill> temp2 = new ArrayList<>();
+        int currentUserId = services.userService().getCurUser().getId();
         for(Bill b: temp){
-            int rentalId = b.getRentalId();
-            int userId = services.rentalService().fetchMap().get(rentalId).getUserId();
-            if(services.userService().getCurUser().getId() == userId){
+//            int rentalId = b.getRentalId();
+//            int userId = services.rentalService().fetchMap().get(rentalId).getUserId();
+            Rental rental = services.rentalService().fetchMap().get(b.getRentalId());
+            if(rental == null){
+                continue;
+            }
+//            if(services.userService().getCurUser().getId() == userId){
+//                temp2.add(b);
+//            }
+            if(rental.getUserId() == currentUserId){
                 temp2.add(b);
             }
         }
@@ -265,7 +331,7 @@ public class SystemFacade {
         Rental target = services.rentalService().fetchMap().get(rental_id);
         Equipment e = target.getEquipment();
         if(!fully_return){
-            services.rentalService().editRental(rental_id, target.getDuration(), false, LocalDate.now().isAfter(target.getDueDate()));
+            services.rentalService().editRental(rental_id, false, LocalDate.now().isAfter(target.getDueDate()));
             services.equipmentService().editEquipment(e.getId(), e.getRate(), "Rented Out");
         } else {
             if(damaged){

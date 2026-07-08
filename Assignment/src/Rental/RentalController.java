@@ -61,11 +61,10 @@ public class RentalController {
         return id != -1;
     }
     
-    public boolean editRental(int id, int new_duration, Boolean return_status, boolean late_status){
+    public boolean editRental(int id, Boolean return_status, boolean late_status){
         boolean success = repository.update(id, return_status, late_status);
         if(success){
             Rental record = rentalMap.get(id);
-            record.setDuration(new_duration);
             record.setReturnStatus(return_status);
             record.setLateStatus(late_status);
         }

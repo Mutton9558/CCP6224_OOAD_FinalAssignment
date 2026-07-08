@@ -46,7 +46,7 @@ public class RentalDB {
                 e.printStackTrace();
             }
         }
-        
+
         public Map<Integer, Rental> fetchAllRentals(Map<Integer, Equipment> equipmentMap){
             Map<Integer, Rental> temp = new HashMap<>();
             
@@ -77,7 +77,7 @@ public class RentalDB {
         }
         
         public int create(int user_id, Equipment equipment, int duration){
-            String insertReq = "INSERT OR IGNORE INTO Rentals VALUES (?, ?, ?, ?, ?, ?)";
+            String insertReq = "INSERT INTO Rentals VALUES (?, ?, ?, ?, ?, ?)";
             LocalDate bookedDate = LocalDate.now();
             LocalDate dueDate = bookedDate.plusDays(duration);
             boolean returnStatus = false;
