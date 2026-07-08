@@ -5,18 +5,21 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import Equipment.Equipment;
-import Equipment.EquipmentController;
+import core.SystemFacade;
 import ui.UIConstants;
 
 public class RentalCreationDialog extends JDialog {
     private UIConstants uiConst = new UIConstants();
     private JTextField userIdTextField;
-    private JTextField equipmentTextField;
     private JSpinner durationSpinner;
+    private SystemFacade facade;
+    private int equipment_id;
 
-    public RentalCreationDialog(Window parent, EquipmentController equipmentInstance, RentalController rentalController) {
+    public RentalCreationDialog(Window parent, SystemFacade facade, int equipment_id) {
         super(parent, "Equipment Rental", Dialog.ModalityType.APPLICATION_MODAL);
         this.setSize(800, 600);
+        this.facade = facade;
+        this.equipment_id = equipment_id;
 
         // create a content panel to hold everything
         JPanel contentPanel = new JPanel();
@@ -31,23 +34,23 @@ public class RentalCreationDialog extends JDialog {
         headerLabel.setFont(new Font("Arial", Font.BOLD, 24));
         headerLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel idLabel = new JLabel("User ID");
-        idLabel.setForeground(Color.WHITE);
-        idLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        idLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+//        JLabel idLabel = new JLabel("User ID");
+//        idLabel.setForeground(Color.WHITE);
+//        idLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+//        idLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+//
+//        userIdTextField = new JTextField(30);
+//        userIdTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
+//        userIdTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, userIdTextField.getPreferredSize().height));
 
-        userIdTextField = new JTextField(30);
-        userIdTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        userIdTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, userIdTextField.getPreferredSize().height));
-
-        JLabel equipmentFieldLabel = new JLabel("Equipment ID");
-        equipmentFieldLabel.setForeground(Color.WHITE);
-        equipmentFieldLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        equipmentFieldLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        equipmentTextField = new JTextField(30);
-        equipmentTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        equipmentTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, equipmentTextField.getPreferredSize().height));
+//        JLabel equipmentFieldLabel = new JLabel("Equipment ID");
+//        equipmentFieldLabel.setForeground(Color.WHITE);
+//        equipmentFieldLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+//        equipmentFieldLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+//
+//        equipmentTextField = new JTextField(30);
+//        equipmentTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
+//        equipmentTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, equipmentTextField.getPreferredSize().height));
 
         JLabel durationLabel = new JLabel("Duration (days)");
         durationLabel.setForeground(Color.WHITE);
@@ -63,20 +66,20 @@ public class RentalCreationDialog extends JDialog {
         JButton confirmBtn = new JButton("Create");
         confirmBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         confirmBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        confirmBtn.addActionListener(e -> onCreate(equipmentInstance, rentalController));
+        confirmBtn.addActionListener(e -> onCreate());
         confirmPanel.add(confirmBtn);
         confirmPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         contentPanel.add(headerLabel);
         contentPanel.add(Box.createVerticalStrut(20));
-        contentPanel.add(idLabel);
-        contentPanel.add(Box.createVerticalStrut(5));
-        contentPanel.add(userIdTextField);
-        contentPanel.add(Box.createVerticalStrut(10));
-        contentPanel.add(equipmentFieldLabel);
-        contentPanel.add(Box.createVerticalStrut(5));
-        contentPanel.add(equipmentTextField);
-        contentPanel.add(Box.createVerticalStrut(10));
+//        contentPanel.add(idLabel);
+//        contentPanel.add(Box.createVerticalStrut(5));
+//        contentPanel.add(userIdTextField);
+//        contentPanel.add(Box.createVerticalStrut(10));
+//        contentPanel.add(equipmentFieldLabel);
+//        contentPanel.add(Box.createVerticalStrut(5));
+//        contentPanel.add(equipmentTextField);
+//        contentPanel.add(Box.createVerticalStrut(10));
         contentPanel.add(durationLabel);
         contentPanel.add(Box.createVerticalStrut(5));
         contentPanel.add(durationSpinner);
@@ -88,43 +91,18 @@ public class RentalCreationDialog extends JDialog {
         this.setLocationRelativeTo(parent);
     }
 
-    public void onCreate(EquipmentController equipmentInstance, RentalController rentalController) {
-        String userIdText = userIdTextField.getText().trim();
-        String equipmentIdText = equipmentTextField.getText().trim();
-
-        if (userIdText.isEmpty() || equipmentIdText.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter both User ID and Equipment ID.",
-                    "Missing Information", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        int userId;
-        int equipmentId;
-        try {
-            userId = Integer.parseInt(userIdText);
-            equipmentId = Integer.parseInt(equipmentIdText);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "User ID and Equipment ID must be numbers.",
-                    "Invalid Input", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        Equipment equipment = equipmentInstance.getEquipmentByID(equipmentId);
-        if (equipment == null) {
-            JOptionPane.showMessageDialog(this, "No equipment found with ID " + equipmentId + ".",
-                    "Invalid Equipment", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        int duration = (Integer) durationSpinner.getValue();
-
-        boolean success = rentalController.addRental(userId, equipment, duration);
-        if (success) {
-            JOptionPane.showMessageDialog(this, "Rental created successfully.");
-            this.dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Failed to create rental. Please try again.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+    public void onCreate() {
+        String userIdText = (String) userIdTextField.getText();
+        String duration = (String) durationSpinner.getValue();
+        
+        try{
+            this.facade.createRental(equipment_id, duration);
+            JOptionPane.showMessageDialog(null, "Successfully created rental!");
+            dispose();
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(null, "Ensure your inputs are correct!", "Invalid Input!", JOptionPane.ERROR_MESSAGE);
+        } catch (RuntimeException e){
+            JOptionPane.showMessageDialog(null, "Could not add Rental to DB", "Internal Server Exception", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

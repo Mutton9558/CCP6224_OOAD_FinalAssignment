@@ -34,6 +34,6 @@ public class Student extends User{
         
     @Override
     public void setDiscountRate(){
-        setDiscount(0.25);
+        setDiscount(0.25f);
     }
 }

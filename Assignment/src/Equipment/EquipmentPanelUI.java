@@ -11,10 +11,12 @@ import ui.UIConstants;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import User.User;
+import User.Permission;
 
 public class EquipmentPanelUI extends JPanel {
     private final UIConstants uiConstants = new UIConstants();
-    private boolean canEdit;
+    private User curUser;
     private core.SystemFacade facade;
     private Map<Category, List<Equipment>> equipmentData;
     private core.SystemFacade.EquipmentPanelContext data;
@@ -38,7 +40,7 @@ public class EquipmentPanelUI extends JPanel {
         setBackground(uiConstants.LightPurple);
 
         this.data = facade.getEquipmentPanelData();
-        this.canEdit = data.canEdit();
+        this.curUser = data.user();
         this.equipmentData = data.equipments();
         
         refreshData();
@@ -122,7 +124,7 @@ public class EquipmentPanelUI extends JPanel {
         newCategoryBtn.setForeground(Color.WHITE);
         newCategoryBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         newCategoryBtn.setFocusPainted(false);
-        newCategoryBtn.setVisible(canEdit);
+        newCategoryBtn.setVisible(this.curUser.hasPermission(Permission.ADD_CATEGORY));
         newCategoryBtn.addActionListener(e -> {
             Window window = SwingUtilities.getWindowAncestor(this);
             JDialog createCategory = new AddCategoryUI(window, facade);
@@ -157,7 +159,7 @@ public class EquipmentPanelUI extends JPanel {
         editCategoryBtn.setForeground(Color.WHITE);
         editCategoryBtn.setFont(new Font("Arial", Font.PLAIN, 12));
         editCategoryBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        editCategoryBtn.setVisible(canEdit);
+        editCategoryBtn.setVisible(this.curUser.hasPermission(Permission.EDIT_CATEGORY));
         editCategoryBtn.addActionListener(e -> {
             Window parent = SwingUtilities.getWindowAncestor(this);
             JDialog editCategoryDialog = new EditCategoryUI(parent, category, facade);
@@ -171,7 +173,7 @@ public class EquipmentPanelUI extends JPanel {
         addEquipmentBtn.setForeground(Color.WHITE);
         addEquipmentBtn.setFont(new Font("Arial", Font.PLAIN, 12));
         addEquipmentBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        addEquipmentBtn.setVisible(canEdit);
+        addEquipmentBtn.setVisible(this.curUser.hasPermission(Permission.ADD_EQUIPMENT));
         addEquipmentBtn.addActionListener(e -> {
             Window parent = SwingUtilities.getWindowAncestor(this);
             JDialog addEquipmentDialog = new AddEquipmentUI(parent, category.getName(), facade);
@@ -277,7 +279,7 @@ public class EquipmentPanelUI extends JPanel {
             Window parent = SwingUtilities.getWindowAncestor(EquipmentPanelUI.this);
             Equipment equipment = equipmentList.get(modelRow);
 
-            JDialog equipmentDetails = new EquipmentDetailsUI(parent, equipment, canEdit, facade);
+            JDialog equipmentDetails = new EquipmentDetailsUI(parent, equipment, curUser.hasPermission(Permission.EDIT_EQUIPMENT), facade);
             equipmentDetails.setVisible(true);
 
             equipmentData = facade.getEquipmentPanelData().equipments();

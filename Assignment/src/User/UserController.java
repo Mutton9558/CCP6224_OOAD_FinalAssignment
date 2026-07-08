@@ -26,6 +26,10 @@ public class UserController {
         return this.userMap;
     }
       
+    public User getCurUser(){
+        return currentUser;
+    }
+    
     //register
     public void registerUser(UserDB repository, String name, String email, String password, String gender, LocalDate dob){
         User newStudent = new Student(name, email, password, gender, dob);
