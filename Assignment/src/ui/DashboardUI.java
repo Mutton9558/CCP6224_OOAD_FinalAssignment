@@ -41,16 +41,16 @@ public class DashboardUI extends JPanel{
         
      // shawn's og code in previous to be reused
      // Iterates over dashboard panels and creates the appropriate side button and content panel
-//        for(DashboardPanel i : dashboardPanels){
-//           JButton sidebarButton = new JButton(i.getName());
-//           sidebarButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, sidebarButton.getPreferredSize().height));
-//           sidebarButton.setVisible(i.isVisible());
-//           contentPanel.add(i.getPanel(), i.getName());
-//           sidebarButton.addActionListener(event -> {
-//                cardlayout2.show(contentPanel, i.getName());
-//            });
-//           sidePanel.add(sidebarButton);
-//        }
+        for(DashboardPanel i : dashboardPanels){
+           JButton sidebarButton = new JButton(i.getName());
+           sidebarButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, sidebarButton.getPreferredSize().height));
+           sidebarButton.setVisible(i.isVisible());
+           contentPanel.add(i.getPanel(), i.getName());
+           sidebarButton.addActionListener(event -> {
+                cardlayout2.show(contentPanel, i.getName());
+            });
+           sidePanel.add(sidebarButton);
+        }
         back_btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, back_btn.getPreferredSize().height));
         back_btn.setVisible(true);
         sidePanel.add(back_btn);
