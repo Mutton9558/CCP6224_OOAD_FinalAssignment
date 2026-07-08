@@ -76,6 +76,17 @@ public class SystemFacade {
         });
         return (new ReturnConfirmationContext(cur));
     }
+
+    public List<Rental>getRentalsByUserID( int userID){
+        Map<Integer, Rental> rentalMap = services.rentalService().fetchMap();
+        List<Rental> temp = new ArrayList<>();
+        rentalMap.forEach((id, val) -> {
+            if(val.getId() == id && val.getUserId() == userID){
+                temp.add(val);
+            }
+        });
+        return temp;
+    }
     
     public void addNewEquipment(String name, String categoryName, String rentalRate, String status) {
         // validate empty fields

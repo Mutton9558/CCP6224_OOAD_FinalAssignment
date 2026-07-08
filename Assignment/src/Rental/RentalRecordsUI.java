@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import core.SystemFacade;
 
 import Equipment.*;
 import ui.UIConstants;
@@ -27,12 +28,12 @@ public class RentalRecordsUI extends JPanel {
     private JTable table;
 
     // Kept so the search feature can call back into the controller/user context
-    private RentalController controller;
+    private final SystemFacade facade;
 
     private JTextField searchField;
 
-    public RentalRecordsUI(RentalController controller) {
-        this.controller = controller;
+    public RentalRecordsUI(SystemFacade facade) {
+        this.facade = facade;
 
         this.setLayout(new GridBagLayout());
         GridBagConstraints adj = new GridBagConstraints();
@@ -219,7 +220,7 @@ public class RentalRecordsUI extends JPanel {
             return;
         }
 
-        List<Rental> results = controller.getRentalsByUserID(userID);
+        List<Rental> results = facade.getRentalsByUserID(userID);
         this.rentalList = (results != null) ? results : new ArrayList<>();
         loadRentals();
 
