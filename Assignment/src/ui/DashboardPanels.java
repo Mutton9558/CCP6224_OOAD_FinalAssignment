@@ -3,23 +3,23 @@ import Equipment.EquipmentPanelUI;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import User.User;
+import User.*;
 import User.Permission;
+import core.SystemFacade;
 
-
+// FOR TESTING PURPOSES, ALL PERMISSIONS ARE ONE !!
 public class DashboardPanels{
     
-    User current_user;
-    
+    private final User current_user;
+    private final SystemFacade facade;
     private ArrayList<DashboardPanel> panels = new ArrayList<>();
     
-    public class EquipmentPanelUI implements DashboardPanel{
+    //EQUIP for equipment managers
+    public class EquipmentPanel implements DashboardPanel{
         
-        private core.SystemFacade facade;
-        private final EquipmentPanelUI panelUI;
-        
-        public EquipmentPanelUI(){ 
-            this.panelUI = new EquipmentPanelUI(true, facade);
+        private final Equipment.EquipmentPanelUI panelUI;
+        public EquipmentPanel(SystemFacade facade){ 
+            this.panelUI = new Equipment.EquipmentPanelUI(facade);
         }
         
         @Override
@@ -29,25 +29,154 @@ public class DashboardPanels{
         
         @Override
         public boolean isVisible(){
-            return current_user.hasPermission(Permission.VIEW_EQUIPMENT);
+            return current_user.hasPermission(Permission.VIEW_PROFILE);
         }
         
         @Override
         public JPanel getPanel(){
             return panelUI;
         }
-        
-        
-        
     }
     
-    public DashboardPanels(){
+    public class RentedEquipmentPanel implements DashboardPanel{
         
+        private final Rental.RentedEquipmentUI panelUI;
+        public RentedEquipmentPanel(SystemFacade facade){
+            this.panelUI = new Rental.RentedEquipmentUI(facade);
+        }
         
+        @Override
+        public String getName(){
+            return "Rented Equipment";
+        }
+        
+        @Override
+        public boolean isVisible(){
+            return current_user.hasPermission(Permission.VIEW_PROFILE);
+        }
+        
+        @Override
+        public JPanel getPanel(){
+            return panelUI;
+        }
     }
     
+    // FOR GENERAL USERS
+    //My Rentals CANNOT PASS CONTROLLER, PLS PASS FACADE!!!!!!!!!!!!
+    public class RentalPanel implements DashboardPanel{
+        
+        private final Rental.RentalRecordsUI panelUI;
+        public RentalPanel(SystemFacade facade){
+            this.panelUI = new Rental.RentalRecordsUI(facade);
+        }
+        
+        @Override
+        public String getName(){
+            return "Rentals";
+        }
+        
+        @Override
+        public boolean isVisible(){
+            return current_user.hasPermission(Permission.VIEW_PROFILE);
+        }
+        
+        @Override
+        public JPanel getPanel(){
+            return panelUI;
+        }
+    }
     
+    public class BillingPanel implements DashboardPanel{
+        
+        private final Billing.BillPaymentUI panelUI;
+        public BillingPanel(SystemFacade facade){
+            this.panelUI = new Billing.BillPaymentUI(facade);
+        }
+        
+        @Override
+        public String getName(){
+            return "Make Payment";
+        }
+        
+        @Override
+        public boolean isVisible(){
+            return current_user.hasPermission(Permission.VIEW_PROFILE);
+        }
+        
+        @Override
+        public JPanel getPanel(){
+            return panelUI;
+        }
+    }
     
+    public class EquipmentReturnPanel implements DashboardPanel{
+        
+        private final Rental.ReturnConfirmationUI panelUI;
+        public EquipmentReturnPanel(SystemFacade facade){
+            this.panelUI = new Rental.ReturnConfirmationUI(facade);
+        }
+        
+        @Override
+        public String getName(){
+            return "Equipment Returns";
+        }
+        
+        @Override
+        public boolean isVisible(){
+            return current_user.hasPermission(Permission.VIEW_PROFILE);
+        }
+        
+        @Override
+        public JPanel getPanel(){
+            return panelUI;
+        }
+    }
+        
+    public class RegisterUserPanel implements DashboardPanel{
+        private final JPanel panelUI;
+        public RegisterUserPanel(SystemFacade facade, Window parentWindow){
+            panelUI = new JPanel();
+            panelUI.setOpaque(false);
+                
+            JButton register_btn = new JButton("Register New User");
+            register_btn.addActionListener( e-> {
+                RegisterUserDialog dialog = new RegisterUserDialog(parentWindow, facade);
+                dialog.setVisible(true);
+            });
+                
+            panelUI.add(register_btn);
+        }
+        
+        @Override
+        public String getName(){
+            return "Register New User";
+        }
+        
+        @Override
+        public boolean isVisible(){
+            return current_user.hasPermission(Permission.VIEW_PROFILE);
+        }
+        
+        @Override
+        public JPanel getPanel(){
+            return panelUI;
+        }         
+    }
     
+    public DashboardPanels(core.SystemFacade facade, User current_user, Window parentWindow){
+        
+        this.facade = facade;
+        this.current_user = current_user;
+        this.panels.add(new EquipmentPanel(facade));
+        this.panels.add(new RentedEquipmentPanel(facade));
+        this.panels.add(new RentalPanel(facade));
+        this.panels.add(new BillingPanel(facade));
+        this.panels.add(new EquipmentReturnPanel(facade));
+        this.panels.add(new RegisterUserPanel(facade, parentWindow));
+
+    }
     
+    public ArrayList<DashboardPanel> returnDashboardPanels(){
+        return this.panels;
+    }   
 }

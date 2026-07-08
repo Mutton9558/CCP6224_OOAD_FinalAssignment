@@ -18,12 +18,28 @@ public class UserController {
         this.userMap = repository.fetchAllUsers();
     }
     
+    //for main
     public static UserController getInstance(UserDB repository){
-        return instance = new UserController(repository);
+        if(instance == null){
+            return instance = new UserController(repository);    
+        }
+        return instance;
     }
+ 
+//    public static UserController getInstance(){
+//        if(instance != null){
+//            throw new IllegalStateException("Must initialize the user controller first!");
+//        }
+//        return instance;
+//    }
     
     public Map<Integer, User> fetchMap(){
         return this.userMap;
+    }
+    
+    //gets the current user 
+    public User getCurrentUser(){
+        return currentUser;
     }
       
     public User getCurUser(){
@@ -31,11 +47,32 @@ public class UserController {
     }
     
     //register
-    public void registerUser(UserDB repository, String name, String email, String password, String gender, LocalDate dob){
-        User newStudent = new Student(name, email, password, gender, dob);
-        int id = repository.addUser(newStudent);
-        newStudent.setId(id);
-        userMap.put(id, newStudent);
+    public void registerUser(String name, String email, String password, String gender,String role, LocalDate dob){
+        User newUser;
+        if(!isValid(name, email, password, gender, dob)){
+            throw new IllegalArgumentException("Invalid Registration details");
+        }
+        switch(role){
+                       
+            case "Student":
+                newUser = new Student(name,  email,  password,  gender,  dob);
+                break;
+            case "Staff":
+                newUser = new Staff(name,  email,  password,  gender,  dob);
+                break;
+            case "EquipmentManager":
+                newUser = new EquipmentManager(name,  email,  password,  gender,  dob);
+                break;
+            case "Admin":
+                newUser = new Admin(name,  email,  password,  gender,  dob);
+                break;
+            default :
+                throw new IllegalArgumentException("Unknown role: " + role);
+        }
+        
+        int id = repository.addUser(newUser);
+        newUser.setId(id);
+        userMap.put(id, newUser);
     }
     
     //delete user 
@@ -44,21 +81,25 @@ public class UserController {
   }
         
     //login
-    public void login(int id, String password){
-        if(userMap.containsKey(id)){
-            User loginAttemptUser = userMap.get(id);
-            if(loginAttemptUser.getPassword().equals(password)){
-                System.out.println("Successful Login!");
-                this.currentUser = loginAttemptUser;
-            }
-            else{
-                System.out.println("No such user exists!");
-            }
+    public User loginUser(int id, String password){
+        
+        User loginAttemptUser = userMap.get(id);
+
+        if(loginAttemptUser == null){
+            return null;
         }
-    }
+        
+        if(!loginAttemptUser.getPassword().equals(password)){
+            return null;
+        } 
+        
+        this.currentUser = loginAttemptUser;
+        return loginAttemptUser;
+        }
+    
 
     //logout 
-    public void logout(){
+    public void logoutUser(){
         currentUser = null;
     }
     

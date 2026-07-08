@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import ui.UIConstants;
 import java.util.List;
 import java.util.ArrayList;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
@@ -18,6 +19,9 @@ import Equipment.Equipment;
 public class ReturnConfirmationUI extends JPanel{
     private UIConstants uiConst = new UIConstants();
     private List<Rental> rentals;
+    private List<Rental> visibleRentals;
+    private DefaultTableModel model;
+    private JTable returnConfirmationTable;
     private SystemFacade facade;
     
     private class confirmBtn extends JButton {
@@ -31,57 +35,71 @@ public class ReturnConfirmationUI extends JPanel{
         }
     }
     
-    public ReturnConfirmationUI(SystemFacade facade){
+    public ReturnConfirmationUI(SystemFacade facade) {
         this.facade = facade;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         setBackground(uiConst.LightPurple);
-        
+
         JLabel headerLabel = new JLabel("Equipment Return Confirmation");
         headerLabel.setForeground(Color.WHITE);
         headerLabel.setFont(new Font("Arial", Font.BOLD, 28));
         headerLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+        String[] columns = {"Equipment ID", "Equipment Name", "Category", "Expected Return Date", "Confirm Return"};
+
+        // build the model empty first, then populate via the shared loadData() method
+        model = new DefaultTableModel(new Object[0][], columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 4;
+            }
+        };
+
+        returnConfirmationTable = new JTable(model);
+        returnConfirmationTable.setAutoCreateRowSorter(true);
+        returnConfirmationTable.setRowHeight(32);
+        returnConfirmationTable.getColumnModel().getColumn(4).setCellRenderer(new TableButtonRenderer());
+        returnConfirmationTable.getColumnModel().getColumn(4).setCellEditor(new TableButtonEditor(returnConfirmationTable));
+
+        JScrollPane rentedEquipmentScrollPane = new JScrollPane(returnConfirmationTable);
+        rentedEquipmentScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        this.add(headerLabel);
+        this.add(Box.createVerticalStrut(20));
+        this.add(rentedEquipmentScrollPane);
+        this.add(Box.createVerticalStrut(20));
+
+        loadData();
+    }
+    
+
+    public void refresh() {
+        loadData();
+    }
+
+    private void loadData() {
         this.rentals = facade.getReturnConfirmationContext().rentCur();
-        List<Object[]> rentedEquipments = new ArrayList<>();
-        
+        this.visibleRentals = new ArrayList<>();
+
+        model.setRowCount(0);
+
         for (Rental r : this.rentals) {
             if (Boolean.TRUE.equals(r.getReturnStatus())) continue;
-            
+
             Equipment eq = r.getEquipment();
             Object[] row = new Object[5];
             row[0] = String.valueOf(r.getId());
             row[1] = eq.getName();
             row[2] = eq.getCategory();
-            row[3] = r.getDueDate().format(dateFormatter);
+            row[3] = (LocalDate) r.getDueDate();
             row[4] = "Confirm Return";
-            rentedEquipments.add(row);
+
+            model.addRow(row);
+            visibleRentals.add(r); // stays in lockstep with the table rows
         }
-        
-        String[] columns = {"Equipment ID", "Equipment Name", "Category", "Expected Return Date", "Confirm Return"};
-        
-        DefaultTableModel model = new DefaultTableModel(rentedEquipments.toArray(new Object[0][]), columns) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return column == 4; 
-            }
-        };
-        
-        JTable rentedEquipmentTable = new JTable(model);
-        rentedEquipmentTable.setAutoCreateRowSorter(true);
-        rentedEquipmentTable.setRowHeight(32);
-        rentedEquipmentTable.getColumnModel().getColumn(4).setCellRenderer(new TableButtonRenderer());
-        rentedEquipmentTable.getColumnModel().getColumn(4).setCellEditor(new TableButtonEditor(rentedEquipmentTable));
-        JScrollPane rentedEquipmentScrollPane = new JScrollPane(rentedEquipmentTable);
-        rentedEquipmentScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        this.add(headerLabel);
-        this.add(Box.createVerticalStrut(20));
-        this.add(rentedEquipmentScrollPane);
-        this.add(Box.createVerticalStrut(20));
     }
-    
+
     private class TableButtonRenderer implements TableCellRenderer {
         private final JButton renderingButton = new confirmBtn();
 
@@ -121,7 +139,12 @@ public class ReturnConfirmationUI extends JPanel{
                 Window parent = SwingUtilities.getWindowAncestor(table);
                 int id = Integer.parseInt((String) table.getModel().getValueAt(modelRow, 0));
                 String name = (String) table.getModel().getValueAt(modelRow, 1);
-                JDialog returnConfirmation = new ReturnConfirmationDialog(parent, rentals.get(modelRow).getId(), id, name, facade);
+                Rental targetRental = visibleRentals.get(modelRow);
+
+                JDialog returnConfirmation = new ReturnConfirmationDialog(
+                        parent, targetRental.getId(), id, name, facade,
+                        ReturnConfirmationUI.this::refresh
+                );
                 returnConfirmation.setVisible(true);
             }
             fireEditingStopped();
