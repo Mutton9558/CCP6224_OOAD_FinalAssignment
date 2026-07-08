@@ -35,6 +35,6 @@ public class Staff extends User{
         
     @Override
     public void setDiscountRate(){
-        setDiscount(0.3);
+        setDiscount(0.3f);
     }
 }

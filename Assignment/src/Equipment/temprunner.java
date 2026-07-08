@@ -24,13 +24,12 @@ public class temprunner{
         CategoryController categoryService = CategoryController.getInstance(categoryRepo);
         EquipmentController equipmentService = EquipmentController.getInstance(equipmentRepo, categoryService);
         RentalController rentalService = RentalController.getInstance(rentalRepo, equipmentService);
-        BillingController billingService = BillingController.getInstance(billingRepo);
         UserController userService = UserController.getInstance(userRepo);
+        BillingController billingService = BillingController.getInstance(billingRepo, userService);
         
         core.SystemServices services = new core.SystemServices(categoryService, equipmentService, rentalService, billingService, userService);
         core.SystemFacade facade = new core.SystemFacade(services);
         
-        // Instantiate your new JPanel
         EquipmentPanelUI listPanel = new EquipmentPanelUI(facade);
         // Highly recommended: Wrap it in a scroll pane so content can scroll 
         JScrollPane scrollPane = new JScrollPane(listPanel);
