@@ -57,7 +57,6 @@ public class ReturnConfirmationUI extends JPanel{
             row[3] = r.getDueDate().format(dateFormatter);
             row[4] = "Confirm Return";
             rentedEquipments.add(row);
-            unreturnedRentals.add(r);
         }
         
         String[] columns = {"Equipment ID", "Equipment Name", "Category", "Expected Return Date", "Confirm Return"};
@@ -120,7 +119,6 @@ public class ReturnConfirmationUI extends JPanel{
                 int modelRow = table.convertRowIndexToModel(visualRow);
                 
                 Window parent = SwingUtilities.getWindowAncestor(table);
-                Rental clickedRental = unreturnedRentals.get(modelRow);
                 int id = Integer.parseInt((String) table.getModel().getValueAt(modelRow, 0));
                 String name = (String) table.getModel().getValueAt(modelRow, 1);
                 JDialog returnConfirmation = new ReturnConfirmationDialog(parent, rentals.get(modelRow).getId(), id, name, facade);

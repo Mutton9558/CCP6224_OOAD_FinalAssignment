@@ -92,7 +92,6 @@ public class ReturnConfirmationDialog extends JDialog {
         });
         confirmBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         confirmBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        confirmBtn.addActionListener(e -> onConfirm(billingInstance, rental));
         confirmPanel.add(confirmBtn);
         confirmPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
@@ -115,19 +114,5 @@ public class ReturnConfirmationDialog extends JDialog {
         this.add(contentPanel);
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(parent);
-    }
-
-    public void onConfirm(BillingController billingInstance, Rental rental) {
-        if (isDamaged) {
-            billingInstance.createDamageBill(rental);
-            JOptionPane.showMessageDialog(this, "Equipment returned successfully with damage bill.");
-            this.dispose();
-        } else if (isReturned){
-            JOptionPane.showMessageDialog(this, "Equipment returned successfully.");
-            this.dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Failed to confirm return. Please try again.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-        }
     }
 }

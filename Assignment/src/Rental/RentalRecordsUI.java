@@ -63,7 +63,7 @@ public class RentalRecordsUI extends JPanel {
 
         String[] columns = new String[5];
         columns[0] = "Rental ID";
-        columns[1] = "Booked User";
+        columns[1] = "Booked User UI";
         columns[2] = "Equipment";
         columns[3] = "Due Date";
         columns[4] = "Status";
@@ -116,9 +116,9 @@ public class RentalRecordsUI extends JPanel {
 
     private void addRow(Rental r) {
         Object[] row = new Object[6];
-        row[0] = r.getId(); // Rental ID
-        row[1] = r.getUserId(); // Booked User [Fix when Elsa pushes to main her User stuff]
-        row[2] = r.getEquipment().getName(); // Equipment Name
+        row[0] = r.getId();
+        row[1] = r.getUserId();
+        row[2] = r.getEquipment().getName();
         row[3] = r.getDueDate() != null ? r.getDueDate().format(DATE_FORMAT) : "N/A";
         row[4] = Boolean.TRUE.equals(r.getReturnStatus())
                 ? "Returned"
