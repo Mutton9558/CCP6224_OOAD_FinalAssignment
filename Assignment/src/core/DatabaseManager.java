@@ -25,7 +25,6 @@ public class DatabaseManager {
                 password VARCHAR NOT NULL,
                 gender VARCHAR NOT NULL,
                 date_of_birth DATE NOT NULL,
-                discount_rate REAL NOT NULL
                 role TEXT NOT NULL
                 );
                                   """;

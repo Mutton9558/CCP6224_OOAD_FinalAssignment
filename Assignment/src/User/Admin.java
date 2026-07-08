@@ -3,8 +3,8 @@ import java.time.LocalDate;
 
 public class Admin extends User{
     
-    public Admin(int id, String name, String email, String password, String gender, LocalDate dob, double discount){
-        super(id, name, email, password, gender, dob, discount);
+    public Admin(int id, String name, String email, String password, String gender, LocalDate dob){
+        super(id, name, email, password, gender, dob);
         setPermissions();
     }
     

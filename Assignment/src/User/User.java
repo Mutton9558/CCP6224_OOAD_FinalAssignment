@@ -16,14 +16,13 @@ public abstract class User{
     private double discount_rate;
     private Set<Permission> permissionSet = EnumSet.noneOf(Permission.class);
 
-    public User(int id, String name, String email, String password, String gender, LocalDate dob, double discount){
+    public User(int id, String name, String email, String password, String gender, LocalDate dob){
         this.user_id = id;
         this.user_name = name;
         this.email = email;
         this.password = password;
         this.gender = gender;
         this.date_of_birth = dob;
-        this.discount_rate = discount;
     }
     
     //abstract methods 
