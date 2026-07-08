@@ -6,20 +6,23 @@ import java.util.List;
 import java.util.ArrayList;
 import Rental.Rental;
 import Equipment.Category;
+import User.UserController;
 
 public class BillingController {
     private Map<Integer, Bill> billMap = new HashMap<>();
     private BillDB repository;
     public static BillingController instance;
+    private UserController userController;
     
-    private BillingController(BillDB repository){
+    private BillingController(BillDB repository, UserController userController){
         this.repository = repository;
         this.billMap = repository.fetchAllBills();
+        this.userController = userController;
     }
     
-    public static BillingController getInstance(BillDB repository){
+    public static BillingController getInstance(BillDB repository, UserController userController){
         if(instance == null){
-            instance = new BillingController(repository);
+            instance = new BillingController(repository, userController);
         }
         
         return instance;
@@ -35,8 +38,7 @@ public class BillingController {
     
     public float applyDiscount(Rental rental){
         float base_fee = calculateFee(rental);
-        Category category = rental.getEquipment().getCategory();
-        return base_fee * category.getDiscount();
+        return base_fee * this.userController.getCurUser().getDiscount();
     }
     
     public float applyPenalty(Rental rental){

@@ -13,7 +13,7 @@ public abstract class User{
     private String password;
     private String gender;
     private LocalDate date_of_birth;
-    private double discount_rate;
+    private float discount_rate;
     private Set<Permission> permissionSet = EnumSet.noneOf(Permission.class);
 
     public User(int id, String name, String email, String password, String gender, LocalDate dob){
@@ -57,7 +57,7 @@ public abstract class User{
     }
     
                 
-    public void setDiscount(double discount){
+    public void setDiscount(float discount){
         this.discount_rate= discount;
     }
     
@@ -87,7 +87,7 @@ public abstract class User{
         return date_of_birth;
     }
     
-        public double getDiscount(){
+    public float getDiscount(){
         return discount_rate;
     }
     

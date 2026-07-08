@@ -8,11 +8,13 @@ import java.util.HashMap;
 import Billing.Bill;
 import Rental.Rental;
 import java.time.LocalDate;
+import User.User;
+import User.Permission;
 
 public class SystemFacade {
     private final SystemServices services;
     
-    public record EquipmentPanelContext(boolean canEdit, Map<Category, List<Equipment>> equipments) {}
+    public record EquipmentPanelContext(User user, Map<Category, List<Equipment>> equipments) {}
     public record AddEquipmentContext(List<String> categoryNames){}
     public record RentedEquipmentContext(List<Equipment> cur, List<Equipment> prev){}
     public record ReturnConfirmationContext(List<Rental> rentCur){}
@@ -23,12 +25,13 @@ public class SystemFacade {
     
     public EquipmentPanelContext getEquipmentPanelData(){
         Map<Category, List<Equipment>> equipmentsByCategoryMap = new HashMap<>();
+        User curUser = services.userService().getCurUser();
         services.categoryService().fetchMap().forEach((id, category) -> {
             List<Equipment> tempList = services.equipmentService().getEquipmentsByCategory(id);
             equipmentsByCategoryMap.put(category, tempList);
         });
-//        will change the true to getting user perm
-        return new EquipmentPanelContext(false, equipmentsByCategoryMap);
+        
+        return new EquipmentPanelContext(curUser, equipmentsByCategoryMap);
     }
     
     public AddEquipmentContext getAddEquipmentContext(){
@@ -63,11 +66,14 @@ public class SystemFacade {
     }
     
     public ReturnConfirmationContext getReturnConfirmationContext(){    
-//        Map<Integer, Rental> rentalMap = services.rentalService().fetchMap();
+        Map<Integer, Rental> rentalMap = services.rentalService().fetchMap();
         List<Rental> cur = new ArrayList<>();
-//        rentalMap.forEach((id, rental) -> {
-//            if(rental.)
-//        });
+        User curUser = services.userService().getCurUser();
+        rentalMap.forEach((id, rental) -> {
+            if(rental.getUserId() == curUser.getId()){
+                cur.add(rental);
+            }
+        });
         return (new ReturnConfirmationContext(cur));
     }
     
@@ -216,20 +222,29 @@ public class SystemFacade {
     }
     
     public List<Bill> fetchUnpaidBills(){
-        return services.billingService().getUnpaidBills();
+        List<Bill> temp = services.billingService().getUnpaidBills();
+        List<Bill> temp2 = new ArrayList<>();
+        for(Bill b: temp){
+            int rentalId = b.getRentalId();
+            int userId = services.rentalService().fetchMap().get(rentalId).getUserId();
+            if(services.userService().getCurUser().getId() == userId){
+                temp2.add(b);
+            }
+        }
+        return temp2;
     }
     
     public boolean payBill(int billId){
         return services.billingService().payBill(billId);
     }
     
-    public void createRental(String userId, int equipmentId, String duration){
-        if(userId.trim().isEmpty() || duration.trim().isEmpty()){
+    public void createRental(int equipmentId, String duration){
+        int uid = services.userService().getCurUser().getId();
+        if(duration.trim().isEmpty()){
             throw new IllegalArgumentException("User or booking duration cannot be empty.");
         }
         
         try{
-            int uid = Integer.parseInt(userId);
             int dur = Integer.parseInt(duration);
             
             Equipment target = services.equipmentService().getEquipmentByID(equipmentId);

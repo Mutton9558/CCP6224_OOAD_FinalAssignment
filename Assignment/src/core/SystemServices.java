@@ -8,5 +8,6 @@ public record SystemServices(
     CategoryController categoryService,
     EquipmentController equipmentService,
     RentalController rentalService,
-    BillingController billingService
+    BillingController billingService,
+    UserController userService
 ) {}

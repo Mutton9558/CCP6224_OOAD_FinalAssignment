@@ -34,14 +34,14 @@ public class RentalCreationDialog extends JDialog {
         headerLabel.setFont(new Font("Arial", Font.BOLD, 24));
         headerLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel idLabel = new JLabel("User ID");
-        idLabel.setForeground(Color.WHITE);
-        idLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        idLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        userIdTextField = new JTextField(30);
-        userIdTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        userIdTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, userIdTextField.getPreferredSize().height));
+//        JLabel idLabel = new JLabel("User ID");
+//        idLabel.setForeground(Color.WHITE);
+//        idLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+//        idLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+//
+//        userIdTextField = new JTextField(30);
+//        userIdTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
+//        userIdTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, userIdTextField.getPreferredSize().height));
 
 //        JLabel equipmentFieldLabel = new JLabel("Equipment ID");
 //        equipmentFieldLabel.setForeground(Color.WHITE);
@@ -72,10 +72,10 @@ public class RentalCreationDialog extends JDialog {
 
         contentPanel.add(headerLabel);
         contentPanel.add(Box.createVerticalStrut(20));
-        contentPanel.add(idLabel);
-        contentPanel.add(Box.createVerticalStrut(5));
-        contentPanel.add(userIdTextField);
-        contentPanel.add(Box.createVerticalStrut(10));
+//        contentPanel.add(idLabel);
+//        contentPanel.add(Box.createVerticalStrut(5));
+//        contentPanel.add(userIdTextField);
+//        contentPanel.add(Box.createVerticalStrut(10));
 //        contentPanel.add(equipmentFieldLabel);
 //        contentPanel.add(Box.createVerticalStrut(5));
 //        contentPanel.add(equipmentTextField);
@@ -96,7 +96,7 @@ public class RentalCreationDialog extends JDialog {
         String duration = (String) durationSpinner.getValue();
         
         try{
-            this.facade.createRental(userIdText, equipment_id, duration);
+            this.facade.createRental(equipment_id, duration);
             JOptionPane.showMessageDialog(null, "Successfully created rental!");
             dispose();
         } catch (IllegalArgumentException e) {

@@ -18,31 +18,33 @@ import java.util.HashMap;
 public class RentalDB {
     
         public RentalDB(){
-//            String insertQuery = "INSERT INTO Rental (user_id, equipment, duration, lateStatus) VALUES (?, ?, ?, ?)";
-//    
-//            Object[][] testData = {
-//                {1, 1, 2, true},
-//                {2, 2, 8, false},
-//                {3, 3, 4, true}
-//            };
-//    
-//            try (Connection conn = core.DatabaseManager.getConnection();
-//                 PreparedStatement statement = conn.prepareStatement(insertQuery)) {
-//    
-//                for (Object[] row : testData) {
-//                    statement.setString(1, (String) row[0]);
-//                    statement.setString(2, (String) row[1]);
-//                    statement.setFloat(3, (Float) row[2]);
-//                    statement.setString(4, (String) row[3]);
-//                    statement.addBatch();
-//                }
-//    
-//                statement.executeBatch();
-//                System.out.println("Test data inserted successfully.");
-//    
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
+            String insertQuery = "INSERT INTO Rental (user_id, equipment, bookedDate, duration, returnStatus, lateStatus) VALUES (?, ?, ?, ?, ?, ?)";
+    
+            Object[][] testData = {
+                {1, 1, LocalDate.now(), 2, false, false},
+                {1, 2, LocalDate.now(), 8, false, false},
+                {3, 3, LocalDate.now(), 4, false, false}
+            };
+    
+            try (Connection conn = core.DatabaseManager.getConnection();
+                 PreparedStatement statement = conn.prepareStatement(insertQuery)) {
+    
+                for (Object[] row : testData) {
+                    statement.setInt(1, (Integer) row[0]);
+                    statement.setInt(2, (Integer) row[1]);
+                    statement.setObject(3, row[2]);
+                    statement.setInt(3, (Integer) row[3]);
+                    statement.setBoolean(4, (Boolean) row[4]);
+                    statement.setBoolean(5, (Boolean) row[5]);
+                    statement.addBatch();
+                }
+    
+                statement.executeBatch();
+                System.out.println("Test data inserted successfully.");
+    
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         
         public Map<Integer, Rental> fetchAllRentals(Map<Integer, Equipment> equipmentMap){
