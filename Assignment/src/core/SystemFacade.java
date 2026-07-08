@@ -349,11 +349,18 @@ public class SystemFacade {
         if(!fully_return){
             services.rentalService().editRental(rental_id, false, LocalDate.now().isAfter(target.getDueDate()));
             services.equipmentService().editEquipment(e.getId(), e.getRate(), "Rented Out");
-        } else {
-            if(damaged){
-                services.billingService().createDamageBill(target);
-                services.equipmentService().editEquipment(e.getId(), e.getRate(), "Available");
-            }
+            return;
+        }
+
+        boolean isLate = LocalDate.now().isAfter(target.getDueDate());
+        services.rentalService().editRental(rental_id, true, isLate);
+        if(damaged){
+            services.billingService().createDamageBill(target);
+            services.equipmentService().editEquipment(e.getId(), e.getRate(), "Available");
+        
+        }else{
+            services.equipmentService().editEquipment(e.getId(), e.getRate(), "Available");
         }
     }
+
 }
