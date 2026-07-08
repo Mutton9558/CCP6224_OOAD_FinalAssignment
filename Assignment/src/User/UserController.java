@@ -20,7 +20,7 @@ public class UserController {
     
     //for main
     public static UserController getInstance(UserDB repository){
-        if(instance != null){
+        if(instance == null){
             return instance = new UserController(repository);    
         }
         return instance;
@@ -68,7 +68,7 @@ public class UserController {
             return null;
         }
         
-        if(loginAttemptUser.getPassword().equals(password)){
+        if(!loginAttemptUser.getPassword().equals(password)){
             return null;
         } 
         

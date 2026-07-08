@@ -33,7 +33,7 @@ public class SystemFacade {
         return user;
     }
     
-    public void logout(int user_id){
+    public void logout(){
         services.userService().logoutUser();
     }
     
@@ -282,10 +282,18 @@ public class SystemFacade {
     public List<Bill> fetchUnpaidBills(){
         List<Bill> temp = services.billingService().getUnpaidBills();
         List<Bill> temp2 = new ArrayList<>();
+        int currentUserId = services.userService().getCurUser().getId();
         for(Bill b: temp){
-            int rentalId = b.getRentalId();
-            int userId = services.rentalService().fetchMap().get(rentalId).getUserId();
-            if(services.userService().getCurUser().getId() == userId){
+//            int rentalId = b.getRentalId();
+//            int userId = services.rentalService().fetchMap().get(rentalId).getUserId();
+            Rental rental = services.rentalService().fetchMap().get(b.getRentalId());
+            if(rental == null){
+                continue;
+            }
+//            if(services.userService().getCurUser().getId() == userId){
+//                temp2.add(b);
+//            }
+            if(rental.getUserId() == currentUserId){
                 temp2.add(b);
             }
         }

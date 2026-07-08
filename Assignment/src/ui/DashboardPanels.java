@@ -7,7 +7,7 @@ import User.User;
 import User.Permission;
 import core.SystemFacade;
 
-
+// FOR TESTING PURPOSES, ALL PERMISSIONS ARE ONE !!
 public class DashboardPanels{
     
     private final User current_user;
@@ -29,7 +29,7 @@ public class DashboardPanels{
         
         @Override
         public boolean isVisible(){
-            return current_user.hasPermission(Permission.VIEW_EQUIPMENT);
+            return current_user.hasPermission(Permission.VIEW_PROFILE);
         }
         
         @Override
@@ -52,7 +52,7 @@ public class DashboardPanels{
         
         @Override
         public boolean isVisible(){
-            return current_user.hasPermission(Permission.VIEW_EQUIPMENT);
+            return current_user.hasPermission(Permission.VIEW_PROFILE);
         }
         
         @Override
@@ -63,28 +63,28 @@ public class DashboardPanels{
     
     // FOR GENERAL USERS
     //My Rentals CANNOT PASS CONTROLLER, PLS PASS FACADE!!!!!!!!!!!!
-//    public class RentalPanel implements DashboardPanel{
-//        
-//        private final Rental.RentalRecordsUI panelUI;
-//        public RentalPanel(SystemFacade facade){
-//            this.panelUI = new Rental.RentalRecordsUI(facade);
-//        }
-//        
-//        @Override
-//        public String getName(){
-//            return "My Rentals";
-//        }
-//        
-//        @Override
-//        public boolean isVisible(){
-//            return current_user.hasPermission(Permission.RENT);
-//        }
-//        
-//        @Override
-//        public JPanel getPanel(){
-//            return panelUI;
-//        }
-//    }
+    public class RentalPanel implements DashboardPanel{
+        
+        private final Rental.RentalRecordsUI panelUI;
+        public RentalPanel(SystemFacade facade){
+            this.panelUI = new Rental.RentalRecordsUI(facade);
+        }
+        
+        @Override
+        public String getName(){
+            return "My Rentals";
+        }
+        
+        @Override
+        public boolean isVisible(){
+            return current_user.hasPermission(Permission.VIEW_PROFILE);
+        }
+        
+        @Override
+        public JPanel getPanel(){
+            return panelUI;
+        }
+    }
     
     public class BillingPanel implements DashboardPanel{
         
@@ -100,7 +100,7 @@ public class DashboardPanels{
         
         @Override
         public boolean isVisible(){
-            return current_user.hasPermission(Permission.MAKE_PAYMENT);
+            return current_user.hasPermission(Permission.VIEW_PROFILE);
         }
         
         @Override
@@ -109,15 +109,14 @@ public class DashboardPanels{
         }
     }
     
-    
-    
     public DashboardPanels(core.SystemFacade facade, User current_user){
         
         this.facade = facade;
         this.current_user = current_user;
         this.panels.add(new EquipmentPanel(facade));
         this.panels.add(new RentedEquipmentPanel(facade));
-
+        this.panels.add(new RentalPanel(facade));
+        this.panels.add(new BillingPanel(facade));
     }
     
     public ArrayList<DashboardPanel> returnDashboardPanels(){

@@ -27,6 +27,10 @@ public class Main {
         RentalDB rentalRepo = new RentalDB();
         BillDB billingRepo = new BillDB();
         
+        //SEED USERS
+        userRepo.seedTestUsers();
+
+        
         UserController userService = UserController.getInstance(userRepo);
         CategoryController categoryService = CategoryController.getInstance(categoryRepo);
         EquipmentController equipmentService = EquipmentController.getInstance(equipmentRepo, categoryService);
@@ -35,6 +39,7 @@ public class Main {
         
         core.SystemServices services = new core.SystemServices(userService, categoryService, equipmentService, rentalService, billingService);
         core.SystemFacade facade = new core.SystemFacade(services);
+   
        //Create new MainUI
         MainUI mainScreen = new MainUI(facade);
     }
