@@ -99,7 +99,7 @@ public class MainUI extends JFrame {
     
     //TEMPORARY
     private void buildLoggedInPanels(User user, JPanel mainPanel, CardLayout cardlayout) {
-        DashboardPanels panelList = new DashboardPanels(facade, user);
+        DashboardPanels panelList = new DashboardPanels(facade, user, this);
         dashboard = new DashboardUI(panelList.returnDashboardPanels());
         profile = new UserProfileUI();
 

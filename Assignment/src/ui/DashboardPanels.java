@@ -3,7 +3,7 @@ import Equipment.EquipmentPanelUI;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import User.User;
+import User.*;
 import User.Permission;
 import core.SystemFacade;
 
@@ -131,8 +131,39 @@ public class DashboardPanels{
             return panelUI;
         }
     }
+        
+    public class RegisterUserPanel implements DashboardPanel{
+        private final JPanel panelUI;
+        public RegisterUserPanel(SystemFacade facade, Window parentWindow){
+            panelUI = new JPanel();
+            panelUI.setOpaque(false);
+                
+            JButton register_btn = new JButton("Register New User");
+            register_btn.addActionListener( e-> {
+                RegisterUserDialog dialog = new RegisterUserDialog(parentWindow, facade);
+                dialog.setVisible(true);
+            });
+                
+            panelUI.add(register_btn);
+        }
+        
+        @Override
+        public String getName(){
+            return "Register New User";
+        }
+        
+        @Override
+        public boolean isVisible(){
+            return current_user.hasPermission(Permission.VIEW_PROFILE);
+        }
+        
+        @Override
+        public JPanel getPanel(){
+            return panelUI;
+        }         
+    }
     
-    public DashboardPanels(core.SystemFacade facade, User current_user){
+    public DashboardPanels(core.SystemFacade facade, User current_user, Window parentWindow){
         
         this.facade = facade;
         this.current_user = current_user;
@@ -141,6 +172,8 @@ public class DashboardPanels{
         this.panels.add(new RentalPanel(facade));
         this.panels.add(new BillingPanel(facade));
         this.panels.add(new EquipmentReturnPanel(facade));
+        this.panels.add(new RegisterUserPanel(facade, parentWindow));
+
     }
     
     public ArrayList<DashboardPanel> returnDashboardPanels(){
