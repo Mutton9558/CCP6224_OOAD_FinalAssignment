@@ -5,7 +5,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import ui.UIConstants;
 import core.SystemFacade;
-import javax.swing.JOptionPane;
 import Rental.RentalCreationDialog;
 
 public class EquipmentDetailsUI extends JDialog {
@@ -138,10 +137,12 @@ public class EquipmentDetailsUI extends JDialog {
 //      enabled for normal user, disabled for resource manager
         JPanel selectPanel = new JPanel();
         selectPanel.setBackground(uiConst.LightPurple);
-        JButton selectBtn = new JButton("Select");
+        JButton selectBtn = new JButton("Rent");
         selectBtn.addActionListener(e -> {
             Window parent2 = SwingUtilities.getWindowAncestor(this);
             JDialog addRental = new RentalCreationDialog(parent2, facade, equipment.getId());
+            facade.editEquipment(equipment.getId(), String.valueOf(equipment.getRate()), "Rented Out");
+            addRental.setVisible(true);
         });
         selectBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         selectBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

@@ -322,21 +322,19 @@ public class SystemFacade {
         return services.billingService().payBill(billId);
     }
     
-    public void createRental(int equipmentId, String duration){
+    public void createRental(int equipmentId, int duration){
         int uid = services.userService().getCurUser().getId();
-        if(duration.trim().isEmpty()){
+        if(duration <= 0){
             throw new IllegalArgumentException("User or booking duration cannot be empty.");
         }
         
-        try{
-            int dur = Integer.parseInt(duration);
-            
+        try{            
             Equipment target = services.equipmentService().getEquipmentById(equipmentId);
             if(target == null){
                 throw new IllegalArgumentException("No such equipment");
             }
             
-            boolean success = services.rentalService().addRental(uid, target, dur);
+            boolean success = services.rentalService().addRental(uid, target, duration);
             if(!success){
                 throw new RuntimeException("Database add operation failed.");
             }
