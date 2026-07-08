@@ -8,6 +8,7 @@ import javax.swing.border.EmptyBorder;
 import Equipment.Equipment;
 import Billing.BillingController;
 import ui.UIConstants;
+import core.SystemFacade;
 
 public class ReturnConfirmationDialog extends JDialog {
     private UIConstants uiConst = new UIConstants();
@@ -15,7 +16,7 @@ public class ReturnConfirmationDialog extends JDialog {
     private boolean isDamaged = false;
     private BillingController billingInstance;
 
-    public ReturnConfirmationDialog(Window parent, int id, String name, Rental rental) {
+    public ReturnConfirmationDialog(Window parent, int rentalId, int id, String name, SystemFacade facade) {
         super(parent, "Return Confirmation", Dialog.ModalityType.APPLICATION_MODAL);
         this.setSize(800, 600);
         
@@ -42,7 +43,6 @@ public class ReturnConfirmationDialog extends JDialog {
         idTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
         idTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, idTextField.getPreferredSize().height));
         idTextField.setText(Integer.toString(id));
-//        will change depending on user
         idTextField.setEnabled(false);
         
         JLabel nameFieldLabel = new JLabel("Equipment Name");
@@ -54,7 +54,6 @@ public class ReturnConfirmationDialog extends JDialog {
         nameTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
         nameTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE, nameTextField.getPreferredSize().height));
         nameTextField.setText(name);
-//        will change depending on user
         nameTextField.setEnabled(false);
         
         JCheckBox returnStatus = new JCheckBox("Equipment returned fully?");
@@ -69,6 +68,7 @@ public class ReturnConfirmationDialog extends JDialog {
                 damageStatus.setEnabled(true);
             } else {
                 damageStatus.setEnabled(false);
+                this.isReturned = false;
                 this.isDamaged = false;
             }
         });
@@ -76,6 +76,8 @@ public class ReturnConfirmationDialog extends JDialog {
         damageStatus.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 this.isDamaged = true;
+            } else  {
+                this.isDamaged = false;
             }
         });
         damageStatus.setBackground(uiConst.LightPurple);
@@ -83,6 +85,11 @@ public class ReturnConfirmationDialog extends JDialog {
         JPanel confirmPanel = new JPanel();
         confirmPanel.setBackground(uiConst.LightPurple);
         JButton confirmBtn = new JButton("Confirm");
+        confirmBtn.addActionListener(e -> {
+            facade.returnEquipmentConfirmation(rentalId, isReturned, isDamaged);
+            JOptionPane.showMessageDialog(null, "Successfully returned equipment!");
+            dispose();
+        });
         confirmBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         confirmBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         confirmBtn.addActionListener(e -> onConfirm(billingInstance, rental));

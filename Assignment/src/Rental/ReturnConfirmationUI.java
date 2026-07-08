@@ -17,8 +17,8 @@ import Equipment.Equipment;
 
 public class ReturnConfirmationUI extends JPanel{
     private UIConstants uiConst = new UIConstants();
-    private RentalController rentalController;
-    private List<Rental> unreturnedRentals = new ArrayList<>(); 
+    private List<Rental> rentals;
+    private SystemFacade facade;
     
     private class confirmBtn extends JButton {
         public confirmBtn() {
@@ -31,9 +31,8 @@ public class ReturnConfirmationUI extends JPanel{
         }
     }
     
-    public ReturnConfirmationUI(RentalController rentalController){
-        this.rentalController = rentalController;
-        
+    public ReturnConfirmationUI(SystemFacade facade){
+        this.facade = facade;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         setBackground(uiConst.LightPurple);
@@ -44,10 +43,10 @@ public class ReturnConfirmationUI extends JPanel{
         headerLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        List<Rental> rentals = rentalController.getAllRentals();
+        this.rentals = facade.getReturnConfirmationContext().rentCur();
         List<Object[]> rentedEquipments = new ArrayList<>();
         
-        for (Rental r : rentals) {
+        for (Rental r : this.rentals) {
             if (Boolean.TRUE.equals(r.getReturnStatus())) continue;
             
             Equipment eq = r.getEquipment();
@@ -124,7 +123,7 @@ public class ReturnConfirmationUI extends JPanel{
                 Rental clickedRental = unreturnedRentals.get(modelRow);
                 int id = Integer.parseInt((String) table.getModel().getValueAt(modelRow, 0));
                 String name = (String) table.getModel().getValueAt(modelRow, 1);
-                JDialog returnConfirmation = new ReturnConfirmationDialog(parent, id, name, clickedRental);
+                JDialog returnConfirmation = new ReturnConfirmationDialog(parent, rentals.get(modelRow).getId(), id, name, facade);
                 returnConfirmation.setVisible(true);
             }
             fireEditingStopped();

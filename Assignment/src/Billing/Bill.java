@@ -5,8 +5,8 @@ public class Bill {
     private final int rental_id;
     private final float base_fee;
     private final float discount_amount;
-    private final float penalty_amount;
-    private final float net_payable;
+    private float penalty_amount;
+    private float net_payable;
     private final String bill_type;
     private String bill_status;
     
@@ -51,6 +51,14 @@ public class Bill {
     
     public String getStatus(){
         return this.bill_status;
+    }
+    
+    public void setPenaltyAmount(float amt){
+        this.net_payable = amt;
+    }
+    
+    public void setNetPayable(float amt){
+        this.penalty_amount = amt;
     }
     
     public void setStatus(String status){

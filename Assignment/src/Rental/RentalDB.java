@@ -18,22 +18,24 @@ import java.util.HashMap;
 public class RentalDB {
     
         public RentalDB(){
-            String insertQuery = "INSERT INTO Rental (user_id, equipment, duration, lateStatus) VALUES (?, ?, ?, ?)";
+            String insertQuery = "INSERT INTO Rental (user_id, equipment, bookedDate, duration, returnStatus, lateStatus) VALUES (?, ?, ?, ?, ?, ?)";
     
             Object[][] testData = {
-                {1, 1, 2, true},
-                {2, 2, 8, false},
-                {3, 3, 4, true}
+                {1, 1, LocalDate.now(), 2, false, false},
+                {1, 2, LocalDate.now(), 8, false, false},
+                {3, 3, LocalDate.now(), 4, false, false}
             };
     
             try (Connection conn = core.DatabaseManager.getConnection();
                  PreparedStatement statement = conn.prepareStatement(insertQuery)) {
     
                 for (Object[] row : testData) {
-                    statement.setString(1, (String) row[0]);
-                    statement.setString(2, (String) row[1]);
-                    statement.setFloat(3, (Float) row[2]);
-                    statement.setString(4, (String) row[3]);
+                    statement.setInt(1, (Integer) row[0]);
+                    statement.setInt(2, (Integer) row[1]);
+                    statement.setObject(3, row[2]);
+                    statement.setInt(3, (Integer) row[3]);
+                    statement.setBoolean(4, (Boolean) row[4]);
+                    statement.setBoolean(5, (Boolean) row[5]);
                     statement.addBatch();
                 }
     
@@ -58,12 +60,11 @@ public class RentalDB {
                         int user_id = res2.getInt("user_id");
                         int equipment = res2.getInt("equipment");
                         LocalDate bookedDate = res2.getDate("bookedDate").toLocalDate();
-                        LocalDate dueDate = res2.getDate("dueDate").toLocalDate();
                         int duration = res2.getInt("duration");
                         boolean returnStatus = res2.getBoolean("returnStatus");
                         boolean lateStatus = res2.getBoolean("lateStatus");
                         
-                        Rental newRental = new Rental(id, user_id, equipmentMap.get(equipment), bookedDate, dueDate, duration, returnStatus, lateStatus);
+                        Rental newRental = new Rental(id, user_id, equipmentMap.get(equipment), bookedDate, duration, returnStatus, lateStatus);
                         temp.put(id, newRental);
                     }
                 }
@@ -76,7 +77,7 @@ public class RentalDB {
         }
         
         public int create(int user_id, Equipment equipment, int duration){
-            String insertReq = "INSERT INTO Rental VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String insertReq = "INSERT INTO Rental VALUES (?, ?, ?, ?, ?, ?)";
             LocalDate bookedDate = LocalDate.now();
             LocalDate dueDate = bookedDate.plusDays(duration);
             boolean returnStatus = false;
@@ -86,10 +87,9 @@ public class RentalDB {
                     statement.setInt(1, user_id);
                     statement.setInt(2, equipment.getId());
                     statement.setDate(3, Date.valueOf(bookedDate));
-                    statement.setDate(4, Date.valueOf(dueDate));
-                    statement.setInt(5, duration);
-                    statement.setBoolean(6, returnStatus);
-                    statement.setBoolean(7, lateStatus);
+                    statement.setInt(4, duration);
+                    statement.setBoolean(5, returnStatus);
+                    statement.setBoolean(6, lateStatus);
                     statement.executeUpdate();
                     try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                         if (generatedKeys.next()) {
