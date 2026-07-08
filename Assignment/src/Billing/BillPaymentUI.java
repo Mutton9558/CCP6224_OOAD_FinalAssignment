@@ -1,23 +1,22 @@
 package Billing;
 
-import javax.swing.*;
+import core.SystemFacade;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import ui.UIConstants;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import core.SystemFacade;
+import ui.UIConstants;
 
 public class BillPaymentUI extends JPanel {
-    private UIConstants uiConst = new UIConstants();
     private SystemFacade facade;
     private List<Bill> billList = new ArrayList<>();
-    private DefaultTableModel tableModel;
-    private JTable table;
+    private final DefaultTableModel tableModel;
+    private final JTable table;
     
     private class payBtn extends JButton {
         public payBtn() {
@@ -36,7 +35,7 @@ public class BillPaymentUI extends JPanel {
         
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        setBackground(uiConst.LightPurple);
+        setBackground(UIConstants.LightPurple);
         
         JLabel headerLabel = new JLabel("Make Payment");
         headerLabel.setForeground(Color.WHITE);
@@ -91,12 +90,13 @@ public class BillPaymentUI extends JPanel {
     }
 
     private class TableButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
-        private final JButton editingButton = new payBtn();
+        private final JButton editingButton;
         private final JTable table;
         private int currentRow;
 
         public TableButtonEditor(JTable table) {
             this.table = table;
+            this.editingButton = new payBtn();
             this.editingButton.addActionListener(this);
         }
 

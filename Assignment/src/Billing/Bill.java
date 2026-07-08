@@ -54,11 +54,11 @@ public class Bill {
     }
     
     public void setPenaltyAmount(float amt){
-        this.net_payable = amt;
+        this.penalty_amount = amt;
     }
     
     public void setNetPayable(float amt){
-        this.penalty_amount = amt;
+        this.net_payable = amt;
     }
     
     public void setStatus(String status){

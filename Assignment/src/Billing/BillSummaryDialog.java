@@ -6,14 +6,12 @@ import javax.swing.border.EmptyBorder;
 import ui.UIConstants;
 
 public class BillSummaryDialog extends JDialog {
-    private UIConstants uiConst = new UIConstants();
-
     public BillSummaryDialog(Window parent, Bill bill) {
         super(parent, "Bill Summary", Dialog.ModalityType.APPLICATION_MODAL);
         this.setSize(800, 600);
         
         JPanel contentPanel = new JPanel();
-        contentPanel.setBackground(uiConst.LightPurple);
+        contentPanel.setBackground(UIConstants.LightPurple);
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         
         contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -79,7 +77,7 @@ public class BillSummaryDialog extends JDialog {
         netPayableTextField.setEnabled(false);
         
         JPanel closePanel = new JPanel();
-        closePanel.setBackground(uiConst.LightPurple);
+        closePanel.setBackground(UIConstants.LightPurple);
         JButton closeBtn = new JButton("Close");
         closeBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         closeBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

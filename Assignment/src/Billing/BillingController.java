@@ -1,16 +1,16 @@
 package Billing;
 
-import java.util.Map;
+import Equipment.Category;
+import Rental.Rental;
+import User.UserController;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
-import Rental.Rental;
-import Equipment.Category;
-import User.UserController;
+import java.util.Map;
 
 public class BillingController {
     private Map<Integer, Bill> billMap = new HashMap<>();
-    private BillDB repository;
+    private final BillDB repository;
     public static BillingController instance;
     private UserController userController;
     
@@ -42,7 +42,7 @@ public class BillingController {
     }
     
     public float applyPenalty(Rental rental){
-//        flat category penalty when late, no per-day overdue count yet
+//        flat category penalty when late, not a percentage
         Category category = rental.getEquipment().getCategory();
         return rental.getLateStatus() ? category.getLatePenalty() : 0;
     }
@@ -50,51 +50,47 @@ public class BillingController {
     public boolean createRentalBill(Rental rental){
         float base_fee = calculateFee(rental);
         float discount_amount = applyDiscount(rental);
-        float penalty = applyPenalty(rental);
-        float net_payable = base_fee - discount_amount;
-        float penaltyAmount = net_payable * penalty;
-//      find the billing for the current rental
+        float penalty_amount = applyPenalty(rental);
+        float net_payable = base_fee - discount_amount + penalty_amount;
+        
+//      find the existing bill for this rental (e.g. the optimistic bill made at rent time)
         for (Map.Entry<Integer, Bill> entry : this.billMap.entrySet()) {
             int id = entry.getKey();
             Bill bill = entry.getValue();
 
-            // Find the billing for the current rental
-            if (bill.getId() == rental.getId()) {
+            if (bill.getRentalId() == rental.getId()) {
                 if ("Unpaid".equals(bill.getStatus())) {
-                    boolean success = repository.update(id, penaltyAmount, net_payable + penaltyAmount);
+                    boolean success = repository.update(id, penalty_amount, net_payable);
                     if (success) {
+                        bill.setPenaltyAmount(penalty_amount);
                         bill.setNetPayable(net_payable);
-                        bill.setPenaltyAmount(penaltyAmount);
                     }
-                    return success; // Stops function and returns status
+                    return success;
                 } else {
-                    Bill newBill = new Bill(id, rental.getId(), 0, 0, penaltyAmount, net_payable + penaltyAmount, "Late Return Fee", "Unpaid");
-                    billMap.put(id, newBill);
-                    return true; // Stops function immediately
+                    int newId = repository.create(rental.getId(), base_fee, discount_amount, penalty_amount, net_payable, "Rental Fee", "Unpaid");
+                    if(newId != -1){
+                        Bill newBill = new Bill(newId, rental.getId(), base_fee, discount_amount, penalty_amount, net_payable, "Rental Fee", "Unpaid");
+                        billMap.put(newId, newBill);
+                    }
+                    return newId != -1;
                 }
             }
         }
         
-        int id = repository.create(rental.getId(), base_fee, discount_amount, penaltyAmount, net_payable + penaltyAmount, "Rental Fee", "Unpaid");
+        int id = repository.create(rental.getId(), base_fee, discount_amount, penalty_amount, net_payable, "Rental Fee", "Unpaid");
         if(id != -1){
-            Bill newBill = new Bill(id, rental.getId(), base_fee, discount_amount, 0, net_payable, "Rental Fee", "Unpaid");
+            Bill newBill = new Bill(id, rental.getId(), base_fee, discount_amount, penalty_amount, net_payable, "Rental Fee", "Unpaid");
             billMap.put(id, newBill);
         }
         return id != -1;
     }
     
     public boolean createDamageBill(Rental rental){
-        float penalty_amount = rental.getEquipment().getCategory().getDamagePenalty();
-        float totalPayable = (float) this.billMap.values().stream()
-        .filter(bill -> bill.getRentalId() == rental.getId())
-        .mapToDouble(bill -> bill.getBaseFee() + bill.getPenalty() - bill.getDiscount())
-        .sum();
+        float damage_penalty = rental.getEquipment().getCategory().getDamagePenalty();
         
-        float netPenalty = totalPayable * penalty_amount;
-        
-        int id = repository.create(rental.getId(), 0, 0, netPenalty, totalPayable + netPenalty, "Damage Fee", "Unpaid");
+        int id = repository.create(rental.getId(), 0, 0, damage_penalty, damage_penalty, "Damage Fee", "Unpaid");
         if(id != -1){
-            Bill newBill = new Bill(id, rental.getId(), 0, 0, netPenalty, totalPayable + netPenalty, "Damage Fee", "Unpaid");
+            Bill newBill = new Bill(id, rental.getId(), 0, 0, damage_penalty, damage_penalty, "Damage Fee", "Unpaid");
             billMap.put(id, newBill);
         }
         return id != -1;
