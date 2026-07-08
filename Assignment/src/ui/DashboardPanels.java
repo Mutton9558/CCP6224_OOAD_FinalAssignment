@@ -109,6 +109,29 @@ public class DashboardPanels{
         }
     }
     
+    public class EquipmentReturnPanel implements DashboardPanel{
+        
+        private final Rental.ReturnConfirmationUI panelUI;
+        public EquipmentReturnPanel(SystemFacade facade){
+            this.panelUI = new Rental.ReturnConfirmationUI(facade);
+        }
+        
+        @Override
+        public String getName(){
+            return "Equipment Returns";
+        }
+        
+        @Override
+        public boolean isVisible(){
+            return current_user.hasPermission(Permission.VIEW_PROFILE);
+        }
+        
+        @Override
+        public JPanel getPanel(){
+            return panelUI;
+        }
+    }
+    
     public DashboardPanels(core.SystemFacade facade, User current_user){
         
         this.facade = facade;
@@ -117,6 +140,7 @@ public class DashboardPanels{
         this.panels.add(new RentedEquipmentPanel(facade));
         this.panels.add(new RentalPanel(facade));
         this.panels.add(new BillingPanel(facade));
+        this.panels.add(new EquipmentReturnPanel(facade));
     }
     
     public ArrayList<DashboardPanel> returnDashboardPanels(){
